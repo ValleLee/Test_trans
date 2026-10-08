@@ -1,0 +1,24 @@
+.env
+.env.*
+!.env.example
+.venv/
+/.venv
+.pytest_cache/
+__pycache__/
+*.py[cod]
+runs/
+*.egg-info/
+
+# Generated datasets, task copies, third-party checkouts, and experiment output.
+/data/
+/tasks/
+/upstream/
+/jobs/
+/task_list/
+/check/stage3/*/harbor_jobs/
+/check/stage3/**/regrade_before_uniform_reset/
+/check/*.json
+/check/*.txt
+/preparation_report.json
+*.log
+!/check/stage3/**/*.log

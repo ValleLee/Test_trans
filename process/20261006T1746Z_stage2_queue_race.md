@@ -1,0 +1,8 @@
+# Stage 2 Python batch queue race (2026-10-06 17:46 UTC)
+
+- Scope: batch-local orchestration; no shared semantic/verifier framework change.
+- Observation: after retry `ff1c025ad3` reached `rejected_semantic`, an early launch of replacement `e64c6c1ca5` freed a stale PID condition in the separately queued `379058e10f` waiter. Both started while four dynamic retries and five other direct jobs were active: 11 conversions briefly ran against a requested limit of 10.
+- Evidence: `data/stage2_batches/stage2_python20_20261006T131302Z/continuation_queue_status.json` recorded `external_active: 11` at 17:44 UTC. PID 3319898 owns the live 379 pipeline and semantic validator; PID 3396833 owns the e64 replacement runner.
+- Mitigation: stopped only idle waiters with no child process. An automatic approval review rejected terminating the live 379 process group because cancelling in-progress conversion was not specifically authorized. The remaining seven pending jobs are now managed by `/tmp/stage2_python20_queue_after_oversubscription.py`, which counts live direct jobs and dynamic retry statuses and starts a job only below 10. The temporary 11 will drop through a normal completion; no additional job is launched while active count is 10 or more.
+- Audit invariant: every queued launch checks for any prior independent audit PASS and skips that task. A pipeline exit or published package is not counted as success before independent audit PASS.
+- Residual risk: the batch-local controller runs from `/tmp` and uses fixed PIDs for jobs already in progress. Revalidate process identities and queue status before any manual restart. This note records a temporary concurrency overshoot, not a converter semantic issue.

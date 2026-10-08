@@ -1,0 +1,196 @@
+{
+  "schema_version": 2,
+  "experiment_id": "deepseek_miniswe_20_20261008",
+  "generated_at": "2026-10-07T19:57:38+00:00",
+  "cohort_size": 20,
+  "rollouts_per_condition": 1,
+  "solver_statuses": {
+    "complete": 40
+  },
+  "cohorts": {
+    "original": {
+      "counts": {
+        "planned": 20,
+        "solver_complete": 20,
+        "nonempty_patches": 20,
+        "dual_valid": 20,
+        "no_patch": 0,
+        "regrade_error": 0,
+        "original_valid": 20,
+        "original_pass": 19,
+        "functional_valid": 20,
+        "functional_pass": 17,
+        "agent_usage_available": 20,
+        "input_tokens": 59609625,
+        "cache_tokens": 58695040,
+        "output_tokens": 536184,
+        "agent_execution_seconds": 10994.05431,
+        "agent_setup_seconds": 1378.913312,
+        "initial_verifier_valid": 20,
+        "initial_verifier_pass": 19,
+        "native_original_comparable": 20,
+        "native_original_disagree": 0
+      },
+      "paired_verifier_matrix": {
+        "both_pass": 16,
+        "original_fail_functional_pass": 1,
+        "original_pass_functional_fail": 3,
+        "both_fail": 0
+      },
+      "rates": {
+        "patch_generation": 1.0,
+        "dual_regrade_coverage_per_planned": 1.0,
+        "dual_regrade_coverage_per_patch": 1.0,
+        "original_pass_per_valid": 0.95,
+        "functional_pass_per_valid": 0.85
+      }
+    },
+    "converted": {
+      "counts": {
+        "planned": 20,
+        "solver_complete": 20,
+        "nonempty_patches": 20,
+        "dual_valid": 20,
+        "no_patch": 0,
+        "regrade_error": 0,
+        "original_valid": 20,
+        "original_pass": 3,
+        "functional_valid": 20,
+        "functional_pass": 13,
+        "agent_usage_available": 20,
+        "input_tokens": 108441069,
+        "cache_tokens": 107098624,
+        "output_tokens": 651276,
+        "agent_execution_seconds": 13269.846864000003,
+        "agent_setup_seconds": 1370.8660920000002,
+        "initial_verifier_valid": 20,
+        "initial_verifier_pass": 3,
+        "native_original_comparable": 20,
+        "native_original_disagree": 0
+      },
+      "paired_verifier_matrix": {
+        "both_pass": 3,
+        "original_fail_functional_pass": 10,
+        "original_pass_functional_fail": 0,
+        "both_fail": 7
+      },
+      "rates": {
+        "patch_generation": 1.0,
+        "dual_regrade_coverage_per_planned": 1.0,
+        "dual_regrade_coverage_per_patch": 1.0,
+        "original_pass_per_valid": 0.15,
+        "functional_pass_per_valid": 0.65
+      }
+    }
+  },
+  "totals": {
+    "planned": 40,
+    "solver_complete": 40,
+    "nonempty_patches": 40,
+    "dual_valid": 40,
+    "no_patch": 0,
+    "regrade_error": 0,
+    "original_valid": 40,
+    "original_pass": 22,
+    "functional_valid": 40,
+    "functional_pass": 30,
+    "agent_usage_available": 40,
+    "input_tokens": 168050694,
+    "cache_tokens": 165793664,
+    "output_tokens": 1187460,
+    "agent_execution_seconds": 24263.901174,
+    "agent_setup_seconds": 2749.7794039999994,
+    "initial_verifier_valid": 40,
+    "initial_verifier_pass": 22,
+    "native_original_comparable": 40,
+    "native_original_disagree": 0
+  },
+  "paired_verifier_matrix": {
+    "both_pass": 19,
+    "original_fail_functional_pass": 11,
+    "original_pass_functional_fail": 3,
+    "both_fail": 7
+  },
+  "rates": {
+    "patch_generation": 1.0,
+    "dual_regrade_coverage_per_planned": 1.0,
+    "dual_regrade_coverage_per_patch": 1.0,
+    "original_pass_per_valid": 0.55,
+    "functional_pass_per_valid": 0.75
+  },
+  "paired_instruction": {
+    "original_verifier": {
+      "paired_tasks": 20,
+      "original_instruction_pass": 19,
+      "converted_instruction_pass": 3,
+      "both_pass": 3,
+      "original_only_pass": 16,
+      "converted_only_pass": 0,
+      "both_fail": 1,
+      "converted_minus_original_pass_rate": -0.8
+    },
+    "functional_verifier": {
+      "paired_tasks": 20,
+      "original_instruction_pass": 17,
+      "converted_instruction_pass": 13,
+      "both_pass": 12,
+      "original_only_pass": 5,
+      "converted_only_pass": 1,
+      "both_fail": 2,
+      "converted_minus_original_pass_rate": -0.2
+    },
+    "deletion_only_original_verifier": {
+      "paired_tasks": 17,
+      "original_instruction_pass": 16,
+      "converted_instruction_pass": 2,
+      "both_pass": 2,
+      "original_only_pass": 14,
+      "converted_only_pass": 0,
+      "both_fail": 1,
+      "converted_minus_original_pass_rate": -0.8235294117647058
+    },
+    "deletion_only_functional_verifier": {
+      "paired_tasks": 17,
+      "original_instruction_pass": 15,
+      "converted_instruction_pass": 12,
+      "both_pass": 11,
+      "original_only_pass": 4,
+      "converted_only_pass": 1,
+      "both_fail": 1,
+      "converted_minus_original_pass_rate": -0.17647058823529413
+    },
+    "clarification_original_verifier": {
+      "paired_tasks": 3,
+      "original_instruction_pass": 3,
+      "converted_instruction_pass": 1,
+      "both_pass": 1,
+      "original_only_pass": 2,
+      "converted_only_pass": 0,
+      "both_fail": 0,
+      "converted_minus_original_pass_rate": -0.6666666666666666
+    },
+    "clarification_functional_verifier": {
+      "paired_tasks": 3,
+      "original_instruction_pass": 2,
+      "converted_instruction_pass": 1,
+      "both_pass": 1,
+      "original_only_pass": 1,
+      "converted_only_pass": 0,
+      "both_fail": 1,
+      "converted_minus_original_pass_rate": -0.3333333333333333
+    }
+  },
+  "semantic_review": {
+    "candidate_disagreements": 14,
+    "original_fail_functional_pass": 11,
+    "original_pass_functional_fail": 3,
+    "reviewed": 14,
+    "confirmed_rescues": 10,
+    "confirmed_false_rejections": 1,
+    "incorrect_patch": 3,
+    "uncertain": 0,
+    "unreviewed": 0,
+    "status": "complete"
+  },
+  "cost_note": "Harbor reports 0 USD for the custom model; actual API billing is not measured here."
+}

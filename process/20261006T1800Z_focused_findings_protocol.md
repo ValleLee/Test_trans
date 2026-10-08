@@ -1,0 +1,11 @@
+# Focused Judge findings shape caused a semantic provider error (2026-10-06 18:00 UTC)
+
+- Phenomenon: a conversion attempt reached Focused Counterfactual Review with a valid assessment object, but the Judge returned `findings` as a JSON string. The controller called `.extend()` on the string and crashed. The pipeline classified this Python exception as `rejected_semantic_provider`, leaving revision `rev_005` unreviewed. This is not a Semantic FAIL on the emitted verifier.
+- Evidence: `runs/instance_internetarchive__openlibrary-2abe28b472ffed563a87cfe83685b161b35263b0-v13642507b4fc1f8d234172bf8129942da2c2ca26/attempts/attempt_003/intermediate/validation/stage2_pipeline.json` records `AttributeError: 'str' object has no attribute 'extend'` at `validation/counterfactual.py:129`.
+- Failure classification: framework-level response-shape handling. Any task that triggers a focused signal can receive a string-valued `findings` field; the failure does not depend on this repository, selector, or candidate implementation.
+- Root cause: the narrow gate validated assessment coverage but assumed `findings` was already a list before appending deterministic counterexamples.
+- General fix: normalize a text `findings` value to a one-element list; treat missing/null findings as empty; retry malformed nontext shapes as protocol errors. A non-object Judge response also becomes a retryable protocol error. Preserve all valid model findings and fail closed after repeated malformed responses.
+- Modified files: `src/swepro_trans/validation/counterfactual.py`, `tests/test_counterfactual_audit.py`.
+- Verification: `PYTHONPATH=src .venv/bin/pytest -q tests/test_counterfactual_audit.py` passed 16 tests, including string findings with a new counterexample and malformed findings that fail closed after retry.
+- Recovery: resume the same `attempt_003/rev_005` through the existing pipeline semantic gate, preserving its repair count of 4. Do not allocate another attempt or count it as successful before the independent audit.
+- Residual risk: other unexpected Judge fields may still require protocol validation; this change addresses the observed field and adds a non-object guard without broadening semantic acceptance.

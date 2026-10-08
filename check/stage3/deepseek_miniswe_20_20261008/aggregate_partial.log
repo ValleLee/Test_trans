@@ -1,0 +1,197 @@
+{
+  "schema_version": 2,
+  "experiment_id": "deepseek_miniswe_20_20261008",
+  "generated_at": "2026-10-07T19:48:31+00:00",
+  "cohort_size": 20,
+  "rollouts_per_condition": 1,
+  "solver_statuses": {
+    "complete": 39,
+    "incomplete": 1
+  },
+  "cohorts": {
+    "original": {
+      "counts": {
+        "planned": 20,
+        "solver_complete": 20,
+        "nonempty_patches": 20,
+        "dual_valid": 20,
+        "no_patch": 0,
+        "regrade_error": 0,
+        "original_valid": 20,
+        "original_pass": 19,
+        "functional_valid": 20,
+        "functional_pass": 17,
+        "agent_usage_available": 20,
+        "input_tokens": 59609625,
+        "cache_tokens": 58695040,
+        "output_tokens": 536184,
+        "agent_execution_seconds": 10994.05431,
+        "agent_setup_seconds": 1378.913312,
+        "initial_verifier_valid": 20,
+        "initial_verifier_pass": 19,
+        "native_original_comparable": 20,
+        "native_original_disagree": 0
+      },
+      "paired_verifier_matrix": {
+        "both_pass": 16,
+        "original_fail_functional_pass": 1,
+        "original_pass_functional_fail": 3,
+        "both_fail": 0
+      },
+      "rates": {
+        "patch_generation": 1.0,
+        "dual_regrade_coverage_per_planned": 1.0,
+        "dual_regrade_coverage_per_patch": 1.0,
+        "original_pass_per_valid": 0.95,
+        "functional_pass_per_valid": 0.85
+      }
+    },
+    "converted": {
+      "counts": {
+        "planned": 20,
+        "solver_complete": 19,
+        "nonempty_patches": 19,
+        "dual_valid": 19,
+        "no_patch": 1,
+        "regrade_error": 0,
+        "original_valid": 19,
+        "original_pass": 3,
+        "functional_valid": 19,
+        "functional_pass": 11,
+        "agent_usage_available": 19,
+        "input_tokens": 91122473,
+        "cache_tokens": 89900288,
+        "output_tokens": 580706,
+        "agent_execution_seconds": 11107.559592000003,
+        "agent_setup_seconds": 1311.1700160000003,
+        "initial_verifier_valid": 19,
+        "initial_verifier_pass": 3,
+        "native_original_comparable": 19,
+        "native_original_disagree": 0
+      },
+      "paired_verifier_matrix": {
+        "both_pass": 3,
+        "original_fail_functional_pass": 8,
+        "original_pass_functional_fail": 0,
+        "both_fail": 8
+      },
+      "rates": {
+        "patch_generation": 0.95,
+        "dual_regrade_coverage_per_planned": 0.95,
+        "dual_regrade_coverage_per_patch": 1.0,
+        "original_pass_per_valid": 0.15789473684210525,
+        "functional_pass_per_valid": 0.5789473684210527
+      }
+    }
+  },
+  "totals": {
+    "planned": 40,
+    "solver_complete": 39,
+    "nonempty_patches": 39,
+    "dual_valid": 39,
+    "no_patch": 1,
+    "regrade_error": 0,
+    "original_valid": 39,
+    "original_pass": 22,
+    "functional_valid": 39,
+    "functional_pass": 28,
+    "agent_usage_available": 39,
+    "input_tokens": 150732098,
+    "cache_tokens": 148595328,
+    "output_tokens": 1116890,
+    "agent_execution_seconds": 22101.613901999997,
+    "agent_setup_seconds": 2690.0833279999993,
+    "initial_verifier_valid": 39,
+    "initial_verifier_pass": 22,
+    "native_original_comparable": 39,
+    "native_original_disagree": 0
+  },
+  "paired_verifier_matrix": {
+    "both_pass": 19,
+    "original_fail_functional_pass": 9,
+    "original_pass_functional_fail": 3,
+    "both_fail": 8
+  },
+  "rates": {
+    "patch_generation": 0.975,
+    "dual_regrade_coverage_per_planned": 0.975,
+    "dual_regrade_coverage_per_patch": 1.0,
+    "original_pass_per_valid": 0.5641025641025641,
+    "functional_pass_per_valid": 0.717948717948718
+  },
+  "paired_instruction": {
+    "original_verifier": {
+      "paired_tasks": 19,
+      "original_instruction_pass": 18,
+      "converted_instruction_pass": 3,
+      "both_pass": 3,
+      "original_only_pass": 15,
+      "converted_only_pass": 0,
+      "both_fail": 1,
+      "converted_minus_original_pass_rate": -0.7894736842105263
+    },
+    "functional_verifier": {
+      "paired_tasks": 19,
+      "original_instruction_pass": 16,
+      "converted_instruction_pass": 11,
+      "both_pass": 10,
+      "original_only_pass": 6,
+      "converted_only_pass": 1,
+      "both_fail": 2,
+      "converted_minus_original_pass_rate": -0.2631578947368421
+    },
+    "deletion_only_original_verifier": {
+      "paired_tasks": 16,
+      "original_instruction_pass": 15,
+      "converted_instruction_pass": 2,
+      "both_pass": 2,
+      "original_only_pass": 13,
+      "converted_only_pass": 0,
+      "both_fail": 1,
+      "converted_minus_original_pass_rate": -0.8125
+    },
+    "deletion_only_functional_verifier": {
+      "paired_tasks": 16,
+      "original_instruction_pass": 14,
+      "converted_instruction_pass": 10,
+      "both_pass": 9,
+      "original_only_pass": 5,
+      "converted_only_pass": 1,
+      "both_fail": 1,
+      "converted_minus_original_pass_rate": -0.25
+    },
+    "clarification_original_verifier": {
+      "paired_tasks": 3,
+      "original_instruction_pass": 3,
+      "converted_instruction_pass": 1,
+      "both_pass": 1,
+      "original_only_pass": 2,
+      "converted_only_pass": 0,
+      "both_fail": 0,
+      "converted_minus_original_pass_rate": -0.6666666666666666
+    },
+    "clarification_functional_verifier": {
+      "paired_tasks": 3,
+      "original_instruction_pass": 2,
+      "converted_instruction_pass": 1,
+      "both_pass": 1,
+      "original_only_pass": 1,
+      "converted_only_pass": 0,
+      "both_fail": 1,
+      "converted_minus_original_pass_rate": -0.3333333333333333
+    }
+  },
+  "semantic_review": {
+    "candidate_disagreements": 12,
+    "original_fail_functional_pass": 9,
+    "original_pass_functional_fail": 3,
+    "reviewed": 12,
+    "confirmed_rescues": 8,
+    "confirmed_false_rejections": 1,
+    "incorrect_patch": 3,
+    "uncertain": 0,
+    "unreviewed": 0,
+    "status": "complete"
+  },
+  "cost_note": "Harbor reports 0 USD for the custom model; actual API billing is not measured here."
+}

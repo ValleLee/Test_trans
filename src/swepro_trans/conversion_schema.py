@@ -28,6 +28,7 @@ REQUIRED_F2P_FIELDS = frozenset({
     "obligation_accounting",
     "preservation_evidence",
     "problem_statement_support",
+    "problem_statement_quotes",
     "behavior_classification",
     "binding_detected",
     "base_repo_observable",
@@ -256,12 +257,17 @@ def obligation_accounting_errors(row: dict[str, Any]) -> list[str]:
             emitted = []
         emitted = [str(value).strip() for value in emitted if str(value).strip()]
         if scope == "product_behavior":
-            item_status = item.get("base_behavior_status", row.get("base_behavior_status"))
-            if item_status not in {"already_satisfies", "changed_or_missing", "unavailable"}:
+            if "base_behavior_status" not in item:
+                errors.append(
+                    f"{source}: obligation_accounting[{index}].base_behavior_status must be explicit; "
+                    "a row-level status cannot classify an individual product obligation"
+                )
+            elif item.get("base_behavior_status") not in {"already_satisfies", "changed_or_missing", "unavailable"}:
                 errors.append(
                     f"{source}: obligation_accounting[{index}].base_behavior_status must be "
                     "already_satisfies, changed_or_missing, or unavailable"
                 )
+            item_status = item.get("base_behavior_status")
             if row.get("behavior_classification") == "base_regression_behavior" and item_status != "already_satisfies":
                 errors.append(f"{source}: Base regression obligation {oid or index} must already satisfy Base")
             product_dispositions.append(str(disposition))
@@ -361,6 +367,9 @@ def classification_errors(row: dict[str, Any]) -> list[str]:
     if base_status not in {"already_satisfies", "changed_or_missing", "unavailable"}:
         errors.append(f"{source}: base_behavior_status must be already_satisfies, changed_or_missing, or unavailable")
     if classification == "p_supported_behavior":
+        quotes = row.get("problem_statement_quotes")
+        if not isinstance(quotes, list) or not quotes or any(not isinstance(q, str) or not q.strip() for q in quotes):
+            errors.append(f"{source}: p_supported_behavior requires non-empty problem_statement_quotes")
         if not str(row.get("observable_surface", "")).strip():
             errors.append(f"{source}: p_supported_behavior requires observable_surface")
         # A P-required new public surface can be absent from Base by design.
@@ -375,6 +384,9 @@ def classification_errors(row: dict[str, Any]) -> list[str]:
         if not str(row.get("preservation_evidence", "")).strip():
             errors.append(f"{source}: p_supported_behavior requires preservation_evidence")
     if classification == "base_regression_behavior":
+        quotes = row.get("problem_statement_quotes")
+        if not isinstance(quotes, list) or not quotes or any(not isinstance(q, str) or not q.strip() for q in quotes):
+            errors.append(f"{source}: base_regression_behavior requires non-empty problem_statement_quotes")
         if base_status != "already_satisfies":
             errors.append(
                 f"{source}: base_regression_behavior requires "

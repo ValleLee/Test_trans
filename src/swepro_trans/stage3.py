@@ -81,8 +81,10 @@ def parse_qualified_tasks(path: Path = COHORT_FILE) -> list[dict[str, str]]:
             current["attempt"] = attempt.group(1)
     if current is not None:
         rows.append(current)
-    if len(rows) != 20 or len({x["instance_id"] for x in rows}) != 20:
-        raise ValueError(f"qualified_tasks.txt must contain 20 unique instances; found {len(rows)}")
+    if not rows:
+        raise ValueError("qualified task cohort must contain at least one instance")
+    if len({x["instance_id"] for x in rows}) != len(rows):
+        raise ValueError("qualified task cohort contains duplicate instances")
     if any("attempt" not in row for row in rows):
         raise ValueError("qualified_tasks.txt has an instance without an accepted attempt")
     return rows
@@ -176,10 +178,12 @@ def accepted_evidence(attempt_root: Path) -> dict[str, Any]:
     return {path.relative_to(attempt_root).as_posix(): read_json(path) for path in candidates if path.is_file()}
 
 
-def prepare(output: Path, harbor_bin: Path, concurrency: int, rollouts: int) -> dict[str, Any]:
+def prepare(output: Path, harbor_bin: Path, concurrency: int, rollouts: int,
+            cohort_file: Path = COHORT_FILE) -> dict[str, Any]:
     if output.exists() and any(output.iterdir()):
         raise FileExistsError(f"experiment output already exists and is not empty: {output}")
-    rows = parse_qualified_tasks()
+    cohort_file = cohort_file.resolve()
+    rows = parse_qualified_tasks(cohort_file)
     tasks_root = output / "materialized_tasks"
     frozen_verifiers = output / "frozen_verifiers"
     tasks_root.mkdir(parents=True, exist_ok=True)
@@ -279,8 +283,8 @@ def prepare(output: Path, harbor_bin: Path, concurrency: int, rollouts: int) -> 
         "schema_version": 1,
         "experiment_id": output.name,
         "created_at": utc_now(),
-        "cohort_source": str(COHORT_FILE),
-        "cohort_source_sha256": sha256_file(COHORT_FILE),
+        "cohort_source": str(cohort_file),
+        "cohort_source_sha256": sha256_file(cohort_file),
         "cohort_size": len(manifest_rows),
         "rollouts_per_condition": rollouts,
         "concurrency": concurrency,
@@ -450,8 +454,8 @@ def run_benchmark(output: Path, harbor_bin: Path, concurrency: int) -> dict[str,
     manifest = read_json(manifest_path)
     if not manifest:
         raise FileNotFoundError(f"missing prepared manifest: {manifest_path}")
-    if int(manifest["cohort_size"]) != 20:
-        raise ValueError("refusing to run: manifest cohort must contain all 20 qualified tasks")
+    if int(manifest["cohort_size"]) != len(manifest.get("qualified_tasks", [])) or not manifest["qualified_tasks"]:
+        raise ValueError("refusing to run: manifest cohort_size does not match a nonempty qualified_tasks list")
     validate_frozen_materials(manifest)
     if concurrency != int(manifest["concurrency"]):
         raise ValueError(f"concurrency {concurrency} differs from frozen manifest {manifest['concurrency']}")
@@ -537,7 +541,7 @@ def regrade_one(job: dict[str, Any], output: Path) -> dict[str, Any]:
                               original_test_patch_path=test_patch if test_patch.is_file() else None,
                               reset_original_test_space=test_patch.is_file())
     old_valid = old.get("patch_applied") and old.get("returncode") not in (None, 91)
-    test_patch_required = test_patch.is_file()
+    test_patch_required = functional.get("original_test_patch_staged") is True
     new_valid = (functional.get("patch_applied")
                  and (not test_patch_required or functional.get("test_patch_applied"))
                  and functional.get("returncode") not in (None, 91, 92))
@@ -601,12 +605,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--harbor", type=Path, default=DEFAULT_HARBOR)
     parser.add_argument("--concurrency", type=int, default=CONCURRENCY)
     parser.add_argument("--rollouts", type=int, default=ROLLOUTS_PER_CONDITION)
+    parser.add_argument("--cohort-file", type=Path, default=COHORT_FILE,
+                        help="qualified-task list with numbered instance IDs and attempt lines")
     args = parser.parse_args(argv)
     output = args.output.resolve()
     harbor = args.harbor.resolve()
     try:
         if args.command == "prepare":
-            result = prepare(output, harbor, args.concurrency, args.rollouts)
+            result = prepare(output, harbor, args.concurrency, args.rollouts, args.cohort_file)
         elif args.command == "run":
             result = run_benchmark(output, harbor, args.concurrency)
         elif args.command == "regrade":
@@ -615,7 +621,7 @@ def main(argv: list[str] | None = None) -> int:
             result = aggregate(output)
         else:
             if not (output / "manifest.json").is_file():
-                prepare(output, harbor, args.concurrency, args.rollouts)
+                prepare(output, harbor, args.concurrency, args.rollouts, args.cohort_file)
             solver = run_benchmark(output, harbor, args.concurrency)
             replay = regrade_benchmark(output, args.concurrency) if solver["success_jobs"] else None
             result = aggregate(output) if replay else {"solver": solver, "regrade": None}

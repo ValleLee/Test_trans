@@ -180,6 +180,14 @@ def _evaluate_candidate(*, paths, revision: Path, kind: str, index: int, env_fil
     ]
     proc = subprocess.run(replay_cmd, cwd=PROJECT_ROOT, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
     replay = _json(replay_path) or {"status": "error", "raw": proc.stdout[-4000:]}
+    if replay.get("infrastructure_failure") is True:
+        return {
+            "status": "infrastructure_failure",
+            "candidate_index": index,
+            "candidate": generated,
+            "replay_status": replay.get("status"),
+            "replay": str(replay_path.relative_to(paths.run_root)),
+        }
 
     candidate_meta = patch.parent / "candidate_metadata.json"
     evidence = _candidate_judge_evidence(paths=paths, revision=revision, patch=patch, replay=replay)
@@ -254,13 +262,19 @@ def _evaluate_candidate(*, paths, revision: Path, kind: str, index: int, env_fil
     }
 
 
-def _collect_candidate_attempts(limit: int, evaluate) -> list[dict[str, Any]]:
-    """Stop when a candidate certifies QA or disproves the verifier."""
+def _collect_candidate_attempts(limit: int, evaluate, *, infrastructure_retries: int = 2) -> list[dict[str, Any]]:
+    """Retry infrastructure-only replay failures without spending candidate slots."""
     attempts: list[dict[str, Any]] = []
     for index in range(1, limit + 1):
+        retries = 0
         result = evaluate(index)
+        while result.get("status") == "infrastructure_failure" and retries < infrastructure_retries:
+            retries += 1
+            result = evaluate(index)
+        if retries:
+            result["infrastructure_retries"] = retries
         attempts.append(result)
-        if result.get("status") in {"pass", "verifier_false_positive"}:
+        if result.get("status") in {"pass", "verifier_false_positive", "infrastructure_failure"}:
             break
     return attempts
 
@@ -322,6 +336,7 @@ def main(argv: list[str] | None = None) -> int:
     limit_key = "max_positive_attempts" if args.kind == "positive" else "max_mutation_attempts"
     limit = max(1, int(config.get("experiment", {}).get(limit_key, 1)))
 
+    infrastructure_retries = max(0, int(config.get("experiment", {}).get("qa_infrastructure_retries", 2)))
     attempts = _collect_candidate_attempts(
         limit,
         lambda index: _evaluate_candidate(
@@ -329,9 +344,11 @@ def main(argv: list[str] | None = None) -> int:
             env_file=args.env_file, config=config, prompt=prompt,
             deterministic_only=args.deterministic_only,
         ),
+        infrastructure_retries=infrastructure_retries,
     )
 
     false_positive = next((item for item in attempts if item.get("status") == "verifier_false_positive"), None)
+    infrastructure_failure = next((item for item in attempts if item.get("status") == "infrastructure_failure"), None)
     winner = None if false_positive else next((item for item in attempts if item.get("status") == "pass"), None)
     summary = {
         "status": "pass" if winner else "fail",
@@ -346,11 +363,17 @@ def main(argv: list[str] | None = None) -> int:
     if false_positive:
         summary["mode"] = "verifier_false_positive"
         summary["reason"] = "A cleanly replayed P-valid candidate failed the functional verifier; this revision cannot be certified."
+    elif infrastructure_failure:
+        summary["mode"] = "replay_infrastructure_failure"
+        summary["reason"] = (
+            "Candidate replay did not complete because of an infrastructure or harness failure after "
+            f"{infrastructure_failure.get('infrastructure_retries', 0)} bounded retries; no semantic verdict was assigned."
+        )
     output = paths.qa_branch(args.kind) / "summary.json"
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(summary, ensure_ascii=False, indent=2))
-    return 0 if winner else 1
+    return 10 if infrastructure_failure else (0 if winner else 1)
 
 
 if __name__ == "__main__":

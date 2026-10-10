@@ -7,7 +7,7 @@ the same Docker fallback used by the Stage 1 preflight.  Official Stage 3
 runs should use pinned Harbor v0.22.0 instead.
 """
 from __future__ import annotations
-import argparse, ast, json, sys
+import argparse, ast, json, re, sys
 from pathlib import Path
 
 from ..runtime.stage1 import image_name, run_docker_preflight, write_json
@@ -21,6 +21,36 @@ from ..conversion_schema import (
 
 REQUIRED_TEST_FILES = ("test.sh", "run_script.sh", "parser.py", "config.json")
 REQUIRED_REVISION_FILES = ("conversion_trace.json", "functional_specification.md", "self_review.md", "manifest.json")
+
+def _normalized_citation_text(value: str) -> str:
+    """Normalize whitespace only; punctuation and wording remain evidence-bearing."""
+    return re.sub(r"\s+", " ", str(value)).strip()
+
+
+def problem_statement_citation_errors(trace: dict, problem_text: str, addendum_text: str = "") -> list[str]:
+    """Require exact source excerpts for rows classified as normative behavior."""
+    errors: list[str] = []
+    sources = [_normalized_citation_text(problem_text)]
+    if addendum_text.strip():
+        sources.append(_normalized_citation_text(addendum_text))
+    for row in trace.get("f2p_accounting", []):
+        if not isinstance(row, dict) or row.get("behavior_classification") not in {
+            "p_supported_behavior", "base_regression_behavior"
+        }:
+            continue
+        selector = str(row.get("source_f2p", "<unknown>"))
+        citations = row.get("problem_statement_quotes")
+        if not isinstance(citations, list) or not citations:
+            errors.append(f"{selector}: missing exact P/addendum quote in problem_statement_quotes")
+            continue
+        for citation in citations:
+            quote = _normalized_citation_text(citation)
+            if not quote or not any(quote in source for source in sources):
+                errors.append(
+                    f"{selector}: problem_statement_quotes contains text not present verbatim in P or approved addendum"
+                )
+    return errors
+
 
 def parse_list(value):
     if isinstance(value, list):
@@ -44,12 +74,34 @@ def _selector_is_emitted(selector: str, tests_root: Path) -> bool:
     selector = str(selector).strip()
     if not selector:
         return False
-    parts = selector.split("::")
-    file_part = parts[0]
-    candidate = tests_root / Path(file_part).name
-    if not candidate.is_file():
-        candidate = tests_root / file_part
-    if candidate.is_file():
+    # SWE-bench/pytest selectors use ``file.py::test_name`` while several
+    # JavaScript runners encode a hierarchical test title as
+    # ``file.js | suite title test title``. The latter is not one literal
+    # substring in source: suite and case names are declared separately.
+    pipe_selector = " | " in selector
+    if pipe_selector:
+        pipe_parts = selector.split(" | ")
+        file_part, pipe_titles = pipe_parts[0], pipe_parts[1:]
+        parts = [file_part]
+    else:
+        parts = selector.split("::")
+        file_part = parts[0]
+        pipe_titles = []
+    source_path = Path(file_part)
+    path_parts = [part for part in source_path.parts if part not in {"/", "\\"}]
+    candidates = []
+    if not source_path.is_absolute():
+        candidates.append(tests_root / source_path)
+    candidates.append(tests_root / source_path.name)
+    # Selectors may retain the repository's ``test/`` prefix or an absolute
+    # container ``/tests/`` prefix, while the converted bundle stores files
+    # relative to its tests root. Try the suffix after either known anchor.
+    for anchor in ("tests", "test"):
+        for index, part in enumerate(path_parts):
+            if part == anchor and index + 1 < len(path_parts):
+                candidates.append(tests_root.joinpath(*path_parts[index + 1:]))
+    candidate = next((path for path in candidates if path.is_file()), None)
+    if candidate is not None:
         artifact_text = candidate.read_text(encoding="utf-8", errors="replace")
     else:
         # Some language runners materialize tests from an embedded heredoc in
@@ -67,12 +119,83 @@ def _selector_is_emitted(selector: str, tests_root: Path) -> bool:
         )
         if Path(file_part).name not in artifact_text:
             return False
+    if pipe_selector:
+        # Test runners compose nested suite/case titles with spaces. Compare
+        # normalized title tokens as an ordered subsequence so punctuation,
+        # quoting, and the boundary between describe()/it() do not make a
+        # real emitted test look absent. The physical test file is still
+        # required above, and runtime collection remains the authority.
+        def title_tokens_appear_in_order(title: str) -> bool:
+            wanted = re.findall(r"[a-z0-9]+", title.lower())
+            available = iter(re.findall(r"[a-z0-9]+", artifact_text.lower()))
+            return bool(wanted) and all(
+                any(token == found for found in available) for token in wanted
+            )
+
+        return bool(pipe_titles) and all(
+            title_tokens_appear_in_order(title) for title in pipe_titles
+        )
     if len(parts) == 1:
         return True
     terminal = parts[-1].split("[", 1)[0].strip()
     if not terminal:
         return True
     return terminal in artifact_text
+
+
+def _selector_source_hints(selector: str, tests_root: Path, limit: int = 6) -> list[str]:
+    """Suggest bundled test sources when an accounting selector points nowhere.
+
+    Hints improve repair feedback only; they never make an absent selector valid.
+    """
+    file_part = str(selector).strip().split(" | ", 1)[0].split("::", 1)[0]
+    wanted = Path(file_part).name.lower()
+    if not wanted or not tests_root.is_dir():
+        return []
+    source_suffixes = {
+        ".py", ".pyi", ".js", ".jsx", ".mjs", ".cjs", ".ts", ".tsx",
+        ".go", ".rs", ".java", ".kt", ".rb", ".php", ".sh",
+    }
+    files = [
+        path for path in tests_root.rglob("*")
+        if path.is_file() and (path.suffix.lower() in source_suffixes or path.name in {"test.sh", "run_script.sh"})
+    ]
+    wanted_stem = Path(wanted).stem.lower()
+    files.sort(key=lambda path: (
+        0 if path.name.lower() == wanted else
+        1 if path.stem.lower() == wanted_stem else
+        2 if wanted_stem in path.stem.lower() or path.stem.lower() in wanted_stem else
+        3,
+        len(path.parts),
+        str(path),
+    ))
+    return [path.relative_to(tests_root).as_posix() for path in files[:limit]]
+
+
+def _selector_role_errors(trace: dict) -> list[str]:
+    """Report selectors incorrectly assigned both Base replay roles."""
+    delta, regressions = converted_selector_groups(trace)
+    overlap = sorted(set(delta) & set(regressions))
+    if not overlap:
+        return []
+    return [
+        "converted selector cannot serve both functional-delta and Base-regression roles: "
+        + ", ".join(overlap[:10])
+    ]
+
+
+def _script_permission_errors(tests_root: Path) -> list[str]:
+    """Reject a non-executable standard runner before invoking Docker.
+
+    ``test.sh`` is launched explicitly through ``bash`` by our replay harness,
+    but ``run_script.sh`` is the native runner entrypoint and converters often
+    invoke it directly from ``test.sh``. A missing executable bit otherwise
+    makes both Base and Gold fail for an artifact packaging defect.
+    """
+    runner = tests_root / "run_script.sh"
+    if runner.is_file() and not (runner.stat().st_mode & 0o111):
+        return ["tests/run_script.sh must be executable (chmod +x)"]
+    return []
 
 
 def artifact_contract(root: Path, rev: Path) -> dict:
@@ -88,6 +211,7 @@ def artifact_contract(root: Path, rev: Path) -> dict:
     tests=rev/'tests'
     for name in REQUIRED_TEST_FILES:
         if not (tests/name).is_file(): errors.append(f'missing revision tests/{name}')
+    errors.extend(_script_permission_errors(tests))
     for name in REQUIRED_REVISION_FILES:
         if not (rev/name).is_file(): errors.append(f'missing revision {name}')
     self_review=rev/'self_review.md'
@@ -130,6 +254,8 @@ def artifact_contract(root: Path, rev: Path) -> dict:
                 if paths.specification_addendum_path.is_file() else ""
             )
             errors.extend(specification_provenance_errors(payload, addendum_text))
+            problem_text = paths.source.joinpath("problem_statement.md").read_text(encoding="utf-8", errors="replace")
+            errors.extend(problem_statement_citation_errors(payload, problem_text, addendum_text))
             original_config = json.loads(cfg.read_text()) if cfg.is_file() else {}
             original_p2p = parse_list(original_config.get('pass_to_pass', original_config.get('pass_to_pass_tests', [])))
             candidate_config_path = tests / 'config.json'
@@ -137,6 +263,7 @@ def artifact_contract(root: Path, rev: Path) -> dict:
             candidate_f2p = parse_list(candidate_config.get('fail_to_pass', []))
             candidate_p2p = parse_list(candidate_config.get('pass_to_pass', candidate_config.get('pass_to_pass_tests', [])))
             delta_selectors, regression_selectors = converted_selector_groups(payload)
+            errors.extend(_selector_role_errors(payload))
             if set(candidate_f2p) != set(delta_selectors):
                 missing_from_trace = sorted(set(candidate_f2p) - set(delta_selectors))
                 missing_from_config = sorted(set(delta_selectors) - set(candidate_f2p))
@@ -199,9 +326,16 @@ def artifact_contract(root: Path, rev: Path) -> dict:
                         if not _selector_is_emitted(str(selector), tests)
                     ]
                     if missing_emitted:
+                        details = []
+                        for selector in missing_emitted[:10]:
+                            hints = _selector_source_hints(selector, tests)
+                            detail = selector
+                            if hints:
+                                detail += " (available bundled sources: " + ", ".join(hints) + ")"
+                            details.append(detail)
                         errors.append(
                             f"{decision} F2P row references absent emitted tests: "
-                            + ", ".join(missing_emitted[:10])
+                            + "; ".join(details)
                         )
                 elif decision == "drop":
                     for field in ("drop_justification", "drop_evidence"):
@@ -239,7 +373,9 @@ def main(argv=None):
             image=image_name(original,row)
             trace_payload = json.loads((rev / "conversion_trace.json").read_text(encoding="utf-8"))
             expectation = replay_expectation(trace_payload)
-            replay=run_docker_preflight(root,image,tests_dir=rev/'tests',log_root=paths.hard_replay_root / 'docker',original_root=original,evidence_root=paths.validation_root,write_compat_results=False,expectation=expectation,stage_original_test_patch=True)
+            original_config = json.loads((original / "tests/config.json").read_text(encoding="utf-8"))
+            original_p2p = parse_list(original_config.get("pass_to_pass", original_config.get("pass_to_pass_tests", [])))
+            replay=run_docker_preflight(root,image,tests_dir=rev/'tests',log_root=paths.hard_replay_root / 'docker',original_root=original,evidence_root=paths.validation_root,write_compat_results=False,expectation=expectation,stage_original_test_patch=bool(original_p2p))
             replay['revision']=str(rev.relative_to(root)) if rev.is_relative_to(root) else str(rev)
             write_json(paths.hard_replay_path,replay)
             result['hard_replay']=replay

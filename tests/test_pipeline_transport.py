@@ -52,3 +52,28 @@ def test_top_level_pipeline_forwards_resume_count_and_agent_timeout(monkeypatch,
     ]) == 0
     assert called["module"] == "pipeline.orchestrator"
     assert called["argv"][-4:] == ["--repair-count", "1", "--agent-timeout-seconds", "3600"]
+
+
+def test_qa_replay_infrastructure_failure_does_not_spawn_converter_repair(monkeypatch) -> None:
+    def finish(root, report, code, revision):
+        assert report["status"] == "qa_infrastructure_failure"
+        assert "converter was not asked" in report["terminal_reason"]
+        assert code == 10
+        return code
+
+    def unexpected_repair(*args, **kwargs):
+        raise AssertionError("QA replay infrastructure failure must not become converter feedback")
+
+    monkeypatch.setattr(orchestrator, "finish", finish)
+    monkeypatch.setattr(orchestrator, "next_revision", unexpected_repair)
+    report = {
+        "status": "rejected_positive_qa",
+        "positive_qa": {"mode": "replay_infrastructure_failure"},
+    }
+    result = orchestrator._retry_or_finish(
+        args=SimpleNamespace(auto_repair=True, repair_count=0, max_revisions=4),
+        paths=SimpleNamespace(attempt_root=Path("/tmp/example")),
+        root=Path("/tmp/example"), revision=Path("/tmp/example/rev_001"),
+        report=report, code=5, gate="positive_qa",
+    )
+    assert result == 10

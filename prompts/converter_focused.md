@@ -2,9 +2,17 @@
 
 Convert one Harbor task into another Harbor task. Deliver a runnable verifier early, then refine it. The only solver specification is `evidence/problem_statement.md` plus an audited `evidence/specification_addendum.md` if present. Requirements, Interface, historical tests, Gold, repository code, and environment are evidence for building tests; they do not by themselves add solver obligations.
 
+Every `p_supported_behavior` and `base_regression_behavior` row must include
+`problem_statement_quotes`: a non-empty JSON string array of exact contiguous
+excerpts copied from the base Problem Statement or the current approved
+addendum. The artifact gate checks literal presence after whitespace
+normalization; semantic review separately checks entailment. Never write a
+paraphrase or source an excerpt from Requirements, Interface, Gold, repository
+code, historical tests, or a prior proposal into this field.
+
 ## Work order
 
-1. Read `evidence/problem_statement.md`, `evidence/historical_tests/config.json`, and the relevant hunks of `evidence/historical_tests/test_patch.patch`. Inspect only the Base product entrypoints needed for the F2P selectors. `evidence/gold_patch.diff` can explain historical intent.
+1. Read `evidence/problem_statement.md`, `evidence/historical_tests/config.json`, and the relevant hunks of `evidence/historical_tests/test_patch.patch`. For every F2P selector, also open its actual source test function in `/workspace/app` or `/workspace/testbed`; a patch/config selector list is not the complete test body. For suite-level selectors, enumerate every table row, nested subtest, parameterized example, and distinct outcome before designing the verifier. Treat the patch as changes to that source, not as a substitute for it. `evidence/gold_patch.diff` can explain historical intent.
 2. In `solution/tests/`, write a first runnable public behavior test and `test.sh` before broad exploration. The first draft may be incomplete; keep improving it. The controller may have copied original Harbor `run_script.sh`, `parser.py`, and `config.json` as editable drafts. Reuse what works. Never apply, bundle, or depend on the historical `test_patch.patch` in the final verifier. Do not reset or modify the repository in the final test script.
    In REPAIR mode, treat Judge feedback as a defect hypothesis, not a new solver specification. If feedback asks for an exact exception class, propagation layer, constructor, module, or Gold mechanism absent from P and the documented Base public contract, preserve the P-supported behavior and explain the counterfactual in `self_review.md` instead of copying that historical assertion.
 3. Account for every historical F2P selector in `solution/conversion_trace.json`. Its selector inventory is preseeded but semantic fields are unresolved. For each selector, identify the product behavior behind the old assertion, the P passage supporting it, the observable surface, and the emitted tests. Preserve the behavior, not the old assertion syntax.
@@ -15,9 +23,42 @@ a private/helper entrypoint, equality of an entire result when P requires only
 part of it, a fixed mock response/call sequence, and an internal field or path
 not specified by P. Choose a public trigger and observable result that a
 P-conforming implementation with a different internal design could satisfy.
-Repeat the executable-source check before SELF_REVIEW: PASS.
+A private callable found in Base is still not a public contract merely because
+it exists or is used by Gold. Consider a P-conforming implementation that
+removes or renames the helper while preserving the public outcome; use a public
+product path unless P or an existing documented public contract explicitly
+names that callable. Also check the opposite counterexample: a private helper
+still returns the expected value while public product behavior is broken; a
+helper-only test may falsely accept it. If no fair public path can exercise the
+historical behavior and discriminate Base from Gold, report the access gap
+instead of switching to a private helper. Repeat this source-level check before
+SELF_REVIEW: PASS.
+
+Before asserting a literal output value, exact member set, version, count, or
+ordering copied from historical fixtures, cite the exact P/addendum text that
+fixes it. The feature's general purpose and Base/Gold's current output do not
+make those facts a closed solver contract. For capability/discovery/reporting
+features, “report what is supported” does not by itself fix the historical list
+or versions; test a useful, well-formed public report while permitting other
+truthful P-conforming values unless P fixes the contents.
+
+Before submission, create an assertion-to-contract table in `self_review.md`
+covering every executable assertion, including shell-generated tests. For each
+assertion, identify its exact condition/output/metadata and cite either an
+exact P/addendum quotation that entails it or an independently documented,
+pre-existing public contract that fixes it. Also test one plausible
+P-conforming alternative. Requirements, Interface, historical tests, Gold,
+Base behavior, and the converter's functional proposal are construction
+evidence only; they cannot supply normative support. A broad purpose such as
+client capability discovery does not by itself require a specific HTTP status,
+MIME type, encoding, body schema, query parameter, or closed value set. Remove
+or weaken any assertion whose only support is construction evidence before
+marking self-review PASS.
 
 ## Decisions for each historical F2P
+
+For a suite-level historical selector, add a case-by-case inventory to `self_review.md` with the source case name/input, assertion outcome, product behavior versus mechanism, Base/P disposition, and emitted selector or case-specific exclusion evidence. Inspect and account for each distinct test case/product outcome before classifying it; a summary of the feature delta is not a complete inventory. Do not drop a whole facade/helper suite just because its original assertions spy on a collaborator. Exclude only the exact internal call shape; preserve independent service effects, guards, persisted/user-visible outcomes, and recovery behavior through a stable public boundary. A test double may observe an external effect semantically without freezing method name, call count, argument shape, or order. Base-existing behavior is a `base_regression_behavior` and must be emitted as converted P2P.
+
 
 - `p_supported_behavior`: P states the behavior and a historical F2P selector covers it. Rewrite or merge it through a public API, UI, CLI, file, service, persisted state, output, or documented error. If that in-scope F2P behavior involves a new public type named by P, test the behavior without requiring an unspecified method or module path. Do not add a test solely because P names a type.
 
@@ -31,7 +72,8 @@ A historical F2P may contain both Base regressions and Base-failing deltas. Give
 
 The controller validates these literal JSON values. For each F2P row, `behavior_classification` must be one of `p_supported_behavior`, `base_regression_behavior`, `missing_product_behavior`, `implementation_detail`. Match `decision` to that class: `rewrite` or `merge` for the first two, `specification_gap` for missing product behavior, `drop` only for pure implementation detail. `preserve`, `delta`, and `mixed_base_regression_and_delta` are explanations, **not** valid values for these fields. `base_behavior_status` must be `changed_or_missing`, `already_satisfies`, or `unavailable`. `task_disposition` must be `convertible` or `non_discriminative`.
 
-Each `obligation_accounting` item must be an object with `id`, `obligation`, `scope`, `disposition`, `emitted_tests`, `evidence`, and `rationale`. Use `scope=product_behavior` with `disposition=preserved` (or `pending_specification`), or `scope=implementation_detail` with `disposition=excluded`. For preserved obligations, give each item its own valid `base_behavior_status`. If one historical F2P mixes a new feature and a Base regression, set the row class to `p_supported_behavior` and row status to `changed_or_missing`, then split the obligations and emitted selectors by their own Base status. Set `emitted_tests` to exact selector strings present in final `tests/config.json`. Each selector must resolve to test implementation shipped inside the verifier bundle, as a test source file or source materialized by its executable harness. A native repository selector in the config is not emitted converted test code; never reuse a historical F2P selector as the converted selector. The artifact gate checks source provenance before replay. Put Base-failing selectors only in `fail_to_pass`; put Base-passing converted regressions after original P2P in `pass_to_pass`.
+Each `obligation_accounting` item must be an object with `id`, `obligation`, `scope`, `disposition`, `emitted_tests`, `evidence`, and `rationale`. Use `scope=product_behavior` with `disposition=preserved` (or `pending_specification`), or `scope=implementation_detail` with `disposition=excluded`. For preserved obligations, give each item its own valid `base_behavior_status`. If one historical F2P mixes a new feature and a Base regression, set the row class to `p_supported_behavior` and row status to `changed_or_missing`, then split the obligations and emitted selectors by their own Base status. Set `emitted_tests` to exact selector strings present in final `tests/config.json`. Each selector must resolve to test implementation shipped inside the verifier bundle, as a test source file or source materialized by its executable harness. A native repository selector in the config is not emitted converted test code; never reuse a historical F2P selector as the converted selector. The artifact gate checks source provenance before replay.
+Before submission, audit every mapping end to end: exact selector in final config → concrete bundled source or harness-generated source → runner collection under that exact name → assertion body that checks the row's observable behavior. Record selector → source path → behavior in `self_review.md`, and repeat after the final edit. A trace row or selector string alone does not prove a test exists; repair missing/stale mappings before submission. Put Base-failing selectors only in `fail_to_pass`; put Base-passing converted regressions after original P2P in `pass_to_pass`.
 Use JSON booleans (`true` or `false`, without quotes or explanatory text) for row fields `base_repo_observable` and `gold_only_binding`. Copy the retained original P2P selectors into `pass_to_pass` in their original order, then append only the distinct converted Base-regression selectors; do not insert, replace, or reorder original P2P entries. Explain uncertainty in `evidence` or `rationale`, never in a typed field.
 
 For error-handling behavior, inspect the actual Base boundary: distinguish a public error contract from an existing error class that happens to be available. Do not require one intermediate layer to wrap an exception in a particular class merely because Gold does. Ask whether a solution handling the same failure at another layer could produce the P-required observable recovery; if yes, move the assertion to the downstream observable result or justify an exact type with a P or Base public contract. Record this counterfactual in self_review.md. If two historical assertions are only different intermediate mechanisms for the same P-required recovery, map them to one meaningful behavioral selector using `merge`; do not duplicate an identical test under two selector names. Preserve any independently observable edge case with its own assertion.
@@ -59,6 +101,19 @@ Also check these language-independent risks before submission:
 - A mock that supplies outputs by fixed call position, assumes one call
   sequence/count, or rejects another plausible public access path. Make the
   fake respond to the semantic input and support the minimum public protocol.
+- A fixture that replaces an internal repository reader/collector and scripts
+  positional responses. Prefer controlling the external file/process/network
+  boundary; do not freeze internal helper call count/order unless documented as
+  an injection contract. Check that an alternative reader or batching strategy
+  preserving the same public behavior still passes.
+- A falsy assertion used to represent a required explicit boolean. `toBeFalsy`,
+  `assert not value`, and similar checks also accept missing/undefined/null; use
+  an exact false assertion only when that value is part of the historical
+  observable behavior and is supported by P or a pre-existing public contract.
+- A historical deep/object comparison translated to assertions on only one
+  convenient field. Enumerate constrained fields and collection members from
+  the source assertion, preserve each P-supported observable outcome, and allow
+  extra fields unless the contract defines a closed shape.
 - Assertions on internal style/classification fields, derived file paths, or
   intermediate return values that P does not specify while the actual artifact
   or product outcome remains unchecked.
@@ -87,6 +142,18 @@ vocabulary contract or a new content requirement absent from P. A modal
 prohibition such as "Hosts must not be empty" can be a valid explanation of an
 empty-host error; it differs from the contradictory factual statement "Hosts
 are not empty" for empty input.
+
+For an error/warning obligation, check both sides of its semantic boundary:
+the required diagnostic must be tied to the triggering event and have the
+category P requires, while a plausible paraphrase or localization remains
+acceptable. If P distinguishes the error category, a different unrelated but
+nonempty exception/message is a required counterexample; do not accept it just
+because it is not Gold's exception or text. Do not invent a lexical oracle when
+P leaves appropriateness undefined. For warnings required per malformed item
+or other event, require coverage of each event but permit additional useful
+warnings unless P explicitly defines an exhaustive set or maximum. Check the
+resulting public rejection/no-value/recovery state too; disappearance of the
+raw invalid input alone is insufficient.
 
 ## Runtime and artifacts
 

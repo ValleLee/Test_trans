@@ -33,6 +33,7 @@ def test_p_supported_new_public_surface_may_be_missing_in_base() -> None:
     row = {
         "source_f2p": "historical::new_public_type",
         "behavior_classification": "p_supported_behavior",
+        "problem_statement_quotes": ["Switch to a `WidgetFamilies` class for consistent parsing."],
         "decision": "rewrite",
         "rationale": "P names a public type and this selector tests its behavior.",
         "base_behavior_status": "changed_or_missing",
@@ -44,6 +45,7 @@ def test_p_supported_new_public_surface_may_be_missing_in_base() -> None:
         "obligation_accounting": [{
             "id": "O1", "obligation": "ordered parsing",
             "scope": "product_behavior", "disposition": "preserved",
+            "base_behavior_status": "changed_or_missing",
             "emitted_tests": ["converted::ordered_parsing"],
             "evidence": "P names the type and ordered parsing behavior.",
             "rationale": "The type is new in this task.",
@@ -56,6 +58,35 @@ def test_p_supported_new_public_surface_may_be_missing_in_base() -> None:
     row["rationale"] = "P names a public type and this selector tests its behavior."
     row["base_behavior_status"] = "already_satisfies"
     assert any("existing Base" in error for error in classification_errors(row))
+
+
+def test_product_obligation_requires_own_base_behavior_status() -> None:
+    from swepro_trans.conversion_schema import classification_errors
+
+    row = {
+        "source_f2p": "historical::mixed",
+        "behavior_classification": "p_supported_behavior",
+        "decision": "rewrite",
+        "rationale": "The source test covers a changed product field.",
+        "base_behavior_status": "changed_or_missing",
+        "base_repo_observable": True,
+        "gold_only_binding": False,
+        "observable_surface": "public database configuration",
+        "preservation_evidence": "The emitted test checks both changed and existing fields.",
+        "behavioral_obligations": ["new cloud fields", "existing global fields"],
+        "obligation_accounting": [{
+            "id": "O1", "obligation": "existing global fields",
+            "scope": "product_behavior", "disposition": "preserved",
+            "emitted_tests": ["converted::global_fields"],
+            "evidence": "The source F2P assertion reads the global fields.",
+            "rationale": "This case is Base-existing.",
+        }],
+        "emitted_tests": ["converted::global_fields"],
+    }
+    errors = classification_errors(row)
+    assert any("base_behavior_status must be explicit" in error for error in errors)
+    row["obligation_accounting"][0]["base_behavior_status"] = "already_satisfies"
+    assert not any("base_behavior_status must be explicit" in error for error in classification_errors(row))
 
 
 def test_converted_selector_groups_split_mixed_obligations_in_one_historical_test() -> None:

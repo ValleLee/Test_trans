@@ -1,0 +1,74 @@
+{
+  "entries": [
+    {
+      "key": "instance_internetarchive__openlibrary-1be7de788a444f6255e89c10ef6aa608550604a8-v29f82c9cf21d57b242f8d8b0e541525d259e2d63|converted|1",
+      "instance_id": "instance_internetarchive__openlibrary-1be7de788a444f6255e89c10ef6aa608550604a8-v29f82c9cf21d57b242f8d8b0e541525d259e2d63",
+      "cohort": "converted",
+      "rollout": 1,
+      "direction": "original_fail_functional_pass",
+      "instruction_change_class": "deletion_only",
+      "patch": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_internetarchive__openlibrary-1be7de788a444f6255e89c10ef6aa608550604a8-v29f82c9cf21d57b242f8d8b0e541525d259e2d63/converted/rollout_001/candidate.patch",
+      "patch_sha256": "d0495634fe0544bd819f925d58bf23d2b07ce29aa9a62cdcbd8baaad65fb467f",
+      "logs": {
+        "original": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_internetarchive__openlibrary-1be7de788a444f6255e89c10ef6aa608550604a8-v29f82c9cf21d57b242f8d8b0e541525d259e2d63/converted/rollout_001/regrade/original",
+        "functional": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_internetarchive__openlibrary-1be7de788a444f6255e89c10ef6aa608550604a8-v29f82c9cf21d57b242f8d8b0e541525d259e2d63/converted/rollout_001/regrade/functional"
+      }
+    },
+    {
+      "key": "instance_ansible__ansible-9142be2f6cabbe6597c9254c5bb9186d17036d55-v0f01c69f1e2528b935359cfe578530722bca2c59|converted|1",
+      "instance_id": "instance_ansible__ansible-9142be2f6cabbe6597c9254c5bb9186d17036d55-v0f01c69f1e2528b935359cfe578530722bca2c59",
+      "cohort": "converted",
+      "rollout": 1,
+      "direction": "original_fail_functional_pass",
+      "instruction_change_class": "deletion_only",
+      "patch": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_ansible__ansible-9142be2f6cabbe6597c9254c5bb9186d17036d55-v0f01c69f1e2528b935359cfe578530722bca2c59/converted/rollout_001/candidate.patch",
+      "patch_sha256": "c866461602eaa73c478bebd862f4c70367cbae599451dfa6548956a9e7d10d9e",
+      "logs": {
+        "original": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_ansible__ansible-9142be2f6cabbe6597c9254c5bb9186d17036d55-v0f01c69f1e2528b935359cfe578530722bca2c59/converted/rollout_001/regrade/original",
+        "functional": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_ansible__ansible-9142be2f6cabbe6597c9254c5bb9186d17036d55-v0f01c69f1e2528b935359cfe578530722bca2c59/converted/rollout_001/regrade/functional"
+      }
+    },
+    {
+      "key": "instance_internetarchive__openlibrary-5069b09e5f64428dce59b33455c8bb17fe577070-v8717e18970bcdc4e0d2cea3b1527752b21e74866|converted|1",
+      "instance_id": "instance_internetarchive__openlibrary-5069b09e5f64428dce59b33455c8bb17fe577070-v8717e18970bcdc4e0d2cea3b1527752b21e74866",
+      "cohort": "converted",
+      "rollout": 1,
+      "direction": "original_fail_functional_pass",
+      "instruction_change_class": "deletion_only",
+      "patch": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_internetarchive__openlibrary-5069b09e5f64428dce59b33455c8bb17fe577070-v8717e18970bcdc4e0d2cea3b1527752b21e74866/converted/rollout_001/candidate.patch",
+      "patch_sha256": "3e009a1f2e6d203d37b0722db96c2d08a14a9361158db6895a5d04a15583d935",
+      "logs": {
+        "original": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_internetarchive__openlibrary-5069b09e5f64428dce59b33455c8bb17fe577070-v8717e18970bcdc4e0d2cea3b1527752b21e74866/converted/rollout_001/regrade/original",
+        "functional": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_internetarchive__openlibrary-5069b09e5f64428dce59b33455c8bb17fe577070-v8717e18970bcdc4e0d2cea3b1527752b21e74866/converted/rollout_001/regrade/functional"
+      }
+    },
+    {
+      "key": "instance_internetarchive__openlibrary-91efee627df01e32007abf2d6ebf73f9d9053076-vbee42ad1b72fb23c6a1c874868a720b370983ed2|converted|1",
+      "instance_id": "instance_internetarchive__openlibrary-91efee627df01e32007abf2d6ebf73f9d9053076-vbee42ad1b72fb23c6a1c874868a720b370983ed2",
+      "cohort": "converted",
+      "rollout": 1,
+      "direction": "original_fail_functional_pass",
+      "instruction_change_class": "deletion_only",
+      "patch": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_internetarchive__openlibrary-91efee627df01e32007abf2d6ebf73f9d9053076-vbee42ad1b72fb23c6a1c874868a720b370983ed2/converted/rollout_001/candidate.patch",
+      "patch_sha256": "7033d96efe4eddf3d359f76eda5bc9c4f49c5963fb4c51861099ef5f9d43e67d",
+      "logs": {
+        "original": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_internetarchive__openlibrary-91efee627df01e32007abf2d6ebf73f9d9053076-vbee42ad1b72fb23c6a1c874868a720b370983ed2/converted/rollout_001/regrade/original",
+        "functional": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_internetarchive__openlibrary-91efee627df01e32007abf2d6ebf73f9d9053076-vbee42ad1b72fb23c6a1c874868a720b370983ed2/converted/rollout_001/regrade/functional"
+      }
+    },
+    {
+      "key": "instance_flipt-io__flipt-72d06db14d58692bfb4d07b1aa745a37b35956f3|converted|1",
+      "instance_id": "instance_flipt-io__flipt-72d06db14d58692bfb4d07b1aa745a37b35956f3",
+      "cohort": "converted",
+      "rollout": 1,
+      "direction": "original_fail_functional_pass",
+      "instruction_change_class": "deletion_only",
+      "patch": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_flipt-io__flipt-72d06db14d58692bfb4d07b1aa745a37b35956f3/converted/rollout_001/candidate.patch",
+      "patch_sha256": "25e3e6ae0a0d1436c73de9d15f6be9ee231e111380a839a703af5a6bea533469",
+      "logs": {
+        "original": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_flipt-io__flipt-72d06db14d58692bfb4d07b1aa745a37b35956f3/converted/rollout_001/regrade/original",
+        "functional": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_flipt-io__flipt-72d06db14d58692bfb4d07b1aa745a37b35956f3/converted/rollout_001/regrade/functional"
+      }
+    }
+  ]
+}

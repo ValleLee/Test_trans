@@ -37,6 +37,20 @@ def test_p2p_evidence_uses_candidate_parser_results(tmp_path):
     assert result["gold"]["missing_selectors"] == ["missing::selector"]
 
 
+def test_p2p_evidence_normalizes_runner_trimmed_selector_whitespace(tmp_path):
+    selectors = ["native::trailing space "]
+    for side in ("base", "gold"):
+        _write(tmp_path / side / "output.json", {"tests": [
+            {"name": "native::trailing space", "status": "PASSED"},
+        ]})
+
+    result = stability._p2p_selector_evidence(tmp_path, {}, selectors)
+
+    assert result["status"] == "pass"
+    assert result["base"]["missing_selectors"] == []
+    assert result["gold"]["missing_selectors"] == []
+
+
 def test_stability_reuses_complete_candidate_runs_for_p2p(monkeypatch, tmp_path):
     root = tmp_path / "run"
     revision = root / "intermediate" / "converter" / "revisions" / "rev_001"

@@ -31,6 +31,10 @@ _PATTERNS = {
     "subcomponent_location_binding": r"\brender_template\s*\(\s*[\x27\x22][^\x27\x22\n]{1,160}/[^\x27\x22\n]{1,160}[\x27\x22]",
     "reflective_entrypoint_scope": r"(?:pkgutil\.walk_packages|inspect\.getmembers)\s*\(",
     "public_type_origin_binding": r"(?:\b[A-Za-z_]\w*\.__module__\b|\b[A-Za-z_]\w*\.__name__\b)",
+    # Advisory signal: a private repository helper may have become the test's
+    # effective product API. The focused Judge distinguishes it from fixture
+    # helpers and documented contracts using the public-behavior counterfactual.
+    "private_entrypoint_call": r"(?m)(?:\b[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*\.)_[A-Za-z]\w*\s*\(|^\s*from\s+[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*\s+import\s+[^\n#]*\b_[A-Za-z_]\w*\b",
     "legacy_alias_representation": r"(?:\b(?:is_builtin_int|is_canonical_member)\b|\btype\s*\([^\n]{1,100}\)\s+is\s+int\b)",
     "permutation_invariant_mapping": r"\b(?:semantic_match|member_match|alias_match)\s*=\s*any\s*\(",
     "decision_branch_binding": r"\bassert\s+(?:unarchived|changed|extracted|updated|needs_update|[A-Za-z_]\w*(?:unarchived|changed|extracted|updated|needs_update)\w*)\s+is\s+(?:True|False)\b",
@@ -41,6 +45,43 @@ _PATTERNS = {
 
 def _sample(text: str, match: re.Match[str]) -> str:
     return text[max(0, match.start() - 120):min(len(text), match.end() + 220)]
+
+
+def _multiple_null_constructor_calls(text: str) -> list[re.Match[str]]:
+    """Find constructor/factory calls supplied with several explicit nulls.
+
+    These calls can make an undocumented dependency-injection shape part of a
+    verifier. The signal is advisory: the focused Judge decides whether the
+    nulls are ordinary input data or an unauthorized construction constraint.
+    """
+    callee = re.compile(r"(?:\bnew\s+)?\b[A-Z][A-Za-z0-9_$]*(?:\.[A-Z][A-Za-z0-9_$]*)*\s*\(")
+    null_value = re.compile(r"\b(?:None|null|nil|NULL)\b")
+    found: list[re.Match[str]] = []
+    for match in callee.finditer(text):
+        opening = match.end() - 1
+        depth = 1
+        quote = ""
+        escaped = False
+        end = opening + 1
+        while end < min(len(text), opening + 2000) and depth:
+            char = text[end]
+            if quote:
+                if escaped:
+                    escaped = False
+                elif char == "\\":
+                    escaped = True
+                elif char == quote:
+                    quote = ""
+            elif char in {"'", '"', "`"}:
+                quote = char
+            elif char == "(":
+                depth += 1
+            elif char == ")":
+                depth -= 1
+            end += 1
+        if depth == 0 and len(null_value.findall(text[opening + 1:end - 1])) >= 3:
+            found.append(text[match.start():end])
+    return found
 
 
 def binding_signals(tests: dict[str, dict[str, object]]) -> list[dict[str, str]]:
@@ -56,6 +97,11 @@ def binding_signals(tests: dict[str, dict[str, object]]) -> list[dict[str, str]]
             match = re.search(pattern, text, flags)
             if match:
                 signals.append({"file": name, "kind": kind, "sample": _sample(text, match)})
+        for call in _multiple_null_constructor_calls(text):
+            match = re.search(re.escape(call), text)
+            if match:
+                signals.append({"file": name, "kind": "multiple_null_constructor_dependencies",
+                                "sample": _sample(text, match)})
         # A claimed decision/registration result followed by an observable
         # downstream action can be a false proof when the test double performs
         # that action unconditionally (or defaults to acting on all inputs).

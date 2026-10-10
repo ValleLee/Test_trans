@@ -37,7 +37,7 @@ revision 尚未完成全部 gate。失败或阻塞结果直接记录在对应 at
 
 ## 仓库内容
 
-Git 仓库包含项目代码、配置模板、测试、完整的 `docs/` 文档，以及 `check/stage3/deepseek_miniswe_20_20261008/` 中 20 条 Stage 3 实验的输入快照、逐项结果和分析。体积较大的 `harbor_jobs/` 原始作业副本和无效的首轮复判目录 `regrade_before_uniform_reset/` 不随仓库发布。其他本地数据、任务副本和结果目录（`data/`、`tasks/`、`runs/`、`jobs/`、`task_list/`）以及第三方代码 `upstream/` 也不发布。新环境需要按 `dataprepare/README.md` 获取数据，并准备官方上游和 Harbor 环境。`.env` 应从 `.env.example` 复制并在本地填写。
+Git 仓库包含项目代码、配置模板、测试、完整的 `docs/` 文档，以及 `check/stage3/` 中原 20 条与新增 22 条 Stage 3 实验的输入快照、逐项结果和分析；合并统计见 `docs/stage3/20261010_stage3_all_new_qualified_combined_results_cn.md`。新增队列清单 `task_list/stage3_new_qualified_cohort_20261010.txt` 一同发布，供复核样本范围。体积较大的 `harbor_jobs/` 原始作业副本和无效的首轮复判目录 `regrade_before_uniform_reset/` 不随仓库发布。其他本地数据、任务副本和结果目录（`data/`、`tasks/`、`runs/`、`jobs/`、`task_list/` 中除上述清单外的文件）以及第三方代码 `upstream/` 也不发布。新环境需要按 `dataprepare/README.md` 获取数据，并准备官方上游和 Harbor 环境。`.env` 应从 `.env.example` 复制并在本地填写。
 
 ## 环境
 

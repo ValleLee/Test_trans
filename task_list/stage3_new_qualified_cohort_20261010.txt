@@ -1,0 +1,45 @@
+# Union of the broad new-qualified and selected-100 new-qualified lists; original Stage 3 cohort excluded.
+01. instance_internetarchive__openlibrary-d109cc7e6e161170391f98f9a6fa1d02534c18e4-ve8c8d62a2b60610a3c4631f5f23ed866bada9818
+    attempt: attempt_001
+02. instance_internetarchive__openlibrary-1be7de788a444f6255e89c10ef6aa608550604a8-v29f82c9cf21d57b242f8d8b0e541525d259e2d63
+    attempt: attempt_009
+03. instance_internetarchive__openlibrary-c8996ecc40803b9155935fd7ff3b8e7be6c1437c-ve8fc82d8aae8463b752a211156c5b7b59f349237
+    attempt: attempt_003
+04. instance_qutebrowser__qutebrowser-fec187c2cb53d769c2682b35ca77858a811414a8-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d
+    attempt: attempt_003
+05. instance_ansible__ansible-9142be2f6cabbe6597c9254c5bb9186d17036d55-v0f01c69f1e2528b935359cfe578530722bca2c59
+    attempt: attempt_004
+06. instance_internetarchive__openlibrary-03095f2680f7516fca35a58e665bf2a41f006273-v8717e18970bcdc4e0d2cea3b1527752b21e74866
+    attempt: attempt_003
+07. instance_qutebrowser__qutebrowser-e64622cd2df5b521342cf4a62e0d4cb8f8c9ae5a-v363c8a7e5ccdf6968fc7ab84a2053ac78036691d
+    attempt: attempt_002
+08. instance_ansible__ansible-0fd88717c953b92ed8a50495d55e630eb5d59166-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5
+    attempt: attempt_001
+09. instance_internetarchive__openlibrary-5069b09e5f64428dce59b33455c8bb17fe577070-v8717e18970bcdc4e0d2cea3b1527752b21e74866
+    attempt: attempt_001
+10. instance_qutebrowser__qutebrowser-5e0d6dc1483cb3336ea0e3dcbd4fe4aa00fc1742-v5149fcda2a9a6fe1d35dfed1bade1444a11ef271
+    attempt: attempt_001
+11. instance_ansible__ansible-d9f1866249756efc264b00ff7497e92c11a9885f-v0f01c69f1e2528b935359cfe578530722bca2c59
+    attempt: attempt_001
+12. instance_internetarchive__openlibrary-91efee627df01e32007abf2d6ebf73f9d9053076-vbee42ad1b72fb23c6a1c874868a720b370983ed2
+    attempt: attempt_001
+13. instance_ansible__ansible-a7d2a4e03209cff1e97e59fd54bb2b05fdbdbec6-v0f01c69f1e2528b935359cfe578530722bca2c59
+    attempt: attempt_001
+14. instance_internetarchive__openlibrary-dbbd9d539c6d4fd45d5be9662aa19b6d664b5137-v08d8e8889ec945ab821fb156c04c7d2e2810debb
+    attempt: attempt_001
+15. instance_ansible__ansible-0ea40e09d1b35bcb69ff4d9cecf3d0defa4b36e8-v30a923fb5c164d6cd18280c02422f75e611e8fb2
+    attempt: attempt_001
+16. instance_flipt-io__flipt-72d06db14d58692bfb4d07b1aa745a37b35956f3
+    attempt: attempt_001
+17. instance_future-architect__vuls-e1df74cbc1a1d1889428b3333a3b2405c4651993
+    attempt: attempt_001
+18. instance_future-architect__vuls-0ec945d0510cdebf92cdd8999f94610772689f14
+    attempt: attempt_001
+19. instance_navidrome__navidrome-3bc9e75b2843f91f6a1e9b604e321c2bd4fd442a
+    attempt: attempt_001
+20. instance_flipt-io__flipt-d966559200183b713cdf3ea5007a7e0ba86a5afb
+    attempt: attempt_005
+21. instance_NodeBB__NodeBB-0c81642997ea1d827dbd02c311db9d4976112cd4-vf2cf3cbd463b7ad942381f1c6d077626485a1e9e
+    attempt: attempt_005
+22. instance_gravitational__teleport-24cafecd8721891092210afc55f6413ab46ca211-vee9b09fb20c43af7e520f57e9239bbcf46b7113d
+    attempt: attempt_006

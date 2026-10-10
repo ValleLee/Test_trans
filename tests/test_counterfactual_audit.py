@@ -409,3 +409,29 @@ def test_counterfactual_audit_batches_signals_and_combines_assessments():
     assert result["risk_batch_count"] == 3
     assert len(result["assessments"]) == len(signals)
     assert {row["file"] for row in result["assessments"]} == {row["file"] for row in signals}
+
+
+def test_private_entrypoint_counterfactual_requires_public_alternative():
+    signals = [{"file": "tests/test_feature.py", "kind": "private_entrypoint_call"}]
+    review = _review(kind="private_entrypoint_call")
+    review["assessments"][0]["valid_alternative"] = (
+        "A different implementation removes the private helper but preserves the same public parser outcome."
+    )
+    assert validate_review(review, signals, "Parse the input and report its result.") == []
+
+    review["assessments"][0]["valid_alternative"] = "The helper has another internal name."
+    assert any("public observable boundary" in error for error in validate_review(
+        review, signals, "Parse the input and report its result."
+    ))
+
+
+def test_null_constructor_dependency_signal_requires_valid_and_invalid_counterfactuals():
+    signals = [{"file": "tests/public_http_test.go", "kind": "multiple_null_constructor_dependencies"}]
+    review = _review(kind="multiple_null_constructor_dependencies")
+    review["assessments"][0]["file"] = "tests/public_http_test.go"
+    assert validate_review(review, signals, "Serve the public endpoint.") == []
+
+    review["assessments"][0]["invalid_alternative"] = ""
+    assert any("missing P-violating alternative" in error for error in validate_review(
+        review, signals, "Serve the public endpoint."
+    ))

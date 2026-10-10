@@ -12,6 +12,14 @@ verifier tampering.
 
 When the targeted behavior transforms or renders input, consider a near-correct identity/echo shortcut that preserves parsing or unrelated behavior but returns the unmodified raw input. This is a useful negative candidate only if it violates the effective P and remains runnable; record the exact input where expected output differs.
 
+When the targeted behavior is an error or warning obligation, prefer a
+semantically wrong but nonempty diagnostic (or a diagnostic unrelated to the
+trigger) as the mutation only when P defines the relevant category. Preserve
+the trigger and all other behavior so the candidate isolates that semantic
+failure. Do not mutate wording, exception class, warning call count, or
+propagation layer when those details are not fixed by P; an extra useful
+warning alone is not a valid negative mutation.
+
 The repository is in `/app`; the output mount is `/solution`. Write a complete
 repository-relative `candidate.patch` and `candidate_metadata.json`, including
 the targeted `source_f2p` and violated behavior. Do not modify the original task

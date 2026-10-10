@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Replay one Positive/Negative QA patch against original and functional tests."""
 from __future__ import annotations
-import argparse, json, shutil, subprocess, tomllib
+import argparse, ast, json, shutil, subprocess, tomllib
 from pathlib import Path
 from ..runtime.stage1 import verifier_network_mode
 from swepro_trans.paths import resolve_task
@@ -10,6 +10,27 @@ from swepro_trans.paths import resolve_task
 def image(root: Path) -> str:
     paths = resolve_task(root)
     return str(tomllib.loads((paths.original / "task.toml").read_text())["environment"]["docker_image"])
+
+
+def _has_original_p2p(root: Path) -> bool:
+    """The historical test patch is needed only to execute retained P2P tests."""
+    config = resolve_task(root).original / "tests" / "config.json"
+    try:
+        data = json.loads(config.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+    raw = data.get("pass_to_pass", data.get("pass_to_pass_tests", []))
+    if isinstance(raw, list):
+        return bool(raw)
+    if isinstance(raw, str):
+        for parser in (json.loads, ast.literal_eval):
+            try:
+                value = parser(raw)
+            except (ValueError, SyntaxError, TypeError):
+                continue
+            if isinstance(value, (list, tuple)):
+                return bool(value)
+    return False
 
 
 def run(
@@ -25,12 +46,18 @@ def run(
     original_test_patch_path: Path | None = None,
     reset_original_test_space: bool = False,
 ) -> dict:
+    requested_test_patch = stage_original_test_patch
+    stage_original_test_patch = stage_original_test_patch and _has_original_p2p(root)
     log.mkdir(parents=True, exist_ok=True)
     command = ["docker", "run", "--rm", "--network", network,
                "-v", f"{patch.resolve()}:/candidate.patch:ro",
                "-v", f"{tests.resolve()}:/tests:ro",
                "-v", f"{log.resolve()}:/logs/verifier",
-               image_name, "bash", "-lc",
+               # Keep the Docker image's configured PATH and toolchain. A
+               # login shell can replace PATH from profile files (e.g. hide
+               # /usr/local/go/bin), making QA replay fail even when the same
+               # verifier passes under the normal non-login container shell.
+               image_name, "bash", "-c",
                "cd /app 2>/dev/null || cd /testbed 2>/dev/null || exit 91; "
                "trap 'chmod -R a+rX /logs/verifier 2>/dev/null || true' EXIT; "]
     if stage_original_test_patch:
@@ -74,11 +101,13 @@ def run(
         p = subprocess.run(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=3600, check=False)
         result = {"returncode": p.returncode, "output": p.stdout[-30000:],
                   "patch_applied": '__PATCH_APPLIED__' in p.stdout,
-                  "test_patch_applied": '__TEST_PATCH_APPLIED__' in p.stdout if stage_original_test_patch else None,
+                  "test_patch_applied": '__TEST_PATCH_APPLIED__' in p.stdout if stage_original_test_patch else (False if requested_test_patch else None),
+                  "original_test_patch_staged": stage_original_test_patch,
                   "command": command}
     except subprocess.TimeoutExpired as exc:
         result = {"returncode": None, "output": str(exc), "patch_applied": False,
-                  "test_patch_applied": False if stage_original_test_patch else None,
+                  "test_patch_applied": False if (stage_original_test_patch or requested_test_patch) else None,
+                  "original_test_patch_staged": stage_original_test_patch,
                   "timeout": True, "command": command}
     (log / "result.json").write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n")
     return result

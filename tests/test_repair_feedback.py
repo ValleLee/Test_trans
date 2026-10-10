@@ -67,3 +67,26 @@ def test_replay_feedback_keeps_early_failure_after_later_success_output():
     compact = _compact_replay_feedback(output, "output")
     assert "specific product failure" in compact
     assert len(compact) < len(output) // 2
+
+
+
+def test_hard_replay_feedback_marks_setup_hook_failure_as_non_behavioral():
+    replay = {
+        "status": "FAIL",
+        "hard_replay": {
+            "runs": {
+                "base": {
+                    "execution_diagnosis": {
+                        "classification": "setup_failure_before_leaf_tests",
+                        "failed_setup_hooks": ["test/topics/thumbs.js before all hook"],
+                    }
+                },
+                "gold": {"execution_diagnosis": {"classification": "leaf_test_results_reported"}},
+            }
+        },
+    }
+    objectives = _repair_objectives("hard_replay", {"hard_replay": replay})
+    diagnosis = next(item for item in objectives if "before any leaf tests ran" in item)
+    assert "not evidence that Base violates or Gold satisfies" in diagnosis
+    assert "keep the task unaccepted" in diagnosis
+    assert "original P2P tests" in diagnosis

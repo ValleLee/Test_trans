@@ -39,6 +39,8 @@ def test_p_named_new_class_does_not_license_unnamed_method() -> None:
 def test_p_class_recognition_requires_explicit_naming() -> None:
     assert _p_names_class("FontFamilies", "Switch to a `FontFamilies` class.")
     assert _p_names_class("FontFamilies", "Use the FontFamilies class.")
+    assert _p_names_class("Options", "Add an `Options` struct for configuration.")
+    assert _p_names_class("Options", "Add an Options type for configuration.")
     assert not _p_names_class("FontFamilies", "The font families should parse cleanly.")
 
 
@@ -64,6 +66,7 @@ def test_protocol_fallback_does_not_reject_false_or_p_named_class() -> None:
             "obligation_accounting": [{"id": "O1", "obligation": "parse"}],
             "preservation_evidence": "public result", "functional_surface": "class",
             "evidence": "base missing", "problem_statement_support": "named class",
+            "problem_statement_quotes": ["Switch to a `WidgetFamilies` class for consistent parsing."],
             "behavior_classification": "p_supported_behavior", "binding_detected": False,
             "base_repo_observable": False, "base_behavior_status": "changed_or_missing",
             "gold_only_binding": False, "observable_surface": "parsed output",
@@ -92,6 +95,56 @@ def test_gold_only_probe_requires_a_gold_declaration() -> None:
     assert _gold_declaration_matches(
         "configutils.FontFamilies.from_str", ["FontFamilies", "from_str"]
     ) == ["FontFamilies", "from_str"]
+
+
+def test_gold_only_probe_extracts_go_receiver_methods() -> None:
+    from swepro_trans.validation.semantic import _gold_declaration_matches, _gold_defined_symbols
+
+    added = [
+        "type Records map[string]Record",
+        "func (r Records) FilterByScore(over float64) Records { return r }",
+        "// func (r Records) CommentOnly() Records { return r }",
+    ]
+
+    symbols = _gold_defined_symbols(added)
+
+    assert "FilterByScore" in symbols
+    assert "CommentOnly" not in symbols
+    assert _gold_declaration_matches("records.FilterByScore", symbols) == ["FilterByScore"]
+
+
+def test_base_probe_flags_gold_only_go_type(tmp_path, monkeypatch) -> None:
+    from types import SimpleNamespace
+    from swepro_trans.validation import semantic
+
+    revision = tmp_path / "rev_001"
+    tests = revision / "tests"
+    tests.mkdir(parents=True)
+    (tests / "run_script.sh").write_text(
+        'cache.NewSimpleCache[string](cache.Options{SizeLimit: 2})\n'
+    )
+    patch = tmp_path / "gold.diff"
+    patch.write_text("+type Options struct { SizeLimit int }\n")
+
+    def fake_run(command, **kwargs):
+        return SimpleNamespace(returncode=0, stdout="__TERM__cache.Options\n")
+
+    monkeypatch.setattr(semantic.subprocess, "run", fake_run)
+    result = semantic._base_probe("image", revision, patch)
+
+    assert "Options" in result["gold_defined_symbols"]
+    assert "Options" in result["gold_defined_types"]
+    assert not result["base_present"]["cache.Options"]
+    assert result["gold_only_candidates"] == ["cache.Options"]
+    assert semantic._p_authorizes_symbol(
+        "cache.Options", "The `Options` struct configures eviction.",
+        set(result["gold_defined_types"]),
+    )
+    assert not semantic._p_authorizes_symbol(
+        "cache.Options", "The cache supports configuration options.",
+        set(result["gold_defined_types"]),
+    )
+    assert result["gold_only_evidence"]["cache.Options"] == ["Options"]
 
 
 def test_base_probe_recognizes_module_path_but_not_gold_member(tmp_path, monkeypatch) -> None:
@@ -123,6 +176,27 @@ def test_base_probe_recognizes_module_path_but_not_gold_member(tmp_path, monkeyp
     assert result["base_present"]["example.plugins.autocomplete"]
     assert not result["base_present"]["example.plugins.autocomplete.GoldMember"]
     assert result["gold_only_candidates"] == ["example.plugins.autocomplete.GoldMember"]
+
+
+def test_base_probe_flags_gold_only_go_receiver_method(tmp_path, monkeypatch) -> None:
+    from types import SimpleNamespace
+    from swepro_trans.validation import semantic
+
+    revision = tmp_path / "rev_001"
+    tests = revision / "tests"
+    tests.mkdir(parents=True)
+    (tests / "run_script.sh").write_text("got = records.FilterByScore(7.0)\n")
+    patch = tmp_path / "gold.diff"
+    patch.write_text("+func (r Records) FilterByScore(over float64) Records { return r }\n")
+
+    def fake_run(command, **kwargs):
+        return SimpleNamespace(returncode=0, stdout="__TERM__records.FilterByScore\n")
+
+    monkeypatch.setattr(semantic.subprocess, "run", fake_run)
+    result = semantic._base_probe("image", revision, patch)
+
+    assert result["gold_only_candidates"] == ["records.FilterByScore"]
+    assert result["gold_only_evidence"]["records.FilterByScore"] == ["FilterByScore"]
 
 
 def test_focused_counterfactual_protocol_failure_is_not_a_verifier_defect() -> None:
@@ -161,3 +235,183 @@ def test_focused_counterfactual_finding_still_routes_to_converter_repair() -> No
     assert merged["binding_risks"] == [
         "Focused counterfactual audit found an implementation-bound verifier assertion"
     ]
+
+
+
+def test_historical_selector_terms_include_suite_root_and_node_id_parts() -> None:
+    from swepro_trans.validation.semantic import _historical_selector_terms
+
+    terms = _historical_selector_terms([
+        "TestLoad",
+        "TestLoad/grpc_level_provided",
+        "tests/test_config.py::test_load[advanced]",
+    ])
+    assert "TestLoad" in terms
+    assert "TestLoad/grpc_level_provided" in terms
+    assert "tests/test_config.py" in terms
+    assert "test_load[advanced]" in terms
+
+
+def test_parse_historical_test_sources_extracts_paths_and_bodies() -> None:
+    from swepro_trans.validation.semantic import _parse_historical_test_sources
+
+    sources = _parse_historical_test_sources(
+        "probe output\n"
+        "__HIST_SOURCE_BEGIN__config/config_test.go\n"
+        "func TestLoad(t *testing.T) { t.Run(\"cache - redis\", run) }\n"
+        "__HIST_SOURCE_END__\n"
+    )
+    assert sources == [{
+        "path": "config/config_test.go",
+        "source": "func TestLoad(t *testing.T) { t.Run(\"cache - redis\", run) }",
+    }]
+
+
+def test_historical_test_source_probe_searches_and_returns_suite_source(monkeypatch) -> None:
+    from types import SimpleNamespace
+    from swepro_trans.validation import semantic
+
+    commands = []
+
+    def fake_run(command, **kwargs):
+        commands.append(command[-1])
+        return SimpleNamespace(returncode=0, stdout=(
+            "__HIST_SOURCE_BEGIN__config/config_test.go\n"
+            "func TestLoad(t *testing.T) {\n"
+            "  tests := []struct{name string}{ {name: \\\"cache - redis\\\"} }\n"
+            "}\n"
+            "__HIST_SOURCE_END__\n"
+        ))
+
+    monkeypatch.setattr(semantic.subprocess, "run", fake_run)
+    result = semantic._historical_test_source_probe(
+        "image", ["TestLoad", "TestLoad/grpc_level_provided"]
+    )
+
+    assert result["status"] == "ok"
+    assert result["source_file_count"] == 1
+    assert "cache - redis" in result["sources"][0]["source"]
+    assert "TestLoad/grpc_level_provided" in commands[0]
+    assert "head -c 14000" in commands[0]
+
+
+def test_semantic_selector_list_parses_stage1_stringified_arrays() -> None:
+    from swepro_trans.validation.semantic import _parse_selector_list
+
+    assert _parse_selector_list(["TestOne", "TestTwo/case"]) == ["TestOne", "TestTwo/case"]
+    assert _parse_selector_list('["TestOne", "TestTwo/case"]') == ["TestOne", "TestTwo/case"]
+    assert _parse_selector_list("['TestOne', 'TestTwo/case']") == ["TestOne", "TestTwo/case"]
+    assert _parse_selector_list("not a selector array") == []
+
+
+def test_historical_source_probe_receives_stringified_selector_values(monkeypatch) -> None:
+    from types import SimpleNamespace
+    from swepro_trans.validation import semantic
+
+    commands = []
+
+    def fake_run(command, **kwargs):
+        commands.append(command[-1])
+        return SimpleNamespace(returncode=0, stdout=(
+            "__HIST_SOURCE_BEGIN__scanner_test.go\n"
+            "func TestParse(t *testing.T) {}\n"
+            "__HIST_SOURCE_END__\n"
+        ))
+
+    monkeypatch.setattr(semantic.subprocess, "run", fake_run)
+    config = {"fail_to_pass": "['TestParse', 'TestParse/invalid']"}
+    selectors = semantic._parse_selector_list(config["fail_to_pass"])
+    result = semantic._historical_test_source_probe("image", selectors)
+
+    assert result["status"] == "ok"
+    assert result["selectors"] == ["TestParse", "TestParse/invalid"]
+    assert result["sources"][0]["path"] == "scanner_test.go"
+    assert "TestParse" in commands[0]
+
+
+def test_historical_test_patch_paths_include_changed_test_file() -> None:
+    from swepro_trans.validation.semantic import _historical_test_patch_paths
+
+    patch = (
+        "diff --git a/models/scanresults_test.go b/models/scanresults_test.go\n"
+        "index abc..def 100644\n"
+        "--- a/models/scanresults_test.go\n"
+        "+++ b/models/scanresults_test.go\n"
+    )
+    assert _historical_test_patch_paths(patch) == ["models/scanresults_test.go"]
+
+
+def test_historical_source_probe_includes_patch_test_files(monkeypatch) -> None:
+    from types import SimpleNamespace
+    from swepro_trans.validation import semantic
+
+    commands = []
+
+    def fake_run(command, **kwargs):
+        commands.append(command[-1])
+        return SimpleNamespace(returncode=0, stdout=(
+            "__HIST_SOURCE_BEGIN__models/scanresults_test.go\n"
+            "func TestFilterIgnorePkgs(t *testing.T) {}\n"
+            "__HIST_SOURCE_END__\n"
+        ))
+
+    monkeypatch.setattr(semantic.subprocess, "run", fake_run)
+    patch = "diff --git a/models/scanresults_test.go b/models/scanresults_test.go\n"
+    result = semantic._historical_test_source_probe("image", ["TestVulnInfos_FilterIgnorePkgs"], patch)
+
+    assert result["status"] == "ok"
+    assert result["patch_paths"] == ["models/scanresults_test.go"]
+    assert result["sources"][0]["path"] == "models/scanresults_test.go"
+    assert "git show" in commands[0]
+    assert "models/scanresults_test.go" in commands[0]
+    assert "exit 0" in commands[0]
+
+
+def test_historical_source_probe_reports_no_matches_without_probe_error(monkeypatch) -> None:
+    from types import SimpleNamespace
+    from swepro_trans.validation import semantic
+
+    monkeypatch.setattr(
+        semantic.subprocess, "run",
+        lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout=""),
+    )
+    result = semantic._historical_test_source_probe("image", ["TestNotPresent"])
+    assert result["status"] == "no_matches"
+    assert result["source_file_count"] == 0
+
+
+def test_compacted_semantic_evidence_preserves_per_obligation_status_and_evidence() -> None:
+    from swepro_trans.validation.semantic import _compact_semantic_f2p_rows
+
+    trace = {"f2p_accounting": [{
+        "source_f2p": "historical::mixed",
+        "behavior_classification": "p_supported_behavior",
+        "obligation_accounting": [{
+            "id": "O1", "obligation": "public result", "scope": "product_behavior",
+            "disposition": "preserved", "base_behavior_status": "already_satisfies",
+            "emitted_tests": ["converted::result"], "evidence": "Base behavior evidence",
+            "rationale": "This is a regression obligation.",
+        }],
+    }]}
+
+    rows = _compact_semantic_f2p_rows(trace, lambda value, _limit: value)
+
+    assert rows[0]["obligation_accounting"] == [{
+        "id": "O1", "obligation": "public result", "scope": "product_behavior",
+        "disposition": "preserved", "base_behavior_status": "already_satisfies",
+        "emitted_tests": ["converted::result"], "evidence": "Base behavior evidence",
+        "rationale": "This is a regression obligation.",
+    }]
+
+
+def test_focused_counterfactual_runs_after_closed_broad_fail_to_collect_all_defects():
+    from swepro_trans.validation.semantic import _should_run_focused_counterfactual
+
+    assert _should_run_focused_counterfactual({"verdict": "PASS"}, deterministic_only=False)
+    assert _should_run_focused_counterfactual({"verdict": "FAIL"}, deterministic_only=False)
+    assert not _should_run_focused_counterfactual({"verdict": "ERROR"}, deterministic_only=False)
+    assert not _should_run_focused_counterfactual(
+        {"verdict": "FAIL", "failure_classification": "judge_transport"},
+        deterministic_only=False,
+    )
+    assert not _should_run_focused_counterfactual({"verdict": "FAIL"}, deterministic_only=True)

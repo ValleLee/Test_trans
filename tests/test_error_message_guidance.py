@@ -11,7 +11,10 @@ def test_modal_prohibition_is_valid_error_message_counterfactual():
         Path("prompts/judges/semantic.md"),
         Path("docs/optimize_rule.md"),
     ):
-        text = path.read_text(encoding="utf-8")
+        text = " ".join(path.read_text(encoding="utf-8").split())
         assert all(term in text for term in required_examples), path
     assert "modal prohibition" in SYSTEM
-    assert "modal prohibitions" in Path("prompts/judges/semantic.md").read_text(encoding="utf-8")
+    semantic_text = " ".join(
+        Path("prompts/judges/semantic.md").read_text(encoding="utf-8").split()
+    ).lower()
+    assert "modal prohibitions" in semantic_text

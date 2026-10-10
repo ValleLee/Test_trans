@@ -219,6 +219,30 @@ def _repair_objectives(failed_gate: str, evidence: dict[str, Any]) -> list[str]:
             "Fix the concrete runner/runtime failure shown in diagnostic_artifacts before "
             "changing semantic scope; keep all previously accepted F2P mappings intact."
         )
+        hard = evidence.get("hard_replay")
+        replay = hard.get("hard_replay", hard) if isinstance(hard, dict) else {}
+        runs = replay.get("runs", {}) if isinstance(replay, dict) else {}
+        setup_failures = []
+        if isinstance(runs, dict):
+            for side, run in runs.items():
+                if not isinstance(run, dict):
+                    continue
+                diagnosis = run.get("execution_diagnosis")
+                if isinstance(diagnosis, dict) and diagnosis.get("classification") == "setup_failure_before_leaf_tests":
+                    setup_failures.append({
+                        "side": side,
+                        "failed_setup_hooks": diagnosis.get("failed_setup_hooks", []),
+                    })
+        if setup_failures:
+            objectives.append(
+                "The replay diagnostics show suite setup hooks failed before any leaf tests ran: "
+                + json.dumps(setup_failures, ensure_ascii=False)
+                + ". This is not evidence that Base violates or Gold satisfies a product behavior. "
+                "Repair setup data only where it belongs to the emitted verifier; do not edit, "
+                "remove, rename, or weaken original P2P tests. If an original-suite hook remains "
+                "blocked, report it as an execution blocker and keep the task unaccepted. Require "
+                "actual leaf-test results and the full Base FAIL / Gold PASS contract before acceptance."
+            )
         aliases = evidence.get("selector_name_diagnostics") or []
         if aliases:
             objectives.append(

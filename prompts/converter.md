@@ -13,16 +13,46 @@ construction evidence used to recover behavior.
 
 ## First decision before writing tests
 
-For each historical F2P, write down the product outcome it protects and the
-exact P passage that supports that outcome. Separately list every new symbol,
+### Mandatory source-case inventory for suite/file selectors
+
+When an F2P selector names a whole test suite, file, or group instead of one
+case, do not classify the selector as a unit. Before deciding `drop`, enumerate
+every source-level test case and its asserted outcomes in `self_review.md` using
+this mapping: source case/assertion → product outcome versus test mechanism →
+P support or already-satisfied Base behavior → disposition → emitted selector
+or evidence-backed exclusion. Map mixed cases obligation by obligation.
+Exclude only the exact mechanism (private member, helper call, spy shape,
+fixture layout, or unsupported detail); retain any distinct service effect,
+guard, persisted state, visible result, or recovery behavior through a stable
+Base/Gold product boundary. A Gold-only facade or method is not itself proof
+that the behavior is absent in Base. If Base already exhibits the outcome,
+preserve it as `base_regression_behavior` / `already_satisfies` and emit the
+corresponding converted-P2P selector. If the source case inventory is missing,
+or a product outcome has no resolved P/Base disposition, do not mark the whole
+suite `implementation_detail` / `drop`; finish the mapping or report the
+specific access/specification gap. A prose statement that the suite was
+inspected is not a substitute for the case-by-case mapping.
+
+For each historical F2P, write down the product outcome it protects and copy the
+exact contiguous P/addendum passage into `problem_statement_quotes` as a JSON string array.
+Do not paraphrase this field. The artifact gate checks every quote as a literal
+substring after whitespace normalization. A quote that exists must still entail
+the behavior; the semantic Judge checks entailment separately. Separately list every new symbol,
 method, path, or exact output shape the proposed verifier would require.
 A name found only in Requirements, Interface, historical tests, or Gold is
 not authorized by P. When P requests behavior without naming an API, test
 that behavior through an existing public product boundary; do not copy the
-historical helper call into the new verifier. If no Base/Gold-stable observable
-boundary can exercise the P behavior, record that limitation instead of
-claiming a Gold-only helper is a public contract. Repeat this check in
-`self_review.md` immediately before submission.
+historical helper call into the new verifier. A private callable that exists in
+Base is still not a public contract merely because the repository contains it
+or Gold uses it. Treat repository code as evidence for discovering the behavior,
+not as authorization to make an internal helper the verifier entrypoint. Consider
+a P-conforming implementation that removes or renames the helper while
+preserving the public outcome. Also check the opposite counterexample: a private helper still returns the
+expected value while the public product behavior is broken. A helper-only test
+may falsely accept it. If no fair public boundary can exercise the P behavior
+and distinguish Base from Gold, record the access gap instead of switching to
+a private helper. Repeat this check in `self_review.md` immediately
+before submission.
 
 Before implementing each verifier, sketch a P-conforming alternative that
 changes the historical implementation choice but preserves the product outcome.
@@ -35,6 +65,24 @@ whole-result equality where P requires only part of a result, fakes with a fixed
 call sequence, and internal fields or paths absent from P. Plan the public
 trigger and observable assertion now; repeat the source-level check before
 SELF_REVIEW: PASS.
+
+For fixtures that replace filesystem, process, network, or other external input,
+separate the external boundary from repository helper calls. Do not patch an
+internal reader/collector and then prescribe its call count or positional
+responses unless that seam is a documented public injection contract. Prefer a
+small semantic fake at the external boundary; verify that a P-conforming
+implementation using another internal reader or batching strategy still reaches
+the same required outcome.
+
+For a historical assertion that compares records, structs, maps, or nested
+objects, enumerate every field and collection member the old assertion actually
+constrained. Preserve each distinct P-supported observable obligation in the
+converted test; do not let checking one field stand in for the rest. Conversely,
+allow additional fields unless P or a pre-existing public contract closes the
+shape. For negative-value checks, distinguish explicit `false` from missing,
+undefined, null, or otherwise absent values. Use an exact boolean assertion only
+when the historical behavior and P/public contract require that boolean; a
+falsy assertion does not prove a value was explicitly set to false.
 
 ## Runtime boundary
 
@@ -124,6 +172,7 @@ test plumbing, Gold bookkeeping, or another implementation choice. Use
 decision drop only in this case. Record concrete evidence and explain why no
 user-visible behavior is lost. A meaningful product behavior mixed with an
 internal helper is not implementation_detail; extract and test the behavior.
+When a historical selector names a whole suite or file, inspect its source and enumerate the distinct test cases and product outcomes before classifying it. Do not drop a suite as implementation_detail merely because its tests use a facade, helper, spy, or collaborator call. Separate the internal call shape from any resulting service-side effect, guard outcome, persisted change, user-visible result, or error recovery; preserve each independent product behavior through a stable public boundary. A call to an external service may be represented by a test double, but assert the semantic effect rather than incidental method name, argument layout, call count, or order unless specified. If the behavior already exists in Base, retain it as base_regression_behavior with already_satisfies.
 
 Use this order when a test calls a newly added symbol:
 
@@ -196,7 +245,7 @@ missing_product_behavior -> specification_gap; implementation_detail -> drop.
 
 Every F2P row must include source_f2p, behavior_intent, historical_behavior,
 behavioral_obligations, obligation_accounting, preservation_evidence, functional_surface, evidence,
-problem_statement_support, behavior_classification, binding_detected,
+problem_statement_support, problem_statement_quotes, behavior_classification, binding_detected,
 base_repo_observable, base_behavior_status, gold_only_binding, observable_surface,
 decision, emitted_tests, rationale, specification_gap, specification_proposal,
 planned_observable_surface, drop_justification, and drop_evidence.
@@ -215,7 +264,10 @@ requires it. A stable, editable, lossless representation can span multiple lines
 `str(parse(canonical_text)) == canonical_text` alone permits an input-echo
 implementation and does not establish state-based rendering. `obligation_accounting` must contain exactly one object per listed
 obligation with fields `id`, `obligation`, `scope`, `disposition`,
-`emitted_tests`, `evidence`, and `rationale`. Use scope `product_behavior` with
+`emitted_tests`, `evidence`, and `rationale`. Every `product_behavior` item must
+also contain its own explicit `base_behavior_status`; never inherit it from the
+row, especially when one source F2P mixes Base-existing and Base-failing
+behaviors. Use scope `product_behavior` with
 disposition `preserved` and at least one emitted test for observable contract
 semantics. Use `pending_specification` only for a missing product behavior that
 will enter a behavior-level addendum. Use scope `implementation_detail` with
@@ -271,6 +323,7 @@ by its executable harness. Merely listing a historical repository selector in
 test. Never reuse a historical F2P selector as the converted test selector;
 rewrite its behavior into verifier-owned test code. The artifact gate checks
 this source provenance before semantic review or Docker replay.
+Before submission, perform a selector-to-source audit for every converted F2P row: (1) resolve each exact `emitted_tests` selector to a concrete file or harness-generated source in the submitted verifier bundle; (2) confirm the runner actually collects and executes that selector, with its exact name present in the emitted result; (3) inspect the assertion body and verify it exercises the row's stated observable behavior rather than merely existing or passing trivially; (4) confirm the mapping still matches `tests/config.json` after the last edit. Record selector → source path → behavior in `self_review.md`. A trace row or selector string is not proof that a test exists. If any link is missing or stale, repair the artifact before submitting; do not spend semantic-review or replay rounds on a broken mapping.
 
 Every rewrite or merge row must emit at least one test. A drop row must include
 drop_justification and drop_evidence, and both must state why no product behavior
@@ -338,6 +391,31 @@ including code generated inside shell scripts, for these implementation bindings
   or canonical alias (for example, the ISBN-13 form of a supplied ISBN-10).
   An exact singleton set is then too restrictive even if Gold emits one item.
   Keep exact equality when the full result is itself the specified contract.
+  For every literal output value, exact member set, version, count, or ordering
+  copied from historical fixtures, identify the exact P/addendum text that
+  fixes it. The feature's general purpose and the fact that Base/Gold currently
+  emit that value are not enough. In discovery/reporting behavior (capabilities,
+  extensions, plugins, formats, backends), a requirement to report what is
+  supported does not itself make the historical enumeration or versions a
+  closed normative set. Test a useful, well-formed public report while allowing
+  other truthful P-conforming values unless P fixes the contents.
+
+Before submission, create an assertion-to-contract table in `self_review.md`
+covering **every executable assertion** in every emitted test, including
+assertions inside shell-generated tests. For each assertion, identify the test
+location, the exact condition/output/metadata it requires, and either (a) an
+exact quotation from P or an approved addendum that entails that condition, or
+(b) the independently documented, pre-existing public contract that fixes it.
+Then state one plausible P-conforming alternative and whether the test accepts
+it. Do not cite Requirements, Interface, historical tests, Gold, Base behavior,
+or `functional_specification.md` as the source of normative force. Those
+materials can explain how to exercise a behavior, but cannot fill a missing
+contract. A broad purpose such as “let clients discover supported
+capabilities” does not by itself require a particular HTTP status, MIME type,
+serialization format, body schema, query parameter, or closed set of values;
+require those details only when P or a separate pre-existing public protocol
+contract actually specifies them. If no qualifying source exists, remove or
+weaken the assertion before `SELF_REVIEW: PASS`.
 - Positional sequences of canned mock responses, strict call count/order, or
   fakes that throw on another plausible call path. Dispatch by public input
   meaning and model the minimum public protocol; require exact call shape only
@@ -416,6 +494,27 @@ must not be empty" and "Hosts may not be empty" can explain an empty-host
 error; distinguish them from the contradictory factual claim "Hosts are not
 empty" for empty input.
 
+For every P-required error or warning, preserve its semantic category and its
+link to the triggering condition without freezing an unprescribed class,
+sentence, or call path. A nonempty exception/message is not sufficient when P
+requires a particular kind of failure (for example, undefined-variable rather
+than an unrelated parse or permission error). Include one unrelated but
+nonempty diagnostic as a counterexample and require the verifier to reject it
+when P supplies a stable semantic distinction; also include a plausible
+paraphrase/localization that should pass. If P only says "appropriate error"
+and supplies no stable way to distinguish relevant from irrelevant wording,
+record that limit instead of inventing keywords. For warnings required per
+input/event, assert the required warning is associated with each such event;
+do not assert an exact total or upper bound when P does not define an exhaustive
+warning set. Additional useful warnings may coexist with the required ones.
+
+For invalid-input and failure-path tests, check the positive semantic
+postcondition as well as absence of the invalid/raw value: the public result
+must represent the required error, no-value, rejection, or recovery state.
+Merely proving that the original input string disappeared does not prove that
+invalid data was rejected; a fabricated unrelated value must not satisfy the
+test.
+
 P2P is outside the conversion scope and must be preserved exactly. Copy the
 entire original `pass_to_pass` selector list byte-for-byte, in its original
 order, into the final `tests/config.json`; do not rename, remap, omit, exclude,
@@ -473,9 +572,12 @@ passes and `0` otherwise.
      "behavioral_obligations": ["..."],
      "obligation_accounting": [{"id": "O1", "obligation": "...",
        "scope": "product_behavior", "disposition": "preserved",
+       "base_behavior_status": "changed_or_missing",
        "emitted_tests": ["..."], "evidence": "...", "rationale": "..."}],
      "preservation_evidence": "...",
      "functional_surface": "...", "evidence": "...",
+     "problem_statement_support": "short explanation",
+     "problem_statement_quotes": ["exact P/addendum wording"],
      "behavior_classification": "p_supported_behavior",
      "decision": "rewrite", "emitted_tests": ["..."], "rationale": "...",
      "specification_gap": "", "specification_proposal": "", "planned_observable_surface": "",
@@ -488,7 +590,7 @@ The array must contain one row for every canonical historical F2P selector. Each
 
 ```text
 source_f2p, behavior_intent, historical_behavior, behavioral_obligations,
-obligation_accounting, preservation_evidence, functional_surface, evidence, problem_statement_support,
+obligation_accounting, preservation_evidence, functional_surface, evidence, problem_statement_support, problem_statement_quotes,
 behavior_classification, binding_detected, base_repo_observable,
 base_behavior_status, gold_only_binding, observable_surface, decision,
 emitted_tests, rationale, specification_gap, specification_proposal,

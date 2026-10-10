@@ -141,7 +141,7 @@ def initialize_conversion_workspace(task_root: Path, run_root: Path | None = Non
     write_json(paths.state_path, {
         "schema_version": "1.0", "workflow": "verifier_conversion", "status": "initialized",
         "instance_id": paths.instance_id, "attempt": attempt_root.name,
-        "instruction_policy": "retained_harbor_instruction",
+        "instruction_policy": "problem_statement_only_with_audited_addendum",
         "final_task": None, "created_at_utc": now(),
     })
     return {
@@ -154,6 +154,21 @@ def initialize_conversion_workspace(task_root: Path, run_root: Path | None = Non
         "trace": str(trace),
         "state": str(paths.state_path),
     }
+
+
+def build_final_instruction(problem: Path, addendum: Path | None = None) -> str:
+    """Build the solver instruction from P plus an optional audited addendum."""
+    instruction = problem.read_text(encoding="utf-8").rstrip()
+    if addendum is not None and addendum.is_file() and addendum.read_text(encoding="utf-8").strip():
+        supplement = addendum.read_text(encoding="utf-8").strip()
+        supplement = re.sub(r"(?m)^## Behavior from .*\s*$", "## Additional observable behavior", supplement)
+        supplement = supplement.replace("using historical F2P evidence", "at the behavior level")
+        close = "</pr_description>"
+        if close in instruction:
+            instruction = instruction.replace(close, "\n\n" + supplement + "\n\n" + close, 1)
+        else:
+            instruction += "\n\n" + supplement
+    return instruction + "\n"
 
 
 def package_final(task_root: Path, revision: Path, run_root: Path | None = None) -> dict:
@@ -204,26 +219,8 @@ def package_final(task_root: Path, revision: Path, run_root: Path | None = None)
     proposal = revision.resolve() / 'functional_specification.md'
     if not proposal.is_file():
         raise ValueError('accepted revision must contain the specification proposal record')
-    instruction = problem.read_text(encoding='utf-8').rstrip()
     addendum = paths.specification_addendum_path
-    if addendum.is_file() and addendum.read_text(encoding='utf-8').strip():
-        supplement = addendum.read_text(encoding='utf-8').strip()
-        # The supplement is part of the task's PR semantics. Keep it inside
-        # <pr_description> so the solver sees one coherent task and does not
-        # receive a post-PR construction note. Older runs may contain source
-        # headings; normalize those headings when repackaging them.
-        supplement = re.sub(r"(?m)^## Behavior from .*\s*$", "## Additional observable behavior", supplement)
-        supplement = supplement.replace("using historical F2P evidence", "at the behavior level")
-        close = "</pr_description>"
-        if close in instruction:
-            instruction = instruction.replace(
-                close,
-                "\n\n" + supplement + "\n\n" + close,
-                1,
-            )
-        else:
-            instruction += "\n\n" + supplement
-    instruction += '\n'
+    instruction = build_final_instruction(problem, addendum)
     (final / 'instruction.md').write_text(instruction, encoding='utf-8')
     for name in ('environment', 'solution'):
         shutil.copytree(original / name, final / name)

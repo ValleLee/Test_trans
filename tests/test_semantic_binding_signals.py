@@ -217,3 +217,21 @@ def test_whole_mapping_equality_against_product_result_gets_counterfactual_revie
     assert "whole_result_exactness" in {
         signal["kind"] for signal in _binding_signals(tests)
     }
+
+
+def test_direct_private_repository_entrypoint_triggers_focused_review():
+    tests = {
+        "tests/test_parser.py": {
+            "head": "from qutebrowser.misc import elf\nresult = elf._parse_from_file(io.BytesIO(data))\n",
+        },
+    }
+    assert "private_entrypoint_call" in {s["kind"] for s in _binding_signals(tests)}
+
+
+def test_multiple_explicit_null_constructor_dependencies_trigger_review():
+    tests = {"tests/public_http_test.go": {"head": (
+        "router := api.New(nil, nil, nil, nil, nil)\n"
+        "response := httptest.NewRecorder()"
+    )}}
+    signals = _binding_signals(tests)
+    assert "multiple_null_constructor_dependencies" in {signal["kind"] for signal in signals}

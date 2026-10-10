@@ -7,7 +7,7 @@ evidence. Only product behaviors represented in the historical F2P scope are
 converted; a P-named type alone does not authorize additional test coverage.
 """
 from __future__ import annotations
-import argparse, hashlib, json, re, shlex, subprocess, tomllib
+import argparse, ast, hashlib, json, re, shlex, subprocess, tomllib
 from pathlib import Path
 import yaml
 
@@ -114,6 +114,34 @@ def _auditable_revision_tests(
     return result
 
 
+def _compact_semantic_f2p_rows(trace: dict[str, Any], clip) -> list[dict[str, Any]]:
+    """Preserve every field the semantic Judge needs to assess row/obligation accounting."""
+    row_keys = (
+        "source_f2p", "behavior_intent", "historical_behavior", "behavioral_obligations",
+        "preservation_evidence", "functional_surface", "behavior_classification",
+        "decision", "emitted_tests", "problem_statement_support", "problem_statement_quotes",
+        "base_repo_observable", "base_behavior_status", "gold_only_binding",
+        "observable_surface", "specification_gap", "specification_proposal",
+        "planned_observable_surface", "drop_justification", "drop_evidence",
+    )
+    obligation_keys = (
+        "id", "obligation", "scope", "disposition", "base_behavior_status",
+        "emitted_tests", "evidence", "rationale",
+    )
+    compact_rows = []
+    for row in trace.get("f2p_accounting", []):
+        if not isinstance(row, dict):
+            compact_rows.append(row)
+            continue
+        compact = {key: clip(row.get(key), 350) for key in row_keys}
+        compact["obligation_accounting"] = [
+            {key: clip(item.get(key), 350) for key in obligation_keys}
+            for item in row.get("obligation_accounting", []) if isinstance(item, dict)
+        ]
+        compact_rows.append(compact)
+    return compact_rows
+
+
 def _without_comment_only_lines(text: str) -> str:
     """Remove prose comments before executable symbol provenance checks.
 
@@ -204,9 +232,9 @@ def _module_source_paths(term: str) -> list[str]:
 
 
 def _p_names_class(name: str, problem_text: str) -> bool:
-    """Recognize an expressly named class while ignoring incidental word matches."""
+    """Recognize an expressly named public type, ignoring incidental matches."""
     return bool(re.search(
-        rf"(?:`{re.escape(name)}`|\b{re.escape(name)}\s+class\b|\bclass\s+{re.escape(name)}\b)",
+        rf"(?:`{re.escape(name)}`|\b{re.escape(name)}\s+(?:class|struct|type)\b|\b(?:class|struct|type)\s+{re.escape(name)}\b)",
         problem_text,
     ))
 
@@ -264,13 +292,15 @@ def _base_probe(image: str, revision: Path, gold_patch: Path) -> dict:
     # verifier imports them through a qualified name (``module.Widget.call``).
     # Keep declaration names so the provenance check cannot miss that common
     # hidden-contract shape.
-    gold_defined = sorted(set(re.findall(
-        r"\b(?:class|def|async\s+def)\s+([A-Za-z_][A-Za-z0-9_]*)",
-        "\n".join(added),
-    )))
+    gold_defined = _gold_defined_symbols(added)
+    added_source = _without_comment_only_lines("\n".join(added))
     gold_classes = sorted(set(re.findall(
         r"\bclass\s+([A-Za-z_][A-Za-z0-9_]*)\b",
-        "\n".join(added),
+        added_source,
+    )))
+    gold_types = sorted(set(gold_classes) | set(re.findall(
+        r"\btype\s+([A-Za-z_][A-Za-z0-9_]*)\b",
+        added_source,
     )))
     # Harbor images contain different repositories. Probe the complete git
     # worktree instead of assuming qutebrowser source/test directories;
@@ -322,15 +352,173 @@ def _base_probe(image: str, revision: Path, gold_patch: Path) -> dict:
         "gold_only_evidence": gold_only_evidence,
         "gold_defined_symbols": gold_defined,
         "gold_defined_classes": gold_classes,
+        "gold_defined_types": gold_types,
         "base_repo_search": output,
         "gold_added_lines_sample": added[:80],
     }
 
 
+def _historical_selector_terms(selectors: list[str]) -> list[str]:
+    """Return searchable source names for native test selectors.
+
+    Suite selectors often contain subtest suffixes (for example Go's
+    ``TestLoad/case_name``); the containing test source is named by the root
+    selector. Keep the complete selector too when it may be a literal test
+    title or a path-based node id.
+    """
+    terms: list[str] = []
+    for raw in selectors:
+        selector = str(raw).strip()
+        if not selector:
+            continue
+        candidates = [selector]
+        if "::" in selector:
+            candidates.extend(part for part in selector.split("::") if part)
+        if "/" in selector:
+            candidates.append(selector.split("/", 1)[0])
+        for term in candidates:
+            if term and term not in terms:
+                terms.append(term)
+    return terms
+
+
+def _parse_historical_test_sources(output: str) -> list[dict[str, str]]:
+    """Parse bounded source snippets emitted by the Base-image source probe."""
+    marker = re.compile(
+        r"__HIST_SOURCE_BEGIN__(?P<path>[^\n]+)\n(?P<source>.*?)\n__HIST_SOURCE_END__",
+        re.DOTALL,
+    )
+    return [
+        {"path": match.group("path").strip(), "source": match.group("source")}
+        for match in marker.finditer(output)
+    ]
+
+
+def _historical_test_patch_paths(patch: str) -> list[str]:
+    """Extract test-file paths changed by the historical F2P patch."""
+    paths: list[str] = []
+    for match in re.finditer(r"^diff --git a/(.+?) b/(.+?)$", patch, re.MULTILINE):
+        path = match.group(1)
+        if path == "/dev/null":
+            path = match.group(2)
+        if re.search(r"(^|/)(?:test|tests|spec|specs)(?:/|$)|(?:_test|\.test|\.spec)", path, re.I):
+            if path not in paths:
+                paths.append(path)
+    return paths
+
+
+def _parse_selector_list(value: object) -> list[str]:
+    """Parse selector arrays from native JSON lists or Stage 1 stringified lists.
+
+    Some imported task manifests serialize ``fail_to_pass`` as the textual
+    representation of a JSON/Python list. Treating those values as malformed
+    made the semantic Judge receive ``no_selectors`` and omit historical test
+    source evidence for otherwise valid tasks.
+    """
+    if isinstance(value, (list, tuple)):
+        return [str(item) for item in value]
+    if not isinstance(value, str):
+        return []
+    for parser in (json.loads, ast.literal_eval):
+        try:
+            parsed = parser(value)
+        except (ValueError, SyntaxError, TypeError, json.JSONDecodeError):
+            continue
+        if isinstance(parsed, (list, tuple)):
+            return [str(item) for item in parsed]
+    return []
+
+
+def _historical_test_source_probe(image: str, selectors: list[str], test_patch: str = "") -> dict:
+    """Read source-level historical tests from the task's immutable Base image.
+
+    The selector manifest and test patch do not contain unchanged table-driven
+    cases. Supplying matched source files lets the semantic Judge verify the
+    converter's case inventory instead of trusting self-reported trace prose.
+    """
+    terms = _historical_selector_terms(selectors)
+    patch_paths = _historical_test_patch_paths(test_patch)
+    if not terms and not patch_paths:
+        return {"status": "no_selectors", "selectors": [], "patch_paths": [], "sources": []}
+    searches = " ; ".join(
+        "git grep -l -I -F -e " + shlex.quote(term) + " 2>/dev/null || true"
+        for term in terms
+    ) or "true"
+    patch_file_search = "for __f in " + " ".join(shlex.quote(path) for path in patch_paths) + "; do git cat-file -e \"HEAD:$__f\" 2>/dev/null && printf '%s\n' \"$__f\"; done"
+    command = (
+        "cd /app 2>/dev/null || cd /testbed 2>/dev/null || exit 91; "
+        "__files=$( { " + searches + "; " + patch_file_search + "; } | sort -u); __count=0; "
+        "while IFS= read -r __f; do "
+        "case \"$__f\" in *test*|*Test*|*spec*|*Spec*) ;; *) continue;; esac; "
+        "printf '__HIST_SOURCE_BEGIN__%s\n' \"$__f\"; "
+        "git show \"HEAD:$__f\" 2>/dev/null | head -c 14000; printf '\n__HIST_SOURCE_END__\n'; "
+        "__count=$((__count + 1)); [ \"$__count\" -ge 4 ] && break; "
+        "done <<< \"$__files\"; exit 0"
+    )
+    try:
+        result = subprocess.run(
+            ["docker", "run", "--rm", "--network", "none", "--entrypoint", "/bin/bash", image, "-lc", command],
+            text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            timeout=120, check=False,
+        )
+        output = result.stdout[-60000:]
+        sources = _parse_historical_test_sources(output)
+        if result.returncode != 0:
+            status = "probe_error"
+        else:
+            status = "ok" if sources else "no_matches"
+    except Exception as exc:
+        output, sources, status = repr(exc), [], "probe_error"
+    return {
+        "status": status,
+        "selectors": selectors,
+        "search_terms": terms,
+        "patch_paths": patch_paths,
+        "sources": sources,
+        "source_file_count": len(sources),
+        "diagnostic": output[-2000:] if status != "ok" else "",
+    }
+
 def _gold_declaration_matches(term: str, gold_defined: list[str]) -> list[str]:
     """Return Gold declarations present in a qualified verifier expression."""
     components = set(term.split("."))
     return [name for name in gold_defined if name in components]
+
+
+def _gold_defined_symbols(added_lines: list[str]) -> list[str]:
+    """Extract declared symbols from added source, including Go types/methods.
+
+    Go methods use ``func (receiver Type) Method(...)`` rather than
+    ``def``/``class`` declarations. Omitting their names lets a verifier call
+    an API introduced only by Gold without the deterministic Base-provenance
+    check noticing that it is one-sided. Named Go types (including structs,
+    interfaces, and aliases) also need provenance checks: a generic type name
+    may exist elsewhere in the repository while being absent from the package
+    imported by the verifier.
+    """
+    added_source = _without_comment_only_lines("\n".join(added_lines))
+    names = set(re.findall(
+        r"\b(?:class|def|async\s+def)\s+([A-Za-z_][A-Za-z0-9_]*)",
+        added_source,
+    ))
+    names.update(re.findall(
+        r"\bfunc\s*(?:\([^)]*\)\s*)?([A-Za-z_][A-Za-z0-9_]*)\s*\(",
+        added_source,
+    ))
+    names.update(re.findall(
+        r"\btype\s+([A-Za-z_][A-Za-z0-9_]*)\b",
+        added_source,
+    ))
+    return sorted(names)
+
+
+def _should_run_focused_counterfactual(result: dict, *, deterministic_only: bool) -> bool:
+    """Collect independent binding findings even when the broad Judge found other defects."""
+    return (
+        not deterministic_only
+        and result.get("verdict") in {"PASS", "FAIL"}
+        and result.get("failure_classification") != "judge_transport"
+    )
 
 
 def _merge_focused_counterfactual_audit(result: dict, focused_audit: dict) -> dict:
@@ -373,7 +561,7 @@ def _deterministic_fallback(evidence: dict, protocol_errors: list[str], *, allow
         source = row.get("source_f2p", "<unknown>")
         required = (
             "behavior_intent", "historical_behavior", "behavioral_obligations",
-            "obligation_accounting", "preservation_evidence", "functional_surface", "evidence", "problem_statement_support",
+            "obligation_accounting", "preservation_evidence", "functional_surface", "evidence", "problem_statement_support", "problem_statement_quotes",
             "behavior_classification", "binding_detected", "base_repo_observable",
             "base_behavior_status", "gold_only_binding", "observable_surface", "decision", "rationale",
         )
@@ -399,10 +587,10 @@ def _deterministic_fallback(evidence: dict, protocol_errors: list[str], *, allow
     if probe.get("status") != "ok":
         failures.append(f"Base repository probe status is {probe.get('status')!r}")
     problem = str(evidence.get("problem_statement", ""))
-    gold_classes = set(probe.get("gold_defined_classes", []))
+    gold_types = set(probe.get("gold_defined_classes", [])) | set(probe.get("gold_defined_types", []))
     unauthorized_gold = [
         str(term) for term in probe.get("gold_only_candidates", [])
-        if not _p_authorizes_symbol(str(term), problem, gold_classes)
+        if not _p_authorizes_symbol(str(term), problem, gold_types)
     ]
     if unauthorized_gold:
         failures.append("Gold-only symbols remain: " + ", ".join(unauthorized_gold))
@@ -507,6 +695,12 @@ def main(argv=None) -> int:
         if isinstance(candidate_roles, dict) and candidate_roles.get("revision") == expected_revision:
             behavior_role_audit = candidate_roles
     full_probe = _base_probe(task_image, revision, paths.original / "solution/gold_patch.diff")
+    historical_test_config = json.loads((paths.original / "tests" / "config.json").read_text(encoding="utf-8"))
+    historical_f2p = _parse_selector_list(
+        historical_test_config.get("fail_to_pass", historical_test_config.get("fail_to_pass_tests", []))
+    )
+    historical_test_patch = _read(paths.original / "tests" / "test_patch.patch", 24000)
+    historical_test_sources = _historical_test_source_probe(task_image, historical_f2p, historical_test_patch)
     evidence = {
         "problem_statement": _read(paths.source / "problem_statement.md", 16000),
         "specification_proposal": _read(revision / "functional_specification.md", 12000),
@@ -514,8 +708,9 @@ def main(argv=None) -> int:
         "requirements_evidence": _read(paths.source / "requirements.md", 12000),
         "interface_evidence": _read(paths.source / "interface.md", 12000),
         "conversion_trace": trace,
-        "historical_test_patch": _read(paths.original / "tests" / "test_patch.patch", 24000),
+        "historical_test_patch": historical_test_patch,
         "historical_test_config": _read(paths.original / "tests" / "config.json", 12000),
+        "historical_test_sources": historical_test_sources,
         "revision_tests": tests,
         "implementation_binding_signals": _binding_signals(tests),
         "base_repository_probe": full_probe,
@@ -537,6 +732,7 @@ def main(argv=None) -> int:
         "conversion_trace": trace,
         "historical_test_patch": evidence["historical_test_patch"],
         "historical_test_config": evidence["historical_test_config"],
+        "historical_test_sources": evidence["historical_test_sources"],
         "implementation_binding_signals": evidence["implementation_binding_signals"],
         "revision_tests": {
             name: {key: value for key, value in data.items() if key != "head"}
@@ -563,26 +759,7 @@ def main(argv=None) -> int:
             return {key: _clip_semantic(item, limit) for key, item in value.items()}
         return value
 
-    compact_rows = []
-    row_keys = (
-        "source_f2p", "behavior_intent", "historical_behavior", "behavioral_obligations",
-        "preservation_evidence", "functional_surface", "behavior_classification",
-        "decision", "emitted_tests", "problem_statement_support",
-        "base_repo_observable", "base_behavior_status", "gold_only_binding",
-        "observable_surface", "specification_gap", "specification_proposal",
-        "planned_observable_surface", "drop_justification", "drop_evidence",
-    )
-    obligation_keys = ("id", "obligation", "scope", "disposition", "emitted_tests", "rationale")
-    for row in trace.get("f2p_accounting", []):
-        if not isinstance(row, dict):
-            compact_rows.append(row)
-            continue
-        compact = {key: _clip_semantic(row.get(key), 350) for key in row_keys}
-        compact["obligation_accounting"] = [
-            {key: _clip_semantic(item.get(key), 350) for key in obligation_keys}
-            for item in row.get("obligation_accounting", []) if isinstance(item, dict)
-        ]
-        compact_rows.append(compact)
+    compact_rows = _compact_semantic_f2p_rows(trace, _clip_semantic)
     minimal_judge_evidence = {
         "problem_statement": evidence["problem_statement"][:9000],
         "specification_proposal": evidence["specification_proposal"][:9000],
@@ -593,6 +770,7 @@ def main(argv=None) -> int:
         "f2p_accounting": compact_rows,
         "historical_test_patch": evidence["historical_test_patch"][:12000],
         "historical_test_config": evidence["historical_test_config"],
+        "historical_test_sources": evidence["historical_test_sources"],
         "implementation_binding_signals": evidence["implementation_binding_signals"],
         "revision_tests": _auditable_revision_tests(tests, head_limit=12000),
         "revision_test_file_inventory": sorted(tests),
@@ -614,7 +792,7 @@ def main(argv=None) -> int:
     problem_text = evidence["problem_statement"]
     def p_authorizes(term: str) -> bool:
         return _p_authorizes_symbol(
-            term, problem_text, set(full_probe.get("gold_defined_classes", []))
+            term, problem_text, set(full_probe.get("gold_defined_classes", [])) | set(full_probe.get("gold_defined_types", []))
         )
 
     early_gold_only = [
@@ -828,7 +1006,7 @@ def main(argv=None) -> int:
                 "Dedicated exact-error contract audit did not return a closed JSON verdict"
             )
             result["focused_error_audit_protocol_error"] = repr(exc)
-    if result.get("verdict") == "PASS" and not deterministic_only:
+    if _should_run_focused_counterfactual(result, deterministic_only=deterministic_only):
         focused_audit = review_counterfactuals(
             config=config, credentials=credentials,
             problem=evidence["problem_statement"],

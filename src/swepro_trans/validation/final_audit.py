@@ -20,12 +20,14 @@ from ..conversion_schema import (
     replay_expectation, trace_disposition_errors,
 )
 from ..paths import PROJECT_ROOT, latest_attempt, resolve_task
+from ..layout import build_final_instruction
 from .binding_signals import revision_evidence_fingerprint
 from .revision import _selector_is_emitted
 
 
 _LEAK_PATTERNS = (
     re.compile(r"^\s*##\s*Behavior from\b", re.I | re.M),
+    re.compile(r"^\s*##\s*(?:Requirements|New Interfaces|Interface)\s*$", re.I | re.M),
     re.compile(r"reference implementation", re.I),
     re.compile(r"Gold[- ]only", re.I),
     re.compile(r"gold[_ -]patch", re.I),
@@ -239,6 +241,16 @@ def audit_task(task_root: Path, *, allow_legacy: bool = False) -> dict[str, Any]
     checks["instruction_leakage"] = "PASS" if not leakage else {"status": "FAIL", "patterns": leakage}
     if leakage:
         errors.append("final instruction contains test/reference implementation leakage")
+    problem_path = paths.source / "problem_statement.md"
+    if problem_path.is_file() and instruction_path.is_file():
+        expected_instruction = build_final_instruction(problem_path, paths.specification_addendum_path)
+        matches_p_only_source = instruction == expected_instruction
+        checks["instruction_matches_p_only_source"] = "PASS" if matches_p_only_source else "FAIL"
+        if not matches_p_only_source:
+            errors.append("final instruction differs from P-only source plus audited addendum")
+    else:
+        checks["instruction_matches_p_only_source"] = "HOLD"
+        errors.append("cannot verify final instruction against missing P-only source")
 
     acceptance = _load(attempt / "intermediate" / "validation" / "acceptance.json") or {}
     checks["recorded_acceptance"] = acceptance.get("status", "missing")

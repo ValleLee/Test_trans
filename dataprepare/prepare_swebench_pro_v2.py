@@ -228,7 +228,7 @@ def strip_instruction_sections(instruction: str) -> str:
 
 
 def write_source_contract(evidence_root: Path, row: dict[str, Any], original_instruction: Path | None = None) -> None:
-    """Persist the retained Harbor instruction separately from evidence."""
+    """Persist the P-only solver instruction and construction evidence separately."""
     source = evidence_root / "source"
     source.mkdir(parents=True, exist_ok=True)
     if original_instruction and original_instruction.is_file():
@@ -241,7 +241,7 @@ def write_source_contract(evidence_root: Path, row: dict[str, Any], original_ins
     (source / "requirements.md").write_text(str(row.get("requirements") or ""), encoding="utf-8")
     (source / "interface.md").write_text(str(row.get("interface") or ""), encoding="utf-8")
     write_json(source / "instruction_policy.json", {
-        "solver_instruction": "retained_harbor_instruction",
+        "solver_instruction": "problem_statement_only_with_audited_addendum",
         "source_field": source_field,
         "removed_sections": ["Requirements", "New Interfaces"],
         "construction_evidence": ["requirements", "interface"],
@@ -276,6 +276,65 @@ def verifier_network_mode(task_root: Path, original_root: Path | None = None) ->
         return "host", raw
     return "none", raw
 
+
+
+
+def _test_execution_diagnosis(result: dict[str, Any]) -> dict[str, Any]:
+    """Summarize whether parsed runner output reached leaf tests.
+
+    A Docker command can return the same non-zero status for a product
+    assertion and for a suite setup hook that prevented every leaf test from
+    running. Keep replay acceptance unchanged, but make this distinction
+    explicit in repair evidence.
+    """
+    artifacts = result.get("diagnostic_artifacts", {})
+    payload = None
+    source = None
+    if isinstance(artifacts, dict):
+        for name in ("output.json", "parsed_results.json", "results.json"):
+            raw = artifacts.get(name)
+            if not isinstance(raw, str):
+                continue
+            try:
+                candidate = json.loads(raw)
+            except json.JSONDecodeError:
+                continue
+            if isinstance(candidate, dict) and isinstance(candidate.get("tests"), list):
+                payload, source = candidate, name
+                break
+
+    if payload is None:
+        return {"classification": "unavailable", "reason": "no parsed test result artifact"}
+
+    rows = [row for row in payload["tests"] if isinstance(row, dict)]
+    hook_rows = []
+    leaf_rows = []
+    for row in rows:
+        name = str(row.get("fullTitle") or row.get("name") or row.get("title") or "")
+        is_hook = bool(re.search(r"\b(?:before|after)\s+(?:all|each)\b|\bhook\b", name, re.IGNORECASE))
+        (hook_rows if is_hook else leaf_rows).append(row)
+
+    failed_hooks = [
+        str(row.get("fullTitle") or row.get("name") or row.get("title") or "<unnamed hook>")
+        for row in hook_rows
+        if str(row.get("status", "")).upper() in {"FAILED", "ERROR"}
+    ]
+    if not leaf_rows and failed_hooks:
+        classification = "setup_failure_before_leaf_tests"
+    elif leaf_rows:
+        classification = "leaf_test_results_reported"
+    else:
+        classification = "no_leaf_test_results_reported"
+    stats = payload.get("stats")
+    return {
+        "classification": classification,
+        "source": source,
+        "reported_rows": len(rows),
+        "leaf_test_rows": len(leaf_rows),
+        "setup_hook_rows": len(hook_rows),
+        "failed_setup_hooks": failed_hooks[:10],
+        "stats_tests": stats.get("tests") if isinstance(stats, dict) else None,
+    }
 
 def run_docker_preflight(task_root: Path, image: str | None, *, tests_dir: Path | None = None, log_root: Path | None = None, original_root: Path | None = None, evidence_root: Path | None = None, write_compat_results: bool = True, expectation: str = "base_fail_gold_pass", stage_original_test_patch: bool = False) -> dict[str, Any]:
     """Run the official Harbor tests/test.sh with Base and Gold states."""
@@ -368,6 +427,7 @@ def run_docker_preflight(task_root: Path, image: str | None, *, tests_dir: Path 
                 continue
         if diagnostics:
             result["diagnostic_artifacts"] = diagnostics
+        result["execution_diagnosis"] = _test_execution_diagnosis(result)
         write_json(log_root / f"{label}_result.json", result)
         runs[label] = result
     base_rc = runs["base"]["returncode"]

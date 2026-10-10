@@ -212,6 +212,14 @@ def _write_specification_addendum(paths, gaps: list[dict[str, Any]]) -> Path:
 def _retry_or_finish(*, args, paths, root: Path, revision: Path, report: dict[str, Any], code: int, gate: str) -> int:
     """Route candidate defects to repair; keep infrastructure failures distinct."""
     semantic = report.get("semantic_review")
+    qa_summary = report.get(gate) if gate in {"positive_qa", "negative_qa"} else None
+    if isinstance(qa_summary, dict) and qa_summary.get("mode") == "replay_infrastructure_failure":
+        report["status"] = "qa_infrastructure_failure"
+        report["terminal_reason"] = (
+            f"{gate} replay could not complete after bounded infrastructure retries; "
+            "the converter was not asked to change its verifier"
+        )
+        return finish(paths.attempt_root or root, report, 10, revision)
     if gate == "semantic_review" and isinstance(semantic, dict) and semantic.get("failure_classification") == "judge_transport":
         report["status"] = "semantic_judge_unavailable"
         return finish(paths.attempt_root or root, report, code, revision)

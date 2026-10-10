@@ -1,0 +1,39 @@
+{
+  "reviews": {
+    "instance_internetarchive__openlibrary-1be7de788a444f6255e89c10ef6aa608550604a8-v29f82c9cf21d57b242f8d8b0e541525d259e2d63|converted|1": {
+      "patch_sha256": "d0495634fe0544bd819f925d58bf23d2b07ce29aa9a62cdcbd8baaad65fb467f",
+      "semantic_verdict": "correct",
+      "rationale": "Correct against the task description: the patch expands raw edition records inside matching and supplies the derived title, author/contributor, and ISBN behavior. The functional verifier passed all six behavior checks. The historical verifier failed only because six required selector IDs were absent after applying its test patch; this does not show a behavioral regression.",
+      "reviewed_at": "2026-10-09T19:44:25+00:00",
+      "review_basis": "Task Description/Expected Behavior and Stage 3 original + functional replay artifacts; requirements-only names/selectors were not treated as normative."
+    },
+    "instance_ansible__ansible-9142be2f6cabbe6597c9254c5bb9186d17036d55-v0f01c69f1e2528b935359cfe578530722bca2c59|converted|1": {
+      "patch_sha256": "c866461602eaa73c478bebd862f4c70367cbae599451dfa6548956a9e7d10d9e",
+      "semantic_verdict": "correct",
+      "rationale": "Correct against the task description: the patch carries a module-declared interpreter through module modification instead of replacing it with the generic Python default. The functional verifier passed declared Python and non-Python interpreter checks, and the remaining configured checks passed. The historical verifier missed two selector IDs, rather than reporting a behavioral failure.",
+      "reviewed_at": "2026-10-09T19:44:25+00:00",
+      "review_basis": "Task Description/Expected Behavior and Stage 3 original + functional replay artifacts; requirements-only names/selectors were not treated as normative."
+    },
+    "instance_internetarchive__openlibrary-5069b09e5f64428dce59b33455c8bb17fe577070-v8717e18970bcdc4e0d2cea3b1527752b21e74866|converted|1": {
+      "patch_sha256": "3e009a1f2e6d203d37b0722db96c2d08a14a9361158db6895a5d04a15583d935",
+      "semantic_verdict": "correct",
+      "rationale": "Correct against the task description: the conflict path for Booknotes preserves existing rows, while the functional test directly verifies unchanged records and the reported conflict; ordinary update and Bookshelves collision behavior also passed. The historical verifier failed because its conflict-test selector was unavailable, not because the patch violated the described behavior.",
+      "reviewed_at": "2026-10-09T19:44:25+00:00",
+      "review_basis": "Task Description/Expected Behavior and Stage 3 original + functional replay artifacts; requirements-only names/selectors were not treated as normative."
+    },
+    "instance_internetarchive__openlibrary-91efee627df01e32007abf2d6ebf73f9d9053076-vbee42ad1b72fb23c6a1c874868a720b370983ed2|converted|1": {
+      "patch_sha256": "7033d96efe4eddf3d359f76eda5bc9c4f49c5963fb4c51861099ef5f9d43e67d",
+      "semantic_verdict": "correct",
+      "rationale": "Correct against the task description: the added utility compares month/day ranges, includes boundaries, supports wraparound, and ignores the year. Its chosen function name differs from the exact name in the removed Requirements section, but the task description does not mandate that name; the functional behavior test and existing date utility checks passed. The historical verifier failed only because the required selector was not present.",
+      "reviewed_at": "2026-10-09T19:44:25+00:00",
+      "review_basis": "Task Description/Expected Behavior and Stage 3 original + functional replay artifacts; requirements-only names/selectors were not treated as normative."
+    },
+    "instance_flipt-io__flipt-72d06db14d58692bfb4d07b1aa745a37b35956f3|converted|1": {
+      "patch_sha256": "25e3e6ae0a0d1436c73de9d15f6be9ee231e111380a839a703af5a6bea533469",
+      "semantic_verdict": "correct",
+      "rationale": "Correct against the task description: the patch creates missing parent directories, opens existing or new files, distinguishes initialization errors, and writes audit events through a filesystem abstraction. All five functional checks passed. The historical verifier reported missing test selector IDs after test-patch application, not a failure of the described sink behavior.",
+      "reviewed_at": "2026-10-09T19:44:25+00:00",
+      "review_basis": "Task Description/Expected Behavior and Stage 3 original + functional replay artifacts; requirements-only names/selectors were not treated as normative."
+    }
+  }
+}

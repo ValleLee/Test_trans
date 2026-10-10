@@ -1,6 +1,6 @@
 # SWE-bench Pro OS v2：实验目标、三阶段框架与首轮结果
 
-> 2026-10-08 11:40 CST 快照。本文可独立阅读；以仓库当前代码、配置及冻结结果为准。Stage 1/2 的批量转换与修复目前暂停，本文没有重新运行它们。Stage 3 首轮 20 任务实验已经完成，统计使用冻结补丁和统一交叉复判结果。
+> 2026-10-08 11:40 CST 首轮实验快照。本文只讨论 Stage 1 选定并预检的 100 条任务、Stage 2 首批完成转换与审计的 20 条任务，以及 Stage 3 对这 20 条任务的首次验证。统计以本轮冻结任务、补丁和统一交叉复判结果为准。
 
 ## 1. 实验要回答什么
 
@@ -43,9 +43,13 @@
 
 ## 2. Stage 1：固定官方任务和可执行 oracle
 
-**方法。** 从官方 V2 数据行选样，固定上游 commit，把原 Harbor task 复制到不可变的任务目录；记录数据行、任务树与镜像来源。使用官方任务镜像和原始 tests/test.sh，对未打补丁的 Base 与应用原始 Gold patch 的 Gold 分别重放。只有 **Base FAIL、Gold PASS** 才能证明原始 verifier 对该任务有基本区分力；失败实例替换后重新执行审计。此处是本地 Docker 重放官方脚本，不等同于 Stage 3 的完整 Harbor solver rollout。
+### 2.1 方法与核心设计
 
-### 2.1 Pipeline
+**选样与固定来源。** Stage 1 要先形成一批可追溯、可重放的原始任务。选样脚本保留通过原始 oracle 的 pilot，再按语言配额和仓库分布补足 100 条；Python、Go、JavaScript 各纳入 2 条官方 HARD。非 HARD 候选按 Gold patch 增加行数分散选取，是为了覆盖不同补丁规模，**不把补丁行数当作难度或模型成功率**。每条任务固定官方来源 commit，保存原始 Harbor task、数据行与任务树 hash、P-only source，以及镜像 digest。这样后续转换和评测可以追溯到同一份任务与环境。
+
+**验证原始 oracle。** 在每条任务的官方镜像中，用同一份原始 `tests/test.sh` 分别回放未修复的 Base 和应用官方 Gold patch 的 Gold。预期是 Base FAIL、Gold PASS：前者说明旧测试确实会拒绝这个未修复版本，后者说明原始任务至少有一个可通过的参考实现。如果任一方向不满足，记录该 ID 并替换，再对补选任务重做准备、镜像与预检；最终总审计还核对 100 个唯一 ID、配额、来源 hash、镜像和逐任务回放结果。这是原始 verifier 的基本有效性门禁，**并不证明 Gold 是唯一正确解**；执行路径是本地 Docker 回放，不是 Stage 3 的完整 Harbor solver rollout。
+
+### 2.2 Pipeline
 
 ~~~text
 官方 V2 数据行 + 任务来源 commit + 语言/HARD 配额
@@ -89,17 +93,23 @@
                               original/ + source + preflight
 ~~~
 
-**当前结果。** [总审计](../../data/stage1/final_100_report.json)为 READY，100/100 个任务满足门禁；选样配额为 Python 40、Go 36、JavaScript 22、TypeScript 2。官方任务来源固定在 [准备脚本](../../dataprepare/prepare_swebench_pro_v2.py)所用 commit `66f92766bba642462d4bbe5479e83f91f9211862`。100 个 READY 是 Stage 1 的可进入数量，**不是** Stage 2 合格包数量。
+### 2.3 结果与指标
+
+[Stage 1 总审计](../../data/stage1/final_100_report.json)记录 `selected_count=100`、`ready_count=100`、状态 `READY`：100/100 个选定任务均在原始测试下 Base FAIL、Gold PASS。语言分布为 Python 40、Go 36、JavaScript 22、TypeScript 2；其中 HARD 任务共 6 条，Python、Go、JavaScript 各 2 条。官方任务来源固定在[准备脚本](../../dataprepare/prepare_swebench_pro_v2.py)所用 commit `66f92766bba642462d4bbe5479e83f91f9211862`。这些数字表示 100 条任务具备进入转换阶段的条件，**不是** Stage 2 已合格数量。
 
 **核心实现。** [选样](../../task_list/select_v2_100.py)、[镜像准备](../../dataprepare/pull_selected_images.py)、[Base/Gold 预检](../../dataprepare/preflight_selected.py)、[全量审计](../../dataprepare/audit_stage1.py)。输入与输出分别位于 `tasks/<id>/original/`、`data/stage1/<id>/source/`、`data/stage1/<id>/preflight/`；Stage 2 初始化后，共享 source 被移到 `runs/<id>/source/`，original 保持不变。
 
 ## 3. Stage 2：把历史测试转换为功能判定
 
-**转换逻辑。** 转换器读取 P 以及作为证据的 R/I、原 F2P/P2P、Gold、Base 仓库。它对每个历史 F2P selector 在 conversion_trace.json 中说明原断言、行为义务、P 依据、公共观察面和去向。P 支持的行为改写/合并为 functional delta；Base 已满足的产品行为可转为回归测试；P 遗漏的重要历史产品行为先提出 specification gap，由控制器审核并形成行为级 addendum，再要求新 revision 落实测试；没有独立产品行为的实现细节可有证据地丢弃。不得借此给原 F2P 未覆盖的 P 条款补测。原始 P2P 保持原 selector 与顺序，追加的 converted regression 与其区分。
+### 3.1 方法与核心设计
 
-[控制器](../../src/swepro_trans/pipeline/orchestrator.py)对一个 attempt 的 revision 按以下顺序执行；可修复失败形成反馈并创建新 revision，终态 attempt 不原地改写。
+**先划清规范与证据。** Stage 2 从 Stage 1 的 READY 任务中取首批 20 条转换。原 instruction 的问题描述 P 是新任务的基础规范；Requirements（R）、New Interfaces（I）、原 F2P/P2P、Gold、Base 仓库和环境可以帮助理解旧测试，却不能仅凭自身成为新增正确性要求。转换范围也由历史 F2P 限定，不能顺手给原 F2P 未覆盖的 P 条款补测。原始 P2P 的 selector 字符串和顺序保持不变，以保留已有回归保护。
 
-### 3.1 Pipeline
+**逐条决定历史 F2P 的去向。** 转换器为每个旧 selector 在 `conversion_trace.json` 中写明原断言、对应行为、P 依据、公共观察面和新测试去向。P 支持且 Base 未满足的行为写成 functional delta；Base 已满足的真实产品行为可改为 converted regression，并与原始 P2P 分开记录。若旧测试涉及 P 未明说但重要的产品行为，先提出 specification gap，由控制器审核行为级 addendum，加入最终 instruction 后再生成相应测试。只固定私有调用、Gold 结构或无独立产品效果的断言，可以有证据地丢弃。这个分类让每条旧 F2P 都有可审查的去向，同时避免把历史实现方式直接搬进新 verifier。
+
+**多层门禁检验“既能分辨，又不过度绑定”。** 每次 revision 先查文件与 selector 映射、P 依据和测试语义；再在干净容器中要求新 verifier 对 Base FAIL、对 Gold PASS，并重复回放以检查稳定性与原始 P2P。正向 QA 尝试构造不同于 Gold、仍满足 P 的实现，要求新 verifier PASS，用来暴露对 Gold 路径的过度绑定；负向 QA 构造相关且非等价的近正确错误实现，要求新 verifier FAIL，用来暴露漏测。失败生成结构化反馈并进入新 revision。只有同一 revision 的门禁、正式打包、final audit 和框架外独立审计都通过，才列入首批合格清单。有限的正负 QA 只是缺陷探针，不代表穷举所有实现。
+
+### 3.2 Pipeline
 
 ~~~text
 STAGE 1 READY：P / R / I / F2P / P2P / Gold / Repo / Env
@@ -132,7 +142,8 @@ STAGE 1 READY：P / R / I / F2P / P2P / Gold / Repo / Env
   ⑤ HARD REPLAY [DOCKER]                           │
      Base + 新 tests → FAIL                         │
      原始 Gold + 新 tests → PASS                    │
-     原 test_patch 仅在临时容器准备 P2P              │
+     原 test_patch 整体应用到临时仓库                │
+     新 test.sh/config 选择新 F2P 与保留的 P2P       │
              │ PASS                                 │
              ▼                                      │
   ⑥ BEHAVIOR ROLE AUDIT [SCRIPT]                    │
@@ -146,14 +157,15 @@ STAGE 1 READY：P / R / I / F2P / P2P / Gold / Repo / Env
                          → 不发布 final/            │
              │ convertible + PASS                   │
              ▼                                      │
-  ⑧ POSITIVE QA [mini session → fresh Judge]        │
+  ⑧ POSITIVE QA [生成 → 双回放 → fresh Judge]       │
      不同于 Gold 且满足 P 的解                       │
      原 verifier PASS/FAIL 只记录                   │
      新 verifier 必须 PASS                          │
              │ PASS                                 │
              ▼                                      │
-  ⑨ NEGATIVE QA [mini session → fresh Judge]        │
+  ⑨ NEGATIVE QA [生成 → 双回放 → fresh Judge]       │
      相关、非等价、违反 P 的 near-correct mutant    │
+     原 verifier PASS/FAIL 只记录                   │
      新 verifier 必须 FAIL                          │
              │ PASS                                 │
              ▼                                      │
@@ -176,17 +188,37 @@ STAGE 1 READY：P / R / I / F2P / P2P / Gold / Repo / Env
 
 正向 QA 完成后才运行负向 QA；它们不是并行分支。
 
-hard replay 的原始 test patch 只进入临时回放容器，使历史 P2P 源码可运行，不打包进新的 tests。Gold PASS 是**一个**兼容性门禁，不推出所有旧 verifier 能过的补丁都能过新 verifier。positive QA 的原始 verifier 结果仅作对照；可接受条件是 Judge 判定 P-valid 且新 verifier PASS。当前配置目标为 1 个有效正解和 1 个相关 mutant，上限分别为 3、5 次尝试，找到首个合格样本即可停止。因此 QA 能发现部分缺陷，不能穷举所有正确实现路线。
+**三类回放的时间与对象。** hard replay 发生在 Stage 2 转换器产出一版候选 `rev_NNN/tests/`、且产物契约和语义审查通过之后，正式打包 `final/` 之前。它将**当前 revision 的 `tests/test.sh` 与 `config.json`** 挂载为 `/tests`，分别在 Base 和应用原始 Gold patch 的仓库上运行；首批可发布任务要求 Base FAIL、Gold PASS。随后 stability 用同一版新测试重复 Base/Gold 回放，并逐条确认保留的 P2P 通过。正负 QA 则在这些门禁通过后，各生成新的候选补丁；对每份补丁分别运行原始 `original/tests/test.sh` 和当前 revision 的新 `tests/test.sh`。旧 verifier 的 PASS/FAIL 是对照记录；QA 是否通过还要看独立 Judge 对补丁语义的判断，以及新 verifier 对正解 PASS、对负例 FAIL。
 
-正式 `final/` 保留原 task.toml、environment、solution，替换 instruction 和 tests；instruction 为移除 R/I 的 P 文本，可附经过门禁的行为级 addendum。自动 accepted/package 只是框架内部完成。进入 [合格清单](../../check/qualified_tasks.txt)还需包完整、final audit PASS、框架外 independent audit PASS、原始 P2P 排除数为 0，并核查 F2P 转换与 instruction。当前合格清单为 **20 个任务：Python 19、TypeScript 1**，均记录明确 attempt；并不表示 100 个 Stage 1 任务都完成转换。
+**最终任务包里有什么。** 打包器把原任务的 `task.toml`、`environment/`、`solution/` 复制到 `final/`，把接受版 revision 的 `tests/` 复制为 `final/tests/`；所以最终执行入口是转换版 `tests/test.sh`，不是原始 `original/tests/test.sh`。首批 20 个 `final/tests/` 均没有原始 `test_patch.patch`，测试脚本也没有引用它。保留在新 `config.json` 里的旧 P2P **selector 只是测试名称，不是测试源码**；原 patch 和原测试命令仍保存在旁边不可变的 `original/tests/`，并没有作为旧 verifier 一起打包进 final。
 
-**当前发现的门禁边界。** [框架外复审记录](20261008_1038_external_review_findings_and_framework_questions_cn.md)已将四个自动 accepted 但语义不合格的包挂起、排除在合格清单外：精确警告次数和私有调用绑定、固定 repr 形状、无效 LCCN 结果欠检、Gold-only 私有 `_build_doc` 接口被误认为 P 要求。记录提出的是框架改进方向，当前代码尚未落实这些修复；不能把自动 accepted 视为独立语义证明。
+**原始 test patch 与 P2P 的关系。** 当前 hard replay 只要原任务的 P2P 列表非空，就把原始 `test_patch.patch` **整份应用到一次性容器的仓库**，再运行转换版 `/tests/test.sh`；这一步没有逐条判断每个 P2P 是否真的缺少源码。QA 的新 verifier 分支在原任务含 P2P 时也做同样的临时准备；QA 的旧 verifier 分支则运行原任务的 `tests/test.sh`，由原脚本处理自己的测试准备。这是为了让镜像中可能缺失的历史 P2P 测试源码存在；但原 patch 常同时含旧 F2P 和 P2P 源码，所以旧 F2P 定义也可能暂时进入新 verifier 的回放容器。新 `tests/config.json` 应选择转换后的 F2P、逐字保留的原 P2P，以及必要的 converted regression；旧 F2P 不应作为新判题目标。首批一条 Ansible 任务的原 patch 含 7 个旧 F2P，其转换版回放日志只收集了配置中的 1 个新 F2P、2 个原 P2P 和 1 个 converted regression。这个例子说明该任务的旧 F2P 没被执行，却不能代替对其他 runner 收集范围的逐项检查。
+
+**为什么不能只从补丁里删去 F2P 行。** `config.json` 的 F2P/P2P 是*测试选择器*的划分，原始 `test_patch.patch` 却是对测试源码文件的改动，两者不一定能按行拆开。首批 Qutebrowser 的一个原始 patch 新建了整份测试文件：其中同一个参数化测试函数对应 **358 个旧 F2P selector 和 1 个旧 P2P selector**。从配置里删掉 358 个 F2P 名称，逻辑上的判定集合确实只剩 P2P；但要让这个 P2P 独立运行，仍需提供该函数、参数、fixture 和依赖。如果把整份源码复制进去，宽范围收集又可能执行旧 F2P。因此独立继承 P2P 需要按任务提取/保留必要源码并验证实际收集结果，不能只对原 patch 做文本减法。
+
+**本轮确实验证了旧 P2P。** 新 `config.json` 保留原始 P2P selector；Stage 2 hard replay 与 stability 在临时准备好测试源码后执行当前新 `test.sh`，stability 逐条要求这些 P2P 在 Base 和 Gold 均 PASS。Stage 3 的 functional verifier 复判也按同样原则准备旧 P2P 测试空间。因此“`final/` 没带旧 patch”**不等于**“本轮没有运行 P2P”。
+
+原 patch 不打包进 `final/tests/`，所以**当前 final 包在缺少历史 P2P 源码的干净镜像中，不能仅凭自身保证这些 P2P 可运行**；它依赖外部回放程序临时准备测试源码。若要求转换后任务包独立运行且完全不引入旧 F2P 源码，需要为保留的 P2P 提供独立测试源码或做受控提取，并重新验证与冻结。本轮总结仅描述首批 20 条的实际回放方式，不把“未选择旧 F2P selector”写成“旧 F2P 源码从未进入容器”。
+
+Gold PASS 是**一个**兼容性门禁，不推出所有旧 verifier 能过的补丁都能过新 verifier。positive QA 的原始 verifier 结果仅作对照；可接受条件是 Judge 判定 P-valid 且新 verifier PASS。首轮配置目标为 1 个有效正解和 1 个相关 mutant，上限分别为 3、5 次尝试，找到首个合格样本即可停止。因此 QA 能发现部分缺陷，不能穷举所有正确实现路线。
+
+### 3.3 结果与指标：首批 20 条
+
+首批[合格清单](../../check/qualified_tasks.txt)冻结 **20 个任务、20 个合格 attempt**，其中 Python 19、TypeScript 1；每条都有明确的 attempt 与 revision。清单合计记录 505 个历史 F2P selector、413 个原始 P2P selector，原始 P2P 排除数合计为 0；这两个 selector 总数是旧测试配置项数，**不是**新测试用例数。正式 `final/` 保留原 task.toml、environment、solution，替换 instruction 和 tests；instruction 为移除 R/I 的 P 文本，可附经过门禁的行为级 addendum。进入清单要求包完整、final audit PASS、框架外 independent audit PASS、原始 P2P 排除数为 0，并核查 F2P 转换与 instruction。因而这 20 条是**完成转换且通过审计的产物数**，占 Stage 1 选定 100 条的 20/100；另外 80 条未纳入首批合格结果，不能用 20/100 估计转换方法的总体成功率。
+
+**门禁边界。** [框架外复审记录](20261008_1038_external_review_findings_and_framework_questions_cn.md)记录了自动 accepted 但未进入首批合格清单的语义问题。正向 QA 目标为 1 个有效替代解、负向 QA 目标为 1 个相关 mutant，且找到首个合格样本即可停止；这些检查提高了发现缺陷的机会，并不穷举全部实现路径。因此自动 accepted 或 Gold PASS 不能单独证明 functional verifier 对所有 P-valid 补丁判定正确。
 
 ## 4. Stage 3：两组生成、同一补丁双 verifier 复判
 
-**设计。** 从合格清单冻结 20 个 instance 及其 accepted attempt。每个任务只做两次 solver rollout：一次读 original/instruction.md，一次读所选 `final/instruction.md`；模型、Harbor、mini-swe-agent、任务镜像、Base 仓库和 agent 设置保持一致。两组产生的是**不同补丁**，不能作为“同一补丁更换 instruction”的因果实验；而对**每份同一补丁**先后运行旧、新 verifier，构成配对判定。17 个任务仅删 R/I，3 个还含行为级澄清，统计分层展示。
+### 4.1 方法与核心设计
 
-### 4.1 Pipeline
+**固定样本与生成条件。** Stage 3 只取 Stage 2 首批合格清单中的 20 个 instance，并冻结各自的 accepted attempt、原始与转换后任务包、镜像和测试。每个任务用相同 Harbor、mini-swe-agent、模型及运行参数各做一次 solver rollout：原始 instruction（P+R+I）生成 patch O，转换后 instruction（P+可选经审计的 addendum）生成 patch F。17 条任务只删除 R/I，另 3 条还含行为澄清，分析时分层。每组各自生成补丁，因此组间通过数变化描述的是两种生成条件下本批补丁的表现，不能被解释为“同一补丁只换 instruction”的因果效应。
+
+**同一补丁交叉复判。** 对 patch O 和 patch F 分别从干净 Base 仓库起步，在独立容器中运行原始 verifier 与 functional verifier。两套复判对同一补丁使用一致的历史测试空间准备规则，避免补丁改动测试文件导致假性的 test patch 冲突。补丁应用失败、超时和基础设施故障单列，不当作语义 FAIL。每份补丁于是得到一对有效 verdict，可归入双 PASS、仅旧 PASS、仅新 PASS、双 FAIL 四格；其中 verifier 差异是严格的同补丁配对比较。
+
+**用行为证据解释 verdict。** 对两套 verifier 判定不一致的补丁，回看 P、两份 instruction、候选 diff 与完整日志，核对新测试检验的是否真是 P 所要求的公共效果。“旧 FAIL／新 PASS”可能是旧测试误拒，也可能是新测试误收；“旧 PASS／新 FAIL”可能是旧测试漏检，也可能是新测试过严或扩大了覆盖范围。逐例审查后才报告有证据支持的正确解数量。本轮冻结补丁和 verdict 保持原样，发现的 verifier 疑点作为 Stage 2 后续复核证据。
+
+### 4.2 Pipeline
 
 ~~~text
 合格清单：20 个 instance + 明确的 accepted attempt
@@ -243,7 +275,7 @@ hard replay 的原始 test patch 只进入临时回放容器，使历史 P2P 源
 
 本轮使用 Harbor 0.22.0、mini-swe-agent 2.4.6、`deepseek-v4-pro-Code-PT-SWE-Pro-o-66`，每组每任务 1 次 rollout，最多 10 个任务并发。模型服务端版本未提供，未固定 seed。Harbor shared mode 的 `trial regrade` 不适用于这批任务，交叉复判由项目 Docker replay 执行；它在干净环境中按原始测试空间规则应用历史 test patch，区分补丁应用/基础设施失败与有效测试 FAIL。40/40 次旧 verifier 独立复判与 Harbor 原生 verdict 相同。评测前的基础设施失败和首次复判准备失误已留档；全部 40 份补丁在统一规则下重新复判，冻结原任务、final 测试及候选补丁未改动。执行和统计入口见 [Stage 3 控制器](../../src/swepro_trans/stage3.py)、[聚合分析](../../src/swepro_trans/stage3_analysis.py)、[Docker replay](../../src/swepro_trans/qa/replay.py)与[测试空间重置](../../src/swepro_trans/qa/stage3_p2p_reset.py)。
 
-### 4.2 冻结结果
+### 4.3 结果与指标（冻结首轮）
 
 40/40 次 rollout 正常结束并生成非空补丁，80/80 个旧/新 verifier verdict 有效。以下每行的四格均针对**同一组的同一补丁**配对计算；行间 instruction 比较则涉及各自生成的补丁。
 
@@ -255,7 +287,7 @@ hard replay 的原始 test patch 只进入临时回放容器，使历史 P2P 源
 
 仅删 R/I 的 17 个任务：旧 verifier 原始→转换为 16→2，新 verifier 为 15→12。另 3 个含行为澄清任务：旧为 3→1，新为 2→1。一次 rollout、非随机抽取的 20 个任务，只能得出这批样本的描述统计，不能当作稳定的模型成功率或单一因素因果效应。正式 solver 墙钟跨度约 85.5 分钟；原始/转换组分别消耗输入 59,609,625 / 108,441,069 tokens、输出 536,184 / 651,276 tokens（输入量包含缓存命中）。Harbor 的费用字段不可用，不据此估算实际花费。生成结果、哈希、日志和汇总位于 [冻结实验目录](../../check/stage3/deepseek_miniswe_20_20261008/)；机器可读总表是 [aggregate.json](../../check/stage3/deepseek_miniswe_20_20261008/aggregate.json)。
 
-### 4.3 判定不一致的解释
+### 4.4 判定不一致的解释
 
 11 份“旧 FAIL／新 PASS”经逐补丁审查，**10 份**有足够 P 层行为证据支持正确；另 1 份 Ansible 转换组补丁错误拒绝合法完整单位名（如 `kilobyte`），新 verifier 漏检，故不能把 11 当作全部“挽救的正确解”。原始 instruction 组唯一旧 FAIL／新 PASS 是 Ansible `human_to_bytes`：补丁拒绝畸形输入，但异常文案不符原 Requirements 中的固定字符串 `Value is not a valid string`；原 instruction 下旧判定成立，删 R/I 后新判定对应保留的 Description。早期机器语义审查将其归因为 selector 不匹配，这一点已由原始 pytest 日志纠正。
 
@@ -267,7 +299,7 @@ Stage 3 暴露的 verifier 疑点应作为 Stage 2 复核证据；若修订测�
 
 ## 5. 核心 prompt 与可执行机制索引
 
-[当前配置](../../configs/experiment.yaml)决定实际生效的 Stage 2 prompt；下表列出用途，不把 prompt 文本误当硬门禁。转换器另有其他历史/聚焦文件，但未列入当前配置映射的不在此表中。
+下表列出首批 20 条转换流程中的 prompt 角色与实现入口，用于理解方法分工；prompt 文本本身不是硬门禁。首轮结论以对应的合格 attempt、审计与 Stage 3 冻结记录为准。
 
 | 角色 | 生效 prompt | 关键约束 |
 | --- | --- | --- |
@@ -278,7 +310,7 @@ Stage 3 暴露的 verifier 疑点应作为 Stage 2 复核证据；若修订测�
 | 负向 QA 生成器 | [negative_generator.md](../../prompts/qa/negative_generator.md) | 构造接近正确、仅违反相关 P 行为的可运行 mutant。 |
 | 负向 QA Judge | [negative.md](../../prompts/judges/negative.md) | 核查明确 P 义务与非等价性，排除无关崩溃或等价变更。 |
 
-| 机制 | 当前实现 | 实际作用 |
+| 机制 | 实现入口 | 实际作用 |
 | --- | --- | --- |
 | F2P accounting 与包结构 | [conversion_schema.py](../../src/swepro_trans/conversion_schema.py)、[revision.py](../../src/swepro_trans/validation/revision.py) | 约束每条历史 selector 的去向、P2P 原样保留、文件与 Base/Gold 回放。 |
 | 编排、addendum 与修复 | [orchestrator.py](../../src/swepro_trans/pipeline/orchestrator.py)、[repair.py](../../src/swepro_trans/pipeline/repair.py) | 固定门禁次序；反馈失败；规范缺口形成行为级 addendum 和新 revision。 |
@@ -286,4 +318,4 @@ Stage 3 暴露的 verifier 疑点应作为 Stage 2 复核证据；若修订测�
 | 正反 QA 与验收 | [QA runner](../../src/swepro_trans/qa/runner.py)、[acceptance.py](../../src/swepro_trans/validation/acceptance.py) | Judge 和 verifier 双条件，核对同一 revision 的门禁。 |
 | 发布与合格审核 | [layout.py](../../src/swepro_trans/layout.py)、[final_audit.py](../../src/swepro_trans/validation/final_audit.py) | 写正式 Harbor 包、检查审计证据；框架外 independent audit 由外部流程生成。 |
 
-证据阅读顺序：先看 [Stage 1 总审计](../../data/stage1/final_100_report.json)和[合格清单](../../check/qualified_tasks.txt)，再顺着一个明确 attempt 的 `source/ → revisions/ → validation/ → qa/ → final/ → review/`，最后看 Stage 3 的 [manifest](../../check/stage3/deepseek_miniswe_20_20261008/manifest.json)、[aggregate](../../check/stage3/deepseek_miniswe_20_20261008/aggregate.json)、逐实例 patch 与复判日志。旧设计文档可解释动机；当文档与实现或冻结证据不一致时，以本节所列代码及本轮冻结记录为准。
+证据阅读顺序：先看 [Stage 1 总审计](../../data/stage1/final_100_report.json)和[合格清单](../../check/qualified_tasks.txt)，再顺着一个明确 attempt 的 `source/ → revisions/ → validation/ → qa/ → final/ → review/`，最后看 Stage 3 的 [manifest](../../check/stage3/deepseek_miniswe_20_20261008/manifest.json)、[aggregate](../../check/stage3/deepseek_miniswe_20_20261008/aggregate.json)、逐实例 patch 与复判日志。旧设计文档可解释动机；若流程描述与首轮冻结证据不一致，以对应 attempt 和本轮冻结记录为准。

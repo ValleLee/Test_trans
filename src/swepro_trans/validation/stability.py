@@ -94,8 +94,17 @@ def _p2p_selector_evidence(log_root: Path, replay: dict[str, Any], selectors: li
             if name in statuses and statuses[name] != status:
                 conflicts.add(name)
             statuses[name] = status
-        missing = [name for name in selectors if name not in statuses]
-        not_passed = {name: statuses[name] for name in selectors if name in statuses and statuses[name] not in {"PASS", "PASSED", "OK"}}
+        # Structured runners may trim selector names while the retained P2P
+        # config preserves the exact original string (including trailing
+        # whitespace). Compare on the same canonical form, but report the
+        # original selector text so diagnostics remain traceable to config.
+        canonical_selectors = [(selector, selector.strip()) for selector in selectors]
+        missing = [original for original, canonical in canonical_selectors if canonical not in statuses]
+        not_passed = {
+            original: statuses[canonical]
+            for original, canonical in canonical_selectors
+            if canonical in statuses and statuses[canonical] not in {"PASS", "PASSED", "OK"}
+        }
         evidence[side] = {
             "status": "pass" if payload and not missing and not not_passed and not conflicts else "fail",
             "output_source": source,
@@ -153,7 +162,7 @@ def run_stability(task_root: Path, revision: Path, repeats: int = 2) -> dict[str
             root, image, tests_dir=candidate_tests, log_root=log_root,
             original_root=paths.original, evidence_root=paths.validation_root,
             write_compat_results=False, expectation=f2p_expectation,
-            stage_original_test_patch=True,
+            stage_original_test_patch=bool(original_p2p),
         )
         replay["revision"] = revision_rel
         write_json(log_root / "result.json", replay)

